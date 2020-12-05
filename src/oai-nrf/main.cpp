@@ -31,7 +31,9 @@
 #include <stdlib.h> // srand
 #include <unistd.h> // get_pid(), pause()
 
-//using namespace smf;
+#include "logger.hpp"
+
+//using namespace nrf;
 //using namespace util;
 using namespace std;
 //using namespace oai::smf_server::api;
@@ -94,9 +96,9 @@ int main(int argc, char **argv)
   }
 
   // Logger
- // Logger::init( "smf" , Options::getlogStdout() , Options::getlogRotFilelog());
+  Logger::init( "smf" , Options::getlogStdout() , Options::getlogRotFilelog());
 
- // Logger::smf_app().startup( "Options parsed" );
+  Logger::smf_app().startup( "Options parsed" );
 
   struct sigaction sigIntHandler;
   sigIntHandler.sa_handler = my_app_signal_handler;

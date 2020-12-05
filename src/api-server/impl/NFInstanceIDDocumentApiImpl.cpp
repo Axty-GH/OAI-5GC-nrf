@@ -18,8 +18,11 @@ namespace api {
 
 using namespace oai::nrf::model;
 
-NFInstanceIDDocumentApiImpl::NFInstanceIDDocumentApiImpl(std::shared_ptr<Pistache::Rest::Router> rtr)
-    : NFInstanceIDDocumentApi(rtr)
+NFInstanceIDDocumentApiImpl::NFInstanceIDDocumentApiImpl(std::shared_ptr<Pistache::Rest::Router> rtr,
+                                                         oai::nrf::nrf_app *nrf_app_inst,
+                                                             std::string address)
+    : NFInstanceIDDocumentApi(rtr), m_nrf_app(nrf_app_inst),
+      m_address(address)
     { }
 
 void NFInstanceIDDocumentApiImpl::deregister_nf_instance(const std::string &nfInstanceID, Pistache::Http::ResponseWriter &response) {

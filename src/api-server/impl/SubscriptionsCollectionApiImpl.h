@@ -31,6 +31,7 @@
 
 #include "ProblemDetails.h"
 #include "SubscriptionData.h"
+#include "nrf_app.hpp"
 
 namespace oai {
 namespace nrf {
@@ -40,11 +41,15 @@ using namespace oai::nrf::model;
 
 class SubscriptionsCollectionApiImpl : public oai::nrf::api::SubscriptionsCollectionApi {
 public:
-    SubscriptionsCollectionApiImpl(std::shared_ptr<Pistache::Rest::Router>);
+    SubscriptionsCollectionApiImpl(std::shared_ptr<Pistache::Rest::Router>,
+                                   oai::nrf::nrf_app *nrf_app_inst,
+                                   std::string address);
     ~SubscriptionsCollectionApiImpl() {}
 
     void create_subscription(const SubscriptionData &subscriptionData, Pistache::Http::ResponseWriter &response);
-
+private:
+    oai::nrf::nrf_app *m_nrf_app;
+    std::string m_address;
 };
 
 }

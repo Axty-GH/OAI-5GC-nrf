@@ -33,6 +33,7 @@ SubscriptionData::SubscriptionData()
     m_ReqNfFqdn = "";
     m_ReqNfFqdnIsSet = false;
     m_ReqSnssaisIsSet = false;
+    //m_SubscrCond;
     
 }
 
@@ -51,8 +52,9 @@ void to_json(nlohmann::json& j, const SubscriptionData& o)
     j["nfStatusNotificationUri"] = o.m_NfStatusNotificationUri;
     if(o.reqNfInstanceIdIsSet())
         j["reqNfInstanceId"] = o.m_ReqNfInstanceId;
-    if(o.subscrCondIsSet())
+/*    if(o.subscrCondIsSet())
         j["subscrCond"] = o.m_SubscrCond;
+*/
     j["subscriptionId"] = o.m_SubscriptionId;
     if(o.validityTimeIsSet())
         j["validityTime"] = o.m_ValidityTime;
@@ -78,11 +80,13 @@ void from_json(const nlohmann::json& j, SubscriptionData& o)
         j.at("reqNfInstanceId").get_to(o.m_ReqNfInstanceId);
         o.m_ReqNfInstanceIdIsSet = true;
     } 
+    /*
     if(j.find("subscrCond") != j.end())
     {
         j.at("subscrCond").get_to(o.m_SubscrCond);
         o.m_SubscrCondIsSet = true;
     } 
+    */
     j.at("subscriptionId").get_to(o.m_SubscriptionId);
     if(j.find("validityTime") != j.end())
     {
@@ -146,15 +150,20 @@ void SubscriptionData::unsetReqNfInstanceId()
 {
     m_ReqNfInstanceIdIsSet = false;
 }
-OneOfNfInstanceIdCondNfTypeCondServiceNameCondAmfCondGuamiListCondNetworkSliceCondNfGroupCond SubscriptionData::getSubscrCond() const
+/*
+m_SubscrCond SubscriptionData::getSubscrCond() const
 {
     return m_SubscrCond;
 }
-void SubscriptionData::setSubscrCond(OneOfNfInstanceIdCondNfTypeCondServiceNameCondAmfCondGuamiListCondNetworkSliceCondNfGroupCond const& value)
+*/
+/*
+void SubscriptionData::setSubscrCond(m_SubscrCond const& value)
 {
     m_SubscrCond = value;
     m_SubscrCondIsSet = true;
 }
+*/
+
 bool SubscriptionData::subscrCondIsSet() const
 {
     return m_SubscrCondIsSet;
@@ -239,11 +248,11 @@ void SubscriptionData::unsetNotifCondition()
 {
     m_NotifConditionIsSet = false;
 }
-NFType SubscriptionData::getReqNfType() const
+std::string SubscriptionData::getReqNfType() const
 {
     return m_ReqNfType;
 }
-void SubscriptionData::setReqNfType(NFType const& value)
+void SubscriptionData::setReqNfType(std::string const& value)
 {
     m_ReqNfType = value;
     m_ReqNfTypeIsSet = true;

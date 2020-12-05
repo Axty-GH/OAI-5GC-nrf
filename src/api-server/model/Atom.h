@@ -20,7 +20,7 @@
 
 
 #include <string>
-#include "AnyType.h"
+//#include "AnyType.h"
 #include <nlohmann/json.hpp>
 
 namespace oai {
@@ -49,8 +49,8 @@ public:
     /// <summary>
     /// 
     /// </summary>
-    AnyType getValue() const;
-    void setValue(AnyType const& value);
+    std::string getValue() const;
+    void setValue(std::string const& value);
     /// <summary>
     /// 
     /// </summary>
@@ -64,7 +64,7 @@ public:
 protected:
     std::string m_Attr;
 
-    AnyType m_Value;
+    std::string m_Value;
 
     bool m_Negative;
     bool m_NegativeIsSet;

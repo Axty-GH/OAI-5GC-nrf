@@ -21,7 +21,7 @@
 
 #include <string>
 #include "PatchOperation.h"
-#include "AnyType.h"
+//#include "AnyType.h"
 #include <nlohmann/json.hpp>
 
 namespace oai {
@@ -62,8 +62,8 @@ public:
     /// <summary>
     /// 
     /// </summary>
-    AnyType getValue() const;
-    void setValue(AnyType const& value);
+    std::string getValue() const;
+    void setValue(std::string const& value);
     bool valueIsSet() const;
     void unsetValue();
 
@@ -76,7 +76,7 @@ protected:
 
     std::string m_From;
     bool m_FromIsSet;
-    AnyType m_Value;
+    std::string m_Value;
     bool m_ValueIsSet;
 };
 

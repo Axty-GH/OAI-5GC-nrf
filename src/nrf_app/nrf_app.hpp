@@ -19,7 +19,7 @@
  *      contact@openairinterface.org
  */
 
-/*! \file smf_config.cpp
+/*! \file smf_app.hpp
  \brief
  \author  Lionel GAUTHIER, Tien-Thinh NGUYEN
  \company Eurecom
@@ -27,30 +27,15 @@
  \email: lionel.gauthier@eurecom.fr, tien-thinh.nguyen@eurecom.fr
  */
 
+#ifndef FILE_NRF_APP_HPP_SEEN
+#define FILE_NRF_APP_HPP_SEEN
+namespace oai{
+namespace nrf {
+class nrf_app{
+
+};
+}
+}
 #include "nrf_config.hpp"
 
-#include <cstdlib>
-#include <iomanip>
-#include <iostream>
-//#include "string.hpp"
-
-// C includes
-#include <arpa/inet.h>
-#include <stdbool.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/types.h>
-#include <unistd.h>
-
-#include <boost/algorithm/string.hpp>
-#include <boost/algorithm/string/classification.hpp>
-#include <boost/algorithm/string/split.hpp>
-
-
-using namespace std;
-//using namespace libconfig;
-using namespace oai::nrf;
-
-//extern smf_config smf_cfg;
-
-
+#endif /* FILE_SMF_APP_HPP_SEEN */

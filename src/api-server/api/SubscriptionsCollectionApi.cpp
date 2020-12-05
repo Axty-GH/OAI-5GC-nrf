@@ -17,7 +17,7 @@ namespace oai {
 namespace nrf {
 namespace api {
 
-using namespace org::openapitools::server::helpers;
+using namespace oai::nrf::helpers;
 using namespace oai::nrf::model;
 
 SubscriptionsCollectionApi::SubscriptionsCollectionApi(std::shared_ptr<Pistache::Rest::Router> rtr) { 

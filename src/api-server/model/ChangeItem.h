@@ -21,7 +21,7 @@
 
 #include "ChangeType.h"
 #include <string>
-#include "AnyType.h"
+//#include "AnyType.h"
 #include <nlohmann/json.hpp>
 
 namespace oai {
@@ -62,15 +62,15 @@ public:
     /// <summary>
     /// 
     /// </summary>
-    AnyType getOrigValue() const;
-    void setOrigValue(AnyType const& value);
+    std::string getOrigValue() const;
+    void setOrigValue(std::string const& value);
     bool origValueIsSet() const;
     void unsetOrigValue();
     /// <summary>
     /// 
     /// </summary>
-    AnyType getNewValue() const;
-    void setNewValue(AnyType const& value);
+    std::string getNewValue() const;
+    void setNewValue(std::string const& value);
     bool newValueIsSet() const;
     void unsetNewValue();
 
@@ -83,9 +83,9 @@ protected:
 
     std::string m_From;
     bool m_FromIsSet;
-    AnyType m_OrigValue;
+    std::string m_OrigValue;
     bool m_OrigValueIsSet;
-    AnyType m_NewValue;
+    std::string m_NewValue;
     bool m_NewValueIsSet;
 };
 

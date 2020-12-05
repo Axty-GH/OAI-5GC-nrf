@@ -19,7 +19,8 @@
 #define NfTypeCond_H_
 
 
-#include "NFType.h"
+//#include "NFType.h"
+#include <string>
 #include <nlohmann/json.hpp>
 
 namespace oai {
@@ -43,13 +44,13 @@ public:
     /// <summary>
     /// 
     /// </summary>
-    NFType getNfType() const;
-    void setNfType(NFType const& value);
+    std::string getNfType() const;
+    void setNfType(std::string const& value);
 
     friend void to_json(nlohmann::json& j, const NfTypeCond& o);
     friend void from_json(const nlohmann::json& j, NfTypeCond& o);
 protected:
-    NFType m_NfType;
+    std::string m_NfType;
 
 };
 

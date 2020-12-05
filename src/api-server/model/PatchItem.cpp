@@ -95,11 +95,11 @@ void PatchItem::unsetFrom()
 {
     m_FromIsSet = false;
 }
-AnyType PatchItem::getValue() const
+std::string PatchItem::getValue() const
 {
     return m_Value;
 }
-void PatchItem::setValue(AnyType const& value)
+void PatchItem::setValue(std::string const& value)
 {
     m_Value = value;
     m_ValueIsSet = true;

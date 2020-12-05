@@ -32,6 +32,7 @@
 #include "PatchItem.h"
 #include "ProblemDetails.h"
 #include "SubscriptionData.h"
+#include "nrf_app.hpp"
 #include <string>
 #include <vector>
 
@@ -43,12 +44,16 @@ using namespace oai::nrf::model;
 
 class SubscriptionIDDocumentApiImpl : public oai::nrf::api::SubscriptionIDDocumentApi {
 public:
-    SubscriptionIDDocumentApiImpl(std::shared_ptr<Pistache::Rest::Router>);
+    SubscriptionIDDocumentApiImpl(std::shared_ptr<Pistache::Rest::Router>,
+                                  oai::nrf::nrf_app *nrf_app_inst,
+                                    std::string address);
     ~SubscriptionIDDocumentApiImpl() {}
 
     void remove_subscription(const std::string &subscriptionID, Pistache::Http::ResponseWriter &response);
     void update_subscription(const std::string &subscriptionID, const std::vector<PatchItem> &patchItem, Pistache::Http::ResponseWriter &response);
-
+private:
+    oai::nrf::nrf_app *m_nrf_app;
+    std::string m_address;
 };
 
 }

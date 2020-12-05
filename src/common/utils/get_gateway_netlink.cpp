@@ -43,8 +43,8 @@ bool util::get_iface_l2_addr(const std::string &iface, std::string &mac) {
   char wb[32];
   mac_address_in.get(wb, 32);
   mac.assign(wb);
-  Logger::pfcp_switch().error("Found IFace %s MAC %s", iface.c_str(),
-                              mac.c_str());
+  //Logger::pfcp_switch().error("Found IFace %s MAC %s", iface.c_str(),
+  //                            mac.c_str());
   mac.erase(std::remove(mac.begin(), mac.end(), ':'), mac.end());
   return true;
 //  ifr = {};

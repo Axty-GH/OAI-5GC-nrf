@@ -30,7 +30,9 @@
 #include <pistache/optional.h>
 
 #include "StoredSearchResult.h"
+#include "nrf_app.hpp"
 #include <string>
+
 
 namespace oai {
 namespace nrf {
@@ -38,13 +40,20 @@ namespace api {
 
 using namespace oai::nrf::model;
 
-class CompleteStoredSearchDocumentApiImpl : public oai::nrf::api::CompleteStoredSearchDocumentApi {
-public:
-    CompleteStoredSearchDocumentApiImpl(std::shared_ptr<Pistache::Rest::Router>);
-    ~CompleteStoredSearchDocumentApiImpl() {}
+class CompleteStoredSearchDocumentApiImpl :
+    public oai::nrf::api::CompleteStoredSearchDocumentApi {
+ public:
+  CompleteStoredSearchDocumentApiImpl(std::shared_ptr<Pistache::Rest::Router>,
+                                      oai::nrf::nrf_app *nrf_app_inst,
+                                      std::string address);
+  ~CompleteStoredSearchDocumentApiImpl() {
+  }
 
-    void retrieve_complete_search(const std::string &searchId, Pistache::Http::ResponseWriter &response);
-
+  void retrieve_complete_search(const std::string &searchId,
+                                Pistache::Http::ResponseWriter &response);
+ private:
+  oai::nrf::nrf_app *m_nrf_app;
+  std::string m_address;
 };
 
 }

@@ -39,8 +39,10 @@
 #include <vector>
 //#include "thread_sched.hpp"
 
+namespace oai{
+namespace nrf {
 
-
-namespace nrf {}  // namespace nrf
+}  // namespace nrf
+}
 
 #endif /* FILE_NRF_CONFIG_HPP_SEEN */

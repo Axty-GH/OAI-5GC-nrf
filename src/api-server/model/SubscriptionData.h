@@ -19,8 +19,7 @@
 #define SubscriptionData_H_
 
 
-#include "OneOfNfInstanceIdCondNfTypeCondServiceNameCondAmfCondGuamiListCondNetworkSliceCondNfGroupCond.h"
-#include "NFType.h"
+//#include "OneOfNfInstanceIdCondNfTypeCondServiceNameCondAmfCondGuamiListCondNetworkSliceCondNfGroupCond.h"
 #include <string>
 #include "NotificationEventType.h"
 #include "PlmnId.h"
@@ -29,9 +28,50 @@
 #include "NotifCondition.h"
 #include <nlohmann/json.hpp>
 
+#include "NfInstanceIdCond.h"
+#include "NfTypeCond.h"
+#include "ServiceNameCond.h"
+#include "AmfCond.h"
+#include "GuamiListCond.h"
+#include "NetworkSliceCond.h"
+#include "NfGroupCond.h"
+
 namespace oai {
 namespace nrf {
 namespace model {
+
+typedef struct subscription_condition_s {
+  uint8_t type;
+  union {
+    NfInstanceIdCond nfInstanceIdCond;
+    NfTypeCond nfTypeCond;
+    ServiceNameCond serviceNameCond;
+    AmfCond amfCond;
+    GuamiListCond guamiListCond;
+    NetworkSliceCond networkSliceCond;
+    NfGroupCond nfGroupCond;
+  };
+
+  subscription_condition_s()
+      : type(0) {
+  }
+
+  subscription_condition_s(uint8_t t)
+      : type(t) {
+  }
+
+  bool operator==(const struct subscription_condition_s &s) const {
+    return (s.type == type);
+  }
+  //------------------------------------------------------------------------------
+  bool operator==(const uint8_t &t) const {
+    return (t == type);
+  }
+
+
+  virtual ~subscription_condition_s() {};
+
+} subscription_condition_t;
 
 /// <summary>
 /// 
@@ -62,8 +102,11 @@ public:
     /// <summary>
     /// 
     /// </summary>
-    OneOfNfInstanceIdCondNfTypeCondServiceNameCondAmfCondGuamiListCondNetworkSliceCondNfGroupCond getSubscrCond() const;
-    void setSubscrCond(OneOfNfInstanceIdCondNfTypeCondServiceNameCondAmfCondGuamiListCondNetworkSliceCondNfGroupCond const& value);
+
+    //OneOfNfInstanceIdCondNfTypeCondServiceNameCondAmfCondGuamiListCondNetworkSliceCondNfGroupCond getSubscrCond() const;
+    subscription_condition_t getSubscrCond() const;
+
+    void setSubscrCond(subscription_condition_t const& value);
     bool subscrCondIsSet() const;
     void unsetSubscrCond();
     /// <summary>
@@ -102,8 +145,8 @@ public:
     /// <summary>
     /// 
     /// </summary>
-    NFType getReqNfType() const;
-    void setReqNfType(NFType const& value);
+    std::string getReqNfType() const;
+    void setReqNfType(std::string const& value);
     bool reqNfTypeIsSet() const;
     void unsetReqNfType();
     /// <summary>
@@ -128,7 +171,8 @@ protected:
 
     std::string m_ReqNfInstanceId;
     bool m_ReqNfInstanceIdIsSet;
-    OneOfNfInstanceIdCondNfTypeCondServiceNameCondAmfCondGuamiListCondNetworkSliceCondNfGroupCond m_SubscrCond;
+    //OneOfNfInstanceIdCondNfTypeCondServiceNameCondAmfCondGuamiListCondNetworkSliceCondNfGroupCond m_SubscrCond;
+    subscription_condition_t m_SubscrCond;
     bool m_SubscrCondIsSet;
     std::string m_SubscriptionId;
 
@@ -140,7 +184,7 @@ protected:
     bool m_PlmnIdIsSet;
     NotifCondition m_NotifCondition;
     bool m_NotifConditionIsSet;
-    NFType m_ReqNfType;
+    std::string m_ReqNfType;
     bool m_ReqNfTypeIsSet;
     std::string m_ReqNfFqdn;
     bool m_ReqNfFqdnIsSet;

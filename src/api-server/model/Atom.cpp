@@ -62,11 +62,11 @@ void Atom::setAttr(std::string const& value)
 {
     m_Attr = value;
 }
-AnyType Atom::getValue() const
+std::string Atom::getValue() const
 {
     return m_Value;
 }
-void Atom::setValue(AnyType const& value)
+void Atom::setValue(std::string const& value)
 {
     m_Value = value;
 }

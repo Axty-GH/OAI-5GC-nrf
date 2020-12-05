@@ -103,11 +103,11 @@ void ChangeItem::unsetFrom()
 {
     m_FromIsSet = false;
 }
-AnyType ChangeItem::getOrigValue() const
+std::string ChangeItem::getOrigValue() const
 {
     return m_OrigValue;
 }
-void ChangeItem::setOrigValue(AnyType const& value)
+void ChangeItem::setOrigValue(std::string const& value)
 {
     m_OrigValue = value;
     m_OrigValueIsSet = true;
@@ -120,11 +120,11 @@ void ChangeItem::unsetOrigValue()
 {
     m_OrigValueIsSet = false;
 }
-AnyType ChangeItem::getNewValue() const
+std::string ChangeItem::getNewValue() const
 {
     return m_NewValue;
 }
-void ChangeItem::setNewValue(AnyType const& value)
+void ChangeItem::setNewValue(std::string const& value)
 {
     m_NewValue = value;
     m_NewValueIsSet = true;

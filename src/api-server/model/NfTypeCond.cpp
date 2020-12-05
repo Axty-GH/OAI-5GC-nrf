@@ -42,11 +42,11 @@ void from_json(const nlohmann::json& j, NfTypeCond& o)
     j.at("nfType").get_to(o.m_NfType);
 }
 
-NFType NfTypeCond::getNfType() const
+std::string NfTypeCond::getNfType() const
 {
     return m_NfType;
 }
-void NfTypeCond::setNfType(NFType const& value)
+void NfTypeCond::setNfType(std::string const& value)
 {
     m_NfType = value;
 }

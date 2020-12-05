@@ -23,10 +23,19 @@
 #include <sstream>
 #include <vector>
 #include <map>
+#include "ServiceName.h"
+#include "PlmnId.h"
+#include "Snssai.h"
+#include "PlmnSnssai.h"
+#include "PduSessionType.h"
+#include "EventId.h"
+#include "NwdafEvent.h"
+#include "AccessType.h"
+#include "ComplexQuery.h"
+#include "AtsssCapability.h"
 
-namespace org {
-namespace openapitools {
-namespace server {
+namespace oai {
+namespace nrf {
 namespace helpers {
 
     std::string toStringValue(const std::string &value);
@@ -42,6 +51,17 @@ namespace helpers {
     bool fromStringValue(const std::string &inStr, bool &value);
     bool fromStringValue(const std::string &inStr, float &value);
     bool fromStringValue(const std::string &inStr, double &value);
+    bool fromStringValue(const std::string &inStr, oai::nrf::model::ServiceName &value);
+    bool fromStringValue(const std::string &inStr, oai::nrf::model::PlmnId &value);
+    bool fromStringValue(const std::string &inStr, oai::nrf::model::Snssai &value);
+    bool fromStringValue(const std::string &inStr, oai::nrf::model::PlmnSnssai &value);
+    bool fromStringValue(const std::string &inStr, oai::nrf::model::PduSessionType &value);
+    bool fromStringValue(const std::string &inStr, oai::nrf::model::EventId &value);
+    bool fromStringValue(const std::string &inStr, oai::nrf::model::NwdafEvent &value);
+    bool fromStringValue(const std::string &inStr, oai::nrf::model::AccessType &value);
+    bool fromStringValue(const std::string &inStr, oai::nrf::model::ComplexQuery &value);
+    bool fromStringValue(const std::string &inStr, oai::nrf::model::AtsssCapability &value);
+
     template<typename T>
     bool fromStringValue(const std::vector<std::string> &inStr, std::vector<T> &value){
         try{
@@ -68,7 +88,6 @@ namespace helpers {
         return fromStringValue(inStrings, value);
     }
 
-}
 }
 }
 }

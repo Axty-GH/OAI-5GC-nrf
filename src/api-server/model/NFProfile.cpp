@@ -57,7 +57,7 @@ NFProfile::NFProfile()
     m_ChfInfoIsSet = false;
     m_ChfInfoExtIsSet = false;
     m_NwdafInfoIsSet = false;
-    m_CustomInfoIsSet = false;
+    //m_CustomInfoIsSet = false;
     m_RecoveryTime = "";
     m_RecoveryTimeIsSet = false;
     m_NfServicePersistence = false;
@@ -144,8 +144,8 @@ void to_json(nlohmann::json& j, const NFProfile& o)
         j["chfInfoExt"] = o.m_ChfInfoExt;
     if(o.nwdafInfoIsSet())
         j["nwdafInfo"] = o.m_NwdafInfo;
-    if(o.customInfoIsSet())
-        j["customInfo"] = o.m_CustomInfo;
+    //if(o.customInfoIsSet())
+    //    j["customInfo"] = o.m_CustomInfo;
     if(o.recoveryTimeIsSet())
         j["recoveryTime"] = o.m_RecoveryTime;
     if(o.nfServicePersistenceIsSet())
@@ -316,11 +316,11 @@ void from_json(const nlohmann::json& j, NFProfile& o)
         j.at("nwdafInfo").get_to(o.m_NwdafInfo);
         o.m_NwdafInfoIsSet = true;
     } 
-    if(j.find("customInfo") != j.end())
+    /*if(j.find("customInfo") != j.end())
     {
         j.at("customInfo").get_to(o.m_CustomInfo);
         o.m_CustomInfoIsSet = true;
-    } 
+    } */
     if(j.find("recoveryTime") != j.end())
     {
         j.at("recoveryTime").get_to(o.m_RecoveryTime);
@@ -368,11 +368,11 @@ void NFProfile::unsetNfInstanceName()
 {
     m_NfInstanceNameIsSet = false;
 }
-NFType NFProfile::getNfType() const
+std::string NFProfile::getNfType() const
 {
     return m_NfType;
 }
-void NFProfile::setNfType(NFType const& value)
+void NFProfile::setNfType(std::string const& value)
 {
     m_NfType = value;
 }
@@ -894,23 +894,27 @@ void NFProfile::unsetNwdafInfo()
 {
     m_NwdafInfoIsSet = false;
 }
-Object NFProfile::getCustomInfo() const
+/*Object NFProfile::getCustomInfo() const
 {
     return m_CustomInfo;
 }
+*/
+/*
 void NFProfile::setCustomInfo(Object const& value)
 {
     m_CustomInfo = value;
     m_CustomInfoIsSet = true;
-}
-bool NFProfile::customInfoIsSet() const
+}*/
+/* bool NFProfile::customInfoIsSet() const
 {
     return m_CustomInfoIsSet;
-}
+}*/
+/*
 void NFProfile::unsetCustomInfo()
 {
     m_CustomInfoIsSet = false;
-}
+}*/
+
 std::string NFProfile::getRecoveryTime() const
 {
     return m_RecoveryTime;

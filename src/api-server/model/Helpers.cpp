@@ -11,9 +11,8 @@
 */
 #include "Helpers.h"
 
-namespace org {
-namespace openapitools {
-namespace server {
+namespace oai {
+namespace nrf {
 namespace helpers {
 
 
@@ -92,7 +91,49 @@ bool fromStringValue(const std::string &inStr, double &value){
     return true;
 }
 
+bool fromStringValue(const std::string &inStr, oai::nrf::model::ServiceName &value) {
+  //TODO
+  return true;
 }
+
+
+bool fromStringValue(const std::string &inStr, oai::nrf::model::PlmnId &value){
+  //TODO
+  return true;
+}
+bool fromStringValue(const std::string &inStr, oai::nrf::model::Snssai &value){
+  //TODO
+  return true;
+}
+bool fromStringValue(const std::string &inStr, oai::nrf::model::PlmnSnssai &value){
+  //TODO
+  return true;
+}
+bool fromStringValue(const std::string &inStr, oai::nrf::model::PduSessionType &value){
+  //TODO
+  return true;
+}
+bool fromStringValue(const std::string &inStr, oai::nrf::model::EventId &value){
+  //TODO
+  return true;
+}
+bool fromStringValue(const std::string &inStr, oai::nrf::model::NwdafEvent &value){
+  //TODO
+  return true;
+}
+bool fromStringValue(const std::string &inStr, oai::nrf::model::AccessType &value){
+  //TODO
+  return true;
+}
+bool fromStringValue(const std::string &inStr, oai::nrf::model::ComplexQuery &value){
+  //TODO
+  return true;
+}
+bool fromStringValue(const std::string &inStr, oai::nrf::model::AtsssCapability &value){
+  //TODO
+  return true;
+}
+
 }
 }
 }

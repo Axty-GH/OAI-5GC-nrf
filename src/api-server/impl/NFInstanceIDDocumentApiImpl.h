@@ -32,6 +32,7 @@
 #include "NFProfile.h"
 #include "PatchItem.h"
 #include "ProblemDetails.h"
+#include "nrf_app.hpp"
 #include <string>
 #include <vector>
 
@@ -43,14 +44,18 @@ using namespace oai::nrf::model;
 
 class NFInstanceIDDocumentApiImpl : public oai::nrf::api::NFInstanceIDDocumentApi {
 public:
-    NFInstanceIDDocumentApiImpl(std::shared_ptr<Pistache::Rest::Router>);
+    NFInstanceIDDocumentApiImpl(std::shared_ptr<Pistache::Rest::Router>,
+                                oai::nrf::nrf_app *nrf_app_inst,
+                                std::string address);
     ~NFInstanceIDDocumentApiImpl() {}
 
     void deregister_nf_instance(const std::string &nfInstanceID, Pistache::Http::ResponseWriter &response);
     void get_nf_instance(const std::string &nfInstanceID, Pistache::Http::ResponseWriter &response);
     void register_nf_instance(const std::string &nfInstanceID, const NFProfile &nFProfile, const Pistache::Optional<Pistache::Http::Header::Raw> &contentEncoding, Pistache::Http::ResponseWriter &response);
     void update_nf_instance(const std::string &nfInstanceID, const std::vector<PatchItem> &patchItem, Pistache::Http::ResponseWriter &response);
-
+private:
+    oai::nrf::nrf_app *m_nrf_app;
+    std::string m_address;
 };
 
 }

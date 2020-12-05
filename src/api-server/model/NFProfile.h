@@ -35,8 +35,8 @@
 #include <vector>
 #include "AmfInfo.h"
 #include "UdrInfo.h"
-#include "NFType.h"
-#include "Object.h"
+//#include "NFType.h"
+//#include "Object.h"
 #include "PlmnSnssai.h"
 #include "AusfInfo.h"
 #include "NwdafInfo.h"
@@ -75,8 +75,8 @@ public:
     /// <summary>
     /// 
     /// </summary>
-    NFType getNfType() const;
-    void setNfType(NFType const& value);
+    std::string getNfType() const;
+    void setNfType(std::string const& value);
     /// <summary>
     /// 
     /// </summary>
@@ -295,10 +295,10 @@ public:
     /// <summary>
     /// 
     /// </summary>
-    Object getCustomInfo() const;
-    void setCustomInfo(Object const& value);
-    bool customInfoIsSet() const;
-    void unsetCustomInfo();
+    //Object getCustomInfo() const;
+    //void setCustomInfo(Object const& value);
+    //bool customInfoIsSet() const;
+    //void unsetCustomInfo();
     /// <summary>
     /// 
     /// </summary>
@@ -335,7 +335,7 @@ protected:
 
     std::string m_NfInstanceName;
     bool m_NfInstanceNameIsSet;
-    NFType m_NfType;
+    std::string m_NfType;
 
     NFStatus m_NfStatus;
 
@@ -399,8 +399,8 @@ protected:
     bool m_ChfInfoExtIsSet;
     NwdafInfo m_NwdafInfo;
     bool m_NwdafInfoIsSet;
-    Object m_CustomInfo;
-    bool m_CustomInfoIsSet;
+    //Object m_CustomInfo;
+    //bool m_CustomInfoIsSet;
     std::string m_RecoveryTime;
     bool m_RecoveryTimeIsSet;
     bool m_NfServicePersistence;
