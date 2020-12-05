@@ -31,7 +31,7 @@ bool Options::m_log_stdout;
 void Options::help()
 {
    std::cout << std::endl
-             << "Usage:  smf  [OPTIONS]..." << std::endl
+             << "Usage:  nrf  [OPTIONS]..." << std::endl
              << "  -h, --help                   Print help and exit" << std::endl
              << "  -c, --libconfigcfg filename  Read the application configuration from this file." << std::endl
              << "  -o, --stdoutlog              Send the application logs to STDOUT fd." << std::endl

@@ -15,19 +15,14 @@
 */
 
 
-#include "async_shell_cmd.hpp"
-#include "common_defs.h"
-#include "itti.hpp"
-#include "logger.hpp"
+
 #include "options.hpp"
-#include "pid_file.hpp"
-#include "smf_app.hpp"
-#include "smf_config.hpp"
-#include "smf-api-server.h"
+
+//#include "smf-api-server.h"
 #include "pistache/endpoint.h"
 #include "pistache/http.h"
 #include "pistache/router.h"
-#include "smf-http2-server.h"
+//#include "smf-http2-server.h"
 
 #include <iostream>
 #include <thread>
@@ -36,17 +31,10 @@
 #include <stdlib.h> // srand
 #include <unistd.h> // get_pid(), pause()
 
-using namespace smf;
-using namespace util;
+//using namespace smf;
+//using namespace util;
 using namespace std;
-using namespace oai::smf_server::api;
-
-itti_mw *itti_inst = nullptr;
-async_shell_cmd *async_shell_cmd_inst = nullptr;
-smf_app *smf_app_inst = nullptr;
-smf_config smf_cfg;
-SMFApiServer *smf_api_server_1 = nullptr;
-smf_http2_server *smf_api_server_2 = nullptr;
+//using namespace oai::smf_server::api;
 
 
 void send_heartbeat_to_tasks(const uint32_t sequence);
@@ -54,17 +42,19 @@ void send_heartbeat_to_tasks(const uint32_t sequence);
 //------------------------------------------------------------------------------
 void send_heartbeat_to_tasks(const uint32_t sequence)
 {
-  itti_msg_ping *itti_msg = new itti_msg_ping(TASK_SMF_APP, TASK_ALL, sequence);
+ /* itti_msg_ping *itti_msg = new itti_msg_ping(TASK_SMF_APP, TASK_ALL, sequence);
   std::shared_ptr<itti_msg_ping> i = std::shared_ptr<itti_msg_ping>(itti_msg);
   int ret = itti_inst->send_broadcast_msg(i);
   if (RETURNok != ret) {
     Logger::smf_app().error( "Could not send ITTI message %s to task TASK_ALL", i->get_msg_name());
   }
+  */
 }
 
 //------------------------------------------------------------------------------
 void my_app_signal_handler(int s)
 {
+  /*
   std::cout << "Caught signal " << s << std::endl;
   Logger::system().startup( "exiting" );
   itti_inst->send_terminate_msg(TASK_SMF_APP);
@@ -88,6 +78,7 @@ void my_app_signal_handler(int s)
   if (smf_app_inst) delete smf_app_inst; smf_app_inst = nullptr;
   std::cout << "SMF APP memory done." << std::endl;
   std::cout << "Freeing Allocated memory done" << std::endl;
+  */
   exit(0);
 }
 //------------------------------------------------------------------------------
@@ -103,9 +94,9 @@ int main(int argc, char **argv)
   }
 
   // Logger
-  Logger::init( "smf" , Options::getlogStdout() , Options::getlogRotFilelog());
+ // Logger::init( "smf" , Options::getlogStdout() , Options::getlogRotFilelog());
 
-  Logger::smf_app().startup( "Options parsed" );
+ // Logger::smf_app().startup( "Options parsed" );
 
   struct sigaction sigIntHandler;
   sigIntHandler.sa_handler = my_app_signal_handler;
@@ -114,27 +105,28 @@ int main(int argc, char **argv)
   sigaction(SIGINT, &sigIntHandler, NULL);
 
   // Config
-  smf_cfg.load(Options::getlibconfigConfig());
-  smf_cfg.display();
+//  smf_cfg.load(Options::getlibconfigConfig());
+//  smf_cfg.display();
 
   // Inter task Interface
-  itti_inst = new itti_mw();
-  itti_inst->start(smf_cfg.itti.itti_timer_sched_params);
+//  itti_inst = new itti_mw();
+//  itti_inst->start(smf_cfg.itti.itti_timer_sched_params);
 
   // system command
-  async_shell_cmd_inst = new async_shell_cmd(smf_cfg.itti.async_cmd_sched_params);
+//  async_shell_cmd_inst = new async_shell_cmd(smf_cfg.itti.async_cmd_sched_params);
 
   // SMF application layer
-  smf_app_inst = new smf_app(Options::getlibconfigConfig());
+//  smf_app_inst = new smf_app(Options::getlibconfigConfig());
 
   // PID file
   // Currently hard-coded value. TODO: add as config option.
-   string pid_file_name = get_exe_absolute_path("/var/run", smf_cfg.instance);
+/*   string pid_file_name = get_exe_absolute_path("/var/run", smf_cfg.instance);
   if (! is_pid_file_lock_success(pid_file_name.c_str())) {
     Logger::smf_app().error( "Lock PID file %s failed\n", pid_file_name.c_str());
     exit (-EDEADLK);
   }
-
+  */
+/*
   //SMF Pistache API server (HTTP1)
   Pistache::Address addr(std::string(inet_ntoa (*((struct in_addr *)&smf_cfg.sbi.addr4))) , Pistache::Port(smf_cfg.sbi.port));
   smf_api_server_1 = new SMFApiServer(addr, smf_app_inst);
@@ -155,7 +147,7 @@ int main(int argc, char **argv)
   fprintf(fp, "STARTED\n");
   fflush(fp);
   fclose(fp);
-
+*/
   pause();
   return 0;
 }

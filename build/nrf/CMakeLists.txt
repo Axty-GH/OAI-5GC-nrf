@@ -21,8 +21,8 @@
 cmake_minimum_required (VERSION 3.0.2)
 project(oai-cn)
 
-# Override options for SMF
-set (  PACKAGE_NAME                    "SMF" )
+# Override options for NRF
+set (  PACKAGE_NAME                    "NRF" )
 set (  STATIC_LINKING                   False )
 #############################################
 # Base directories, compatible with legacy OAI building
@@ -31,6 +31,4 @@ set (OPENAIRCN_DIR   $ENV{OPENAIRCN_DIR})
 set (BUILD_TOP_DIR   ${OPENAIRCN_DIR}/build)
 set (SRC_TOP_DIR     $ENV{OPENAIRCN_DIR}/src)
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/../../src/oai_smf/CMakeLists.txt)
-
-ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/../../src/smf_app ${CMAKE_CURRENT_BINARY_DIR}/smf_app)
+include(${CMAKE_CURRENT_SOURCE_DIR}/../../src/oai-nrf/CMakeLists.txt)
