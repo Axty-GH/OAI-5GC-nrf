@@ -18,19 +18,15 @@
 # For more information about the OpenAirInterface (OAI) Software Alliance:
 #      contact@openairinterface.org
 ################################################################################
-cmake_minimum_required (VERSION 3.0.2)
-project(oai-cn)
 
-# Override options for NRF
-set (  PACKAGE_NAME                    "NRF" )
-set (  STATIC_LINKING                   False )
-#############################################
-# Base directories, compatible with legacy OAI building
-################################################
-set (OPENAIRCN_DIR   $ENV{OPENAIRCN_DIR})
-set (BUILD_TOP_DIR   ${OPENAIRCN_DIR}/build)
-set (SRC_TOP_DIR     $ENV{OPENAIRCN_DIR}/src)
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/../../src/oai-nrf/CMakeLists.txt)
+include_directories(${SRC_TOP_DIR}/../build/ext/spdlog/include)
+include_directories(${SRC_TOP_DIR}/api-server/api)
+include_directories(${SRC_TOP_DIR}/api-server/impl)
+include_directories(${SRC_TOP_DIR}/api-server/model)
+include_directories(${SRC_TOP_DIR}/api-server/)
 
-ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/../../src/nrf_app ${CMAKE_CURRENT_BINARY_DIR}/nrf_app)
+add_library (NRF STATIC
+  nrf_config.cpp
+)
+

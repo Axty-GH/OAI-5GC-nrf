@@ -18,19 +18,18 @@
 # For more information about the OpenAirInterface (OAI) Software Alliance:
 #      contact@openairinterface.org
 ################################################################################
-cmake_minimum_required (VERSION 3.0.2)
-project(oai-cn)
 
-# Override options for NRF
-set (  PACKAGE_NAME                    "NRF" )
-set (  STATIC_LINKING                   False )
-#############################################
-# Base directories, compatible with legacy OAI building
-################################################
-set (OPENAIRCN_DIR   $ENV{OPENAIRCN_DIR})
-set (BUILD_TOP_DIR   ${OPENAIRCN_DIR}/build)
-set (SRC_TOP_DIR     $ENV{OPENAIRCN_DIR}/src)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/msg)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/nas)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/ngap)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/common/utils)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/..)
+include_directories(${SRC_TOP_DIR}/../build/ext/spdlog/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/..)
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/../../src/oai-nrf/CMakeLists.txt)
+add_library(3GPP_COMMON_TYPES STATIC
+  ${CMAKE_CURRENT_SOURCE_DIR}/logger.cpp
+)
 
-ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/../../src/nrf_app ${CMAKE_CURRENT_BINARY_DIR}/nrf_app)
+

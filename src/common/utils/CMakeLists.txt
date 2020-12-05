@@ -18,19 +18,24 @@
 # For more information about the OpenAirInterface (OAI) Software Alliance:
 #      contact@openairinterface.org
 ################################################################################
-cmake_minimum_required (VERSION 3.0.2)
-project(oai-cn)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(${SRC_TOP_DIR}/common)
+include_directories(${SRC_TOP_DIR}/common/utils)
+include_directories(${SRC_TOP_DIR}/../build/ext/spdlog/include)
 
-# Override options for NRF
-set (  PACKAGE_NAME                    "NRF" )
-set (  STATIC_LINKING                   False )
-#############################################
-# Base directories, compatible with legacy OAI building
-################################################
-set (OPENAIRCN_DIR   $ENV{OPENAIRCN_DIR})
-set (BUILD_TOP_DIR   ${OPENAIRCN_DIR}/build)
-set (SRC_TOP_DIR     $ENV{OPENAIRCN_DIR}/src)
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/../../src/oai-nrf/CMakeLists.txt)
+set(CN_UTILS_SRC STATIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/async_shell_cmd.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/conversions.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/get_gateway_netlink.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/if.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/pid_file.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/string.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/thread_sched.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/mime_parser.cpp
+    )
 
-ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/../../src/nrf_app ${CMAKE_CURRENT_BINARY_DIR}/nrf_app)
+
+add_library(CN_UTILS ${CN_UTILS_SRC})
+
+

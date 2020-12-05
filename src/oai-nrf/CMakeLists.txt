@@ -262,8 +262,8 @@ else(STATIC_LINKING)
     SET(BUILD_SHARED_LIBS ON)
 endif(STATIC_LINKING)
 
-#ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/../../src/common ${CMAKE_CURRENT_BINARY_DIR}/common)
-#ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/../../src/common/utils ${CMAKE_CURRENT_BINARY_DIR}/utils)
+ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/../../src/common ${CMAKE_CURRENT_BINARY_DIR}/common)
+ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/../../src/common/utils ${CMAKE_CURRENT_BINARY_DIR}/utils)
 #ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/../../src/pfcp ${CMAKE_CURRENT_BINARY_DIR}/pfcp)
 #ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/../../src/udp ${CMAKE_CURRENT_BINARY_DIR}/udp)
 ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/../../src/api-server ${CMAKE_CURRENT_BINARY_DIR}/api-server)
@@ -274,15 +274,12 @@ ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/../../src/api-server ${CMAKE_CURREN
 
 ################################################################################
 # Specific part for oai_nrf folder
-add_definitions("-DPACKAGE_NAME=\"SMF\"")
+add_definitions("-DPACKAGE_NAME=\"NRF\"")
 
-#include_directories(${SRC_TOP_DIR}/nrf_app)
-#include_directories(${SRC_TOP_DIR}/oai_nrf)
-#include_directories(${SRC_TOP_DIR}/itti)
-#include_directories(${SRC_TOP_DIR}/common)
-#include_directories(${SRC_TOP_DIR}/common/msg)
-#include_directories(${SRC_TOP_DIR}/common/nas)
-#include_directories(${SRC_TOP_DIR}/common/utils)
+include_directories(${SRC_TOP_DIR}/nrf_app)
+include_directories(${SRC_TOP_DIR}/oai_nrf)
+include_directories(${SRC_TOP_DIR}/common)
+include_directories(${SRC_TOP_DIR}/common/utils)
 #include_directories(${SRC_TOP_DIR}/common/utils/bstr)
 #include_directories(${SRC_TOP_DIR}/pfcp)
 #include_directories(${SRC_TOP_DIR}/udp)
@@ -317,5 +314,5 @@ IF(STATIC_LINKING)
 ENDIF(STATIC_LINKING)   
 
 target_link_libraries (nrf ${ASAN} 
-    -Wl,--start-group -lnettle ${NETTLE_LIBRARIES} ${CRYPTO_LIBRARIES} -lnghttp2_asio -lboost_system -lboost_thread -lssl -lcrypto gflags glog dl double-conversion folly -Wl,--end-group pthread m rt config++ event boost_system pistache curl)
+    -Wl,--start-group NRF 3GPP_COMMON_TYPES CN_UTILS -lnettle ${NETTLE_LIBRARIES} ${CRYPTO_LIBRARIES} -lnghttp2_asio -lboost_system -lboost_thread -lssl -lcrypto gflags glog dl double-conversion folly -Wl,--end-group pthread m rt config++ event boost_system pistache curl)
     
