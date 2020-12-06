@@ -19,7 +19,7 @@
  *      contact@openairinterface.org
  */
 
-/*! \file smf_config.hpp
+/*! \file nrf_config.hpp
  * \brief
  \author  Lionel GAUTHIER, Tien-Thinh NGUYEN
  \company Eurecom
@@ -39,8 +39,69 @@
 #include <vector>
 //#include "thread_sched.hpp"
 
-namespace oai{
+#define NRF_CONFIG_STRING_NRF_CONFIG                            "NRF"
+#define NRF_CONFIG_STRING_PID_DIRECTORY                         "PID_DIRECTORY"
+#define NRF_CONFIG_STRING_INSTANCE                              "INSTANCE"
+#define NRF_CONFIG_STRING_INTERFACE_NAME                        "INTERFACE_NAME"
+#define NRF_CONFIG_STRING_IPV4_ADDRESS                          "IPV4_ADDRESS"
+#define NRF_CONFIG_STRING_PORT                                  "PORT"
+#define NRF_CONFIG_STRING_INTERFACE_SBI                         "SBI"
+#define NRF_CONFIG_STRING_SBI_HTTP2_PORT                        "HTTP2_PORT"
+#define NRF_CONFIG_STRING_API_VERSION                           "API_VERSION"
+
+namespace oai {
 namespace nrf {
+
+typedef struct interface_cfg_s {
+  std::string if_name;
+  struct in_addr addr4;
+  struct in_addr network4;
+  struct in6_addr addr6;
+  unsigned int mtu;
+  unsigned int port;
+} interface_cfg_t;
+
+class nrf_config {
+ private:
+  int load_interface(const libconfig::Setting &if_cfg, interface_cfg_t &cfg);
+
+ public:
+  /* Reader/writer lock for this configuration */
+  std::mutex m_rw_lock;
+  std::string pid_dir;
+  unsigned int instance = 0;
+
+  interface_cfg_t sbi;
+  unsigned int sbi_http2_port;
+  std::string sbi_api_version;
+  //Local configuration
+  bool local_configuration;
+
+  nrf_config()
+      :
+      m_rw_lock(),
+      pid_dir(),
+      instance(0),
+      sbi() {
+
+    sbi.port = 80;
+    sbi_http2_port = 8080;
+    sbi_api_version = "v1";
+
+  }
+  ;
+  ~nrf_config();
+  void lock() {
+    m_rw_lock.lock();
+  }
+  ;
+  void unlock() {
+    m_rw_lock.unlock();
+  }
+  ;
+  int load(const std::string &config_file);
+  void display();
+};
 
 }  // namespace nrf
 }

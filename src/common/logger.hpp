@@ -92,14 +92,14 @@ class Logger {
   static _Logger& itti() {
     return *singleton().m_itti;
   }
-  static _Logger& smf_app() {
-    return *singleton().m_smf_app;
+  static _Logger& nrf_app() {
+    return *singleton().m_nrf_app;
   }
   static _Logger& system() {
     return *singleton().m_system;
   }
-  static _Logger& smf_n11() {
-    return *singleton().m_smf_n11;
+  static _Logger& nrf_n11() {
+    return *singleton().m_nrf_n11;
   }
   static _Logger& nrf_sbi() {
     return *singleton().m_nrf_sbi;
@@ -126,9 +126,9 @@ class Logger {
 
   _Logger *m_async_cmd;
   _Logger *m_itti;
-  _Logger *m_smf_app;
+  _Logger *m_nrf_app;
   _Logger *m_system;
-  _Logger *m_smf_n11;
+  _Logger *m_nrf_n11;
   _Logger *m_nrf_sbi;
 };
 

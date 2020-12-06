@@ -18,11 +18,10 @@
 
 #include "options.hpp"
 
-//#include "smf-api-server.h"
+#include "nrf-api-server.h"
 #include "pistache/endpoint.h"
 #include "pistache/http.h"
 #include "pistache/router.h"
-//#include "smf-http2-server.h"
 
 #include <iostream>
 #include <thread>
@@ -33,10 +32,13 @@
 
 #include "logger.hpp"
 
-//using namespace nrf;
+using namespace oai::nrf;
 //using namespace util;
 using namespace std;
-//using namespace oai::smf_server::api;
+//using namespace oai::nrf_server::api;
+
+nrf_app *nrf_app_inst = nullptr;
+nrf_config nrf_cfg;
 
 
 void send_heartbeat_to_tasks(const uint32_t sequence);
@@ -48,7 +50,7 @@ void send_heartbeat_to_tasks(const uint32_t sequence)
   std::shared_ptr<itti_msg_ping> i = std::shared_ptr<itti_msg_ping>(itti_msg);
   int ret = itti_inst->send_broadcast_msg(i);
   if (RETURNok != ret) {
-    Logger::smf_app().error( "Could not send ITTI message %s to task TASK_ALL", i->get_msg_name());
+    Logger::nrf_app().error( "Could not send ITTI message %s to task TASK_ALL", i->get_msg_name());
   }
   */
 }
@@ -64,20 +66,20 @@ void my_app_signal_handler(int s)
   std::cout << "Freeing Allocated memory..." << std::endl;
   if (async_shell_cmd_inst) delete async_shell_cmd_inst; async_shell_cmd_inst = nullptr;
   std::cout << "Async Shell CMD memory done." << std::endl;
-  if (smf_api_server_1) {
-    smf_api_server_1->shutdown();
-    delete smf_api_server_1;
-    smf_api_server_1 = nullptr;
+  if (nrf_api_server_1) {
+    nrf_api_server_1->shutdown();
+    delete nrf_api_server_1;
+    nrf_api_server_1 = nullptr;
   }
-  if (smf_api_server_2) {
-    smf_api_server_2->stop();
-    delete smf_api_server_2;
-    smf_api_server_2 = nullptr;
+  if (nrf_api_server_2) {
+    nrf_api_server_2->stop();
+    delete nrf_api_server_2;
+    nrf_api_server_2 = nullptr;
   }
   std::cout << "SMF API Server memory done." << std::endl;
   if (itti_inst) delete itti_inst; itti_inst = nullptr;
   std::cout << "ITTI memory done." << std::endl;
-  if (smf_app_inst) delete smf_app_inst; smf_app_inst = nullptr;
+  if (nrf_app_inst) delete nrf_app_inst; nrf_app_inst = nullptr;
   std::cout << "SMF APP memory done." << std::endl;
   std::cout << "Freeing Allocated memory done" << std::endl;
   */
@@ -96,9 +98,9 @@ int main(int argc, char **argv)
   }
 
   // Logger
-  Logger::init( "smf" , Options::getlogStdout() , Options::getlogRotFilelog());
+  Logger::init( "nrf" , Options::getlogStdout() , Options::getlogRotFilelog());
 
-  Logger::smf_app().startup( "Options parsed" );
+  Logger::nrf_app().startup( "Options parsed" );
 
   struct sigaction sigIntHandler;
   sigIntHandler.sa_handler = my_app_signal_handler;
@@ -107,44 +109,39 @@ int main(int argc, char **argv)
   sigaction(SIGINT, &sigIntHandler, NULL);
 
   // Config
-//  smf_cfg.load(Options::getlibconfigConfig());
-//  smf_cfg.display();
+  nrf_cfg.load(Options::getlibconfigConfig());
+  nrf_cfg.display();
 
   // Inter task Interface
 //  itti_inst = new itti_mw();
-//  itti_inst->start(smf_cfg.itti.itti_timer_sched_params);
+//  itti_inst->start(nrf_cfg.itti.itti_timer_sched_params);
 
   // system command
-//  async_shell_cmd_inst = new async_shell_cmd(smf_cfg.itti.async_cmd_sched_params);
+//  async_shell_cmd_inst = new async_shell_cmd(nrf_cfg.itti.async_cmd_sched_params);
 
   // SMF application layer
-//  smf_app_inst = new smf_app(Options::getlibconfigConfig());
+//  nrf_app_inst = new nrf_app(Options::getlibconfigConfig());
 
   // PID file
   // Currently hard-coded value. TODO: add as config option.
-/*   string pid_file_name = get_exe_absolute_path("/var/run", smf_cfg.instance);
+/*   string pid_file_name = get_exe_absolute_path("/var/run", nrf_cfg.instance);
   if (! is_pid_file_lock_success(pid_file_name.c_str())) {
-    Logger::smf_app().error( "Lock PID file %s failed\n", pid_file_name.c_str());
+    Logger::nrf_app().error( "Lock PID file %s failed\n", pid_file_name.c_str());
     exit (-EDEADLK);
   }
   */
 /*
   //SMF Pistache API server (HTTP1)
-  Pistache::Address addr(std::string(inet_ntoa (*((struct in_addr *)&smf_cfg.sbi.addr4))) , Pistache::Port(smf_cfg.sbi.port));
-  smf_api_server_1 = new SMFApiServer(addr, smf_app_inst);
-  smf_api_server_1->init(2);
-  //smf_api_server_1->start();
-  std::thread smf_http1_manager(&SMFApiServer::start, smf_api_server_1);
-  //SMF NGHTTP API server (HTTP2)
-  smf_api_server_2 = new smf_http2_server(conv::toString(smf_cfg.sbi.addr4), smf_cfg.sbi_http2_port, smf_app_inst);
-  //smf_api_server_2->start();
-  std::thread smf_http2_manager(&smf_http2_server::start, smf_api_server_2);
-
-  smf_http1_manager.join();
-  smf_http2_manager.join();
-
+  Pistache::Address addr(std::string(inet_ntoa (*((struct in_addr *)&nrf_cfg.sbi.addr4))) , Pistache::Port(nrf_cfg.sbi.port));
+  nrf_api_server_1 = new SMFApiServer(addr, nrf_app_inst);
+  nrf_api_server_1->init(2);
+  //nrf_api_server_1->start();
+  std::thread nrf_http1_manager(&SMFApiServer::start, nrf_api_server_1);
+  nrf_http1_manager.join();
+*/
+/*
   FILE *fp = NULL;
-  std::string filename = fmt::format("/tmp/smf_{}.status", getpid());
+  std::string filename = fmt::format("/tmp/nrf_{}.status", getpid());
   fp = fopen(filename.c_str(), "w+");
   fprintf(fp, "STARTED\n");
   fflush(fp);
