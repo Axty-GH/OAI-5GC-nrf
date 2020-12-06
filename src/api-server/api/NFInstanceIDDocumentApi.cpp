@@ -12,6 +12,9 @@
 
 #include "NFInstanceIDDocumentApi.h"
 #include "Helpers.h"
+#include "nrf_config.hpp"
+
+extern oai::nrf::nrf_config nrf_cfg;
 
 namespace oai {
 namespace nrf {
@@ -31,10 +34,10 @@ void NFInstanceIDDocumentApi::init() {
 void NFInstanceIDDocumentApi::setupRoutes() {
     using namespace Pistache::Rest;
 
-    Routes::Delete(*router, base + "/nf-instances/:nfInstanceID", Routes::bind(&NFInstanceIDDocumentApi::deregister_nf_instance_handler, this));
-    Routes::Get(*router, base + "/nf-instances/:nfInstanceID", Routes::bind(&NFInstanceIDDocumentApi::get_nf_instance_handler, this));
-    Routes::Put(*router, base + "/nf-instances/:nfInstanceID", Routes::bind(&NFInstanceIDDocumentApi::register_nf_instance_handler, this));
-    Routes::Patch(*router, base + "/nf-instances/:nfInstanceID", Routes::bind(&NFInstanceIDDocumentApi::update_nf_instance_handler, this));
+    Routes::Delete(*router, base + nrf_cfg.sbi_api_version + "/nf-instances/:nfInstanceID", Routes::bind(&NFInstanceIDDocumentApi::deregister_nf_instance_handler, this));
+    Routes::Get(*router, base + nrf_cfg.sbi_api_version + "/nf-instances/:nfInstanceID", Routes::bind(&NFInstanceIDDocumentApi::get_nf_instance_handler, this));
+    Routes::Put(*router, base + nrf_cfg.sbi_api_version + "/nf-instances/:nfInstanceID", Routes::bind(&NFInstanceIDDocumentApi::register_nf_instance_handler, this));
+    Routes::Patch(*router, base + nrf_cfg.sbi_api_version + "/nf-instances/:nfInstanceID", Routes::bind(&NFInstanceIDDocumentApi::update_nf_instance_handler, this));
 
     // Default handler, called when a route is not found
     router->addCustomHandler(Routes::bind(&NFInstanceIDDocumentApi::nf_instance_id_document_api_default_handler, this));

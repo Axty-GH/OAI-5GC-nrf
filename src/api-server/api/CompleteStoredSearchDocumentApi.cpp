@@ -12,6 +12,9 @@
 
 #include "CompleteStoredSearchDocumentApi.h"
 #include "Helpers.h"
+#include "nrf_config.hpp"
+
+extern oai::nrf::nrf_config nrf_cfg;
 
 namespace oai {
 namespace nrf {
@@ -31,7 +34,7 @@ void CompleteStoredSearchDocumentApi::init() {
 void CompleteStoredSearchDocumentApi::setupRoutes() {
     using namespace Pistache::Rest;
 
-    Routes::Get(*router, base + "/searches/:searchId/complete", Routes::bind(&CompleteStoredSearchDocumentApi::retrieve_complete_search_handler, this));
+    Routes::Get(*router, base +  nrf_cfg.sbi_api_version + "/searches/:searchId/complete", Routes::bind(&CompleteStoredSearchDocumentApi::retrieve_complete_search_handler, this));
 
     // Default handler, called when a route is not found
     router->addCustomHandler(Routes::bind(&CompleteStoredSearchDocumentApi::complete_stored_search_document_api_default_handler, this));

@@ -40,7 +40,7 @@ public:
     virtual ~CompleteStoredSearchDocumentApi() {}
     void init();
 
-    const std::string base = "/nnrf-disc/v1";
+    const std::string base = "/nnrf-disc/";
 
 private:
     void setupRoutes();

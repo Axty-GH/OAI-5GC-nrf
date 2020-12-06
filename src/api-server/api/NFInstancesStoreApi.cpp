@@ -12,6 +12,9 @@
 
 #include "NFInstancesStoreApi.h"
 #include "Helpers.h"
+#include "nrf_config.hpp"
+
+extern oai::nrf::nrf_config nrf_cfg;
 
 namespace oai {
 namespace nrf {
@@ -31,7 +34,7 @@ void NFInstancesStoreApi::init() {
 void NFInstancesStoreApi::setupRoutes() {
     using namespace Pistache::Rest;
 
-    Routes::Get(*router, base + "/nf-instances", Routes::bind(&NFInstancesStoreApi::search_nf_instances_handler, this));
+    Routes::Get(*router, base + nrf_cfg.sbi_api_version + "/nf-instances", Routes::bind(&NFInstancesStoreApi::search_nf_instances_handler, this));
 
     // Default handler, called when a route is not found
     router->addCustomHandler(Routes::bind(&NFInstancesStoreApi::nf_instances_store_api_default_handler, this));

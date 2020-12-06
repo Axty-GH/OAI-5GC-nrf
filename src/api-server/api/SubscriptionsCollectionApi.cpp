@@ -12,6 +12,9 @@
 
 #include "SubscriptionsCollectionApi.h"
 #include "Helpers.h"
+#include "nrf_config.hpp"
+
+extern oai::nrf::nrf_config nrf_cfg;
 
 namespace oai {
 namespace nrf {
@@ -31,7 +34,7 @@ void SubscriptionsCollectionApi::init() {
 void SubscriptionsCollectionApi::setupRoutes() {
     using namespace Pistache::Rest;
 
-    Routes::Post(*router, base + "/subscriptions", Routes::bind(&SubscriptionsCollectionApi::create_subscription_handler, this));
+    Routes::Post(*router, base + nrf_cfg.sbi_api_version + "/subscriptions", Routes::bind(&SubscriptionsCollectionApi::create_subscription_handler, this));
 
     // Default handler, called when a route is not found
     router->addCustomHandler(Routes::bind(&SubscriptionsCollectionApi::subscriptions_collection_api_default_handler, this));

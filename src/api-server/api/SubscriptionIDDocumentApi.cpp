@@ -12,6 +12,9 @@
 
 #include "SubscriptionIDDocumentApi.h"
 #include "Helpers.h"
+#include "nrf_config.hpp"
+
+extern oai::nrf::nrf_config nrf_cfg;
 
 namespace oai {
 namespace nrf {
@@ -31,8 +34,8 @@ void SubscriptionIDDocumentApi::init() {
 void SubscriptionIDDocumentApi::setupRoutes() {
     using namespace Pistache::Rest;
 
-    Routes::Delete(*router, base + "/subscriptions/:subscriptionID", Routes::bind(&SubscriptionIDDocumentApi::remove_subscription_handler, this));
-    Routes::Patch(*router, base + "/subscriptions/:subscriptionID", Routes::bind(&SubscriptionIDDocumentApi::update_subscription_handler, this));
+    Routes::Delete(*router, base + nrf_cfg.sbi_api_version + "/subscriptions/:subscriptionID", Routes::bind(&SubscriptionIDDocumentApi::remove_subscription_handler, this));
+    Routes::Patch(*router, base + nrf_cfg.sbi_api_version + "/subscriptions/:subscriptionID", Routes::bind(&SubscriptionIDDocumentApi::update_subscription_handler, this));
 
     // Default handler, called when a route is not found
     router->addCustomHandler(Routes::bind(&SubscriptionIDDocumentApi::subscription_id_document_api_default_handler, this));
