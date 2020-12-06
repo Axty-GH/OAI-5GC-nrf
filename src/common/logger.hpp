@@ -98,9 +98,6 @@ class Logger {
   static _Logger& system() {
     return *singleton().m_system;
   }
-  static _Logger& nrf_n11() {
-    return *singleton().m_nrf_n11;
-  }
   static _Logger& nrf_sbi() {
     return *singleton().m_nrf_sbi;
   }
@@ -128,7 +125,6 @@ class Logger {
   _Logger *m_itti;
   _Logger *m_nrf_app;
   _Logger *m_system;
-  _Logger *m_nrf_n11;
   _Logger *m_nrf_sbi;
 };
 

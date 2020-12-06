@@ -36,28 +36,6 @@
 #define RETURNerror       (int)1
 #define RETURNok          (int)0
 
-typedef enum {
-  /* Fatal errors - received message should not be processed */
-  TLV_MAC_MISMATCH = -14,
-  TLV_BUFFER_NULL = -13,
-  TLV_BUFFER_TOO_SHORT = -12,
-  TLV_PROTOCOL_NOT_SUPPORTED = -11,
-  TLV_WRONG_MESSAGE_TYPE = -10,
-  TLV_OCTET_STRING_TOO_LONG_FOR_IEI = -9,
-
-  TLV_VALUE_DOESNT_MATCH = -4,
-  TLV_MANDATORY_FIELD_NOT_PRESENT = -3,
-  TLV_UNEXPECTED_IEI = -2,
-
-//  RETURNerror                             = -1,
-//  RETURNok                                = 0,
-
-  TLV_ERROR_OK = RETURNok,
-  /* Defines error code limit below which received message should be discarded
-   * because it cannot be further processed */
-  TLV_FATAL_ERROR = TLV_VALUE_DOESNT_MATCH
-
-} error_code_e;
 //------------------------------------------------------------------------------
 #define DECODE_U8(bUFFER, vALUE, sIZE)    \
     vALUE = *(uint8_t*)(bUFFER);    \

@@ -14,11 +14,11 @@
 * limitations under the License.
 */
 
-
-
-#include "options.hpp"
-
+#include "nrf_app.hpp"
 #include "nrf-api-server.h"
+#include "options.hpp"
+#include "pid_file.hpp"
+
 #include "pistache/endpoint.h"
 #include "pistache/http.h"
 #include "pistache/router.h"
@@ -33,7 +33,7 @@
 #include "logger.hpp"
 
 using namespace oai::nrf;
-//using namespace util;
+using namespace util;
 using namespace std;
 //using namespace oai::nrf_server::api;
 
@@ -120,16 +120,16 @@ int main(int argc, char **argv)
 //  async_shell_cmd_inst = new async_shell_cmd(nrf_cfg.itti.async_cmd_sched_params);
 
   // SMF application layer
-//  nrf_app_inst = new nrf_app(Options::getlibconfigConfig());
+   nrf_app_inst = new nrf_app(Options::getlibconfigConfig());
 
   // PID file
   // Currently hard-coded value. TODO: add as config option.
-/*   string pid_file_name = get_exe_absolute_path("/var/run", nrf_cfg.instance);
+   string pid_file_name = get_exe_absolute_path("/var/run", nrf_cfg.instance);
   if (! is_pid_file_lock_success(pid_file_name.c_str())) {
     Logger::nrf_app().error( "Lock PID file %s failed\n", pid_file_name.c_str());
     exit (-EDEADLK);
   }
-  */
+
 /*
   //SMF Pistache API server (HTTP1)
   Pistache::Address addr(std::string(inet_ntoa (*((struct in_addr *)&nrf_cfg.sbi.addr4))) , Pistache::Port(nrf_cfg.sbi.port));
@@ -139,14 +139,14 @@ int main(int argc, char **argv)
   std::thread nrf_http1_manager(&SMFApiServer::start, nrf_api_server_1);
   nrf_http1_manager.join();
 */
-/*
+
   FILE *fp = NULL;
   std::string filename = fmt::format("/tmp/nrf_{}.status", getpid());
   fp = fopen(filename.c_str(), "w+");
   fprintf(fp, "STARTED\n");
   fflush(fp);
   fclose(fp);
-*/
+
   pause();
   return 0;
 }

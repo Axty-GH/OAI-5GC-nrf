@@ -29,9 +29,18 @@
 
 #ifndef FILE_NRF_APP_HPP_SEEN
 #define FILE_NRF_APP_HPP_SEEN
+
+#include <string>
+
 namespace oai{
 namespace nrf {
-class nrf_app{
+class nrf_config;
+class nrf_app {
+
+ public:
+  explicit nrf_app(const std::string &config_file);
+  nrf_app(nrf_app const&) = delete;
+  void operator=(nrf_app const&) = delete;
 
 };
 }

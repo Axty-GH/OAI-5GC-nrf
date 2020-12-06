@@ -37,7 +37,6 @@
 
 #include <mutex>
 #include <vector>
-//#include "thread_sched.hpp"
 
 #define NRF_CONFIG_STRING_NRF_CONFIG                            "NRF"
 #define NRF_CONFIG_STRING_PID_DIRECTORY                         "PID_DIRECTORY"
@@ -45,7 +44,7 @@
 #define NRF_CONFIG_STRING_INTERFACE_NAME                        "INTERFACE_NAME"
 #define NRF_CONFIG_STRING_IPV4_ADDRESS                          "IPV4_ADDRESS"
 #define NRF_CONFIG_STRING_PORT                                  "PORT"
-#define NRF_CONFIG_STRING_INTERFACE_SBI                         "SBI"
+#define NRF_CONFIG_STRING_INTERFACE_SBI                         "SBI_INTERFACE"
 #define NRF_CONFIG_STRING_SBI_HTTP2_PORT                        "HTTP2_PORT"
 #define NRF_CONFIG_STRING_API_VERSION                           "API_VERSION"
 

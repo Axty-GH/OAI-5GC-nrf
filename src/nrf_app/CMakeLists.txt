@@ -27,6 +27,7 @@ include_directories(${SRC_TOP_DIR}/api-server/model)
 include_directories(${SRC_TOP_DIR}/api-server/)
 
 add_library (NRF STATIC
+  nrf_app.cpp
   nrf_config.cpp
 )
 

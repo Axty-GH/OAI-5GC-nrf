@@ -23,7 +23,7 @@
 #include <memory>
 
 Logger *Logger::m_singleton = NULL;
-
+//------------------------------------------------------------------------------
 void Logger::_init(const char *app, const bool log_stdout,
                    bool const log_rot_file) {
   int num_sinks = 0;
@@ -46,9 +46,8 @@ void Logger::_init(const char *app, const bool log_stdout,
   if (log_rot_file) {
     std::string filename = fmt::format("./{}.log", app);
     m_sinks.push_back(
-        std::make_shared<spdlog::sinks::rotating_file_sink_mt>(filename,
-                                                               5 * 1024 * 1024,
-                                                               3));
+        std::make_shared < spdlog::sinks::rotating_file_sink_mt
+            > (filename, 5 * 1024 * 1024, 3));
     m_sinks[num_sinks++].get()->set_level(llevel);
   }
 
@@ -59,13 +58,10 @@ void Logger::_init(const char *app, const bool log_stdout,
   m_itti = new _Logger("itti   ", m_sinks, ss.str().c_str());
   m_nrf_app = new _Logger("nrf_app", m_sinks, ss.str().c_str());
   m_system = new _Logger("system ", m_sinks, ss.str().c_str());
-  m_nrf_n11 = new _Logger("nrf_n11", m_sinks, ss.str().c_str());
   m_nrf_sbi = new _Logger("sbi_srv", m_sinks, ss.str().c_str());
 }
 
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
+//------------------------------------------------------------------------------
 _Logger::_Logger(const char *category, std::vector<spdlog::sink_ptr> &sinks,
                  const char *pattern)
     :
@@ -82,6 +78,7 @@ _Logger::_Logger(const char *category, std::vector<spdlog::sink_ptr> &sinks,
 #endif
 }
 
+//------------------------------------------------------------------------------
 void _Logger::trace(const char *format, ...) {
 #if TRACE_IS_ON
    va_list args;
@@ -91,6 +88,7 @@ void _Logger::trace(const char *format, ...) {
 #endif
 }
 
+//------------------------------------------------------------------------------
 void _Logger::debug(const char *format, ...) {
 #if DEBUG_IS_ON
    va_list args;
@@ -100,6 +98,7 @@ void _Logger::debug(const char *format, ...) {
 #endif
 }
 
+//------------------------------------------------------------------------------
 void _Logger::info(const char *format, ...) {
 #if INFO_IS_ON
    va_list args;
@@ -109,6 +108,7 @@ void _Logger::info(const char *format, ...) {
 #endif
 }
 
+//------------------------------------------------------------------------------
 void _Logger::startup(const char *format, ...) {
   va_list args;
   va_start(args, format);
@@ -116,6 +116,7 @@ void _Logger::startup(const char *format, ...) {
   va_end(args);
 }
 
+//------------------------------------------------------------------------------
 void _Logger::warn(const char *format, ...) {
   va_list args;
   va_start(args, format);
@@ -123,6 +124,7 @@ void _Logger::warn(const char *format, ...) {
   va_end(args);
 }
 
+//------------------------------------------------------------------------------
 void _Logger::error(const char *format, ...) {
   va_list args;
   va_start(args, format);
@@ -130,6 +132,7 @@ void _Logger::error(const char *format, ...) {
   va_end(args);
 }
 
+//------------------------------------------------------------------------------
 void _Logger::log(_LogType lt, const char *format, va_list &args) {
   char buffer[2048];
 

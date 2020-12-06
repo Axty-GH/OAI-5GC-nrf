@@ -19,7 +19,7 @@
  *      contact@openairinterface.org
  */
 
-/*! \file smf_app.cpp
+/*! \file nrf_app.cpp
  \brief
  \author  Lionel GAUTHIER, Tien-Thinh NGUYEN
  \company Eurecom
@@ -28,5 +28,19 @@
  */
 
 #include "nrf_app.hpp"
+#include "common_defs.h"
+#include "nrf_config.hpp"
+#include "logger.hpp"
 
+using namespace oai::nrf;
+
+extern nrf_app *nrf_app_inst;
+extern nrf_config nrf_cfg;
+
+//------------------------------------------------------------------------------
+nrf_app::nrf_app(const std::string &config_file)
+ {
+  Logger::nrf_app().startup("Starting...");
+  Logger::nrf_app().startup("Started");
+}
 

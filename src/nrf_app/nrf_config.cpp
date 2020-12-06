@@ -51,7 +51,6 @@
 #include "logger.hpp"
 #include "nrf_app.hpp"
 
-
 using namespace std;
 using namespace libconfig;
 using namespace oai::nrf;
@@ -74,7 +73,7 @@ int nrf_config::load_interface(const Setting &if_cfg, interface_cfg_t &cfg) {
         return RETURNerror ;
       }
     } else {
-      std::vector<std::string> words;
+      std::vector < std::string > words;
       boost::split(words, address, boost::is_any_of("/"),
                    boost::token_compress_on);
       if (words.size() != 2) {
@@ -83,7 +82,7 @@ int nrf_config::load_interface(const Setting &if_cfg, interface_cfg_t &cfg) {
             address.c_str());
         return RETURNerror ;
       }
-      unsigned char buf_in_addr[sizeof(struct in6_addr)];  // you never know...
+      unsigned char buf_in_addr[sizeof(struct in6_addr)];
       if (inet_pton(AF_INET, util::trim(words.at(0)).c_str(), buf_in_addr)
           == 1) {
         memcpy(&cfg.addr4, buf_in_addr, sizeof(struct in_addr));
@@ -146,7 +145,6 @@ int nrf_config::load(const string &config_file) {
                            nfex.getPath());
   }
 
-
   try {
 
     const Setting &sbi_cfg = nrf_cfg[NRF_CONFIG_STRING_INTERFACE_SBI];
@@ -169,7 +167,6 @@ int nrf_config::load(const string &config_file) {
     return RETURNerror ;
   }
 
-
   return true;
 }
 
@@ -181,20 +178,17 @@ void nrf_config::display() {
   Logger::nrf_app().info("- Instance ..............: %d\n", instance);
   Logger::nrf_app().info("- PID dir ...............: %s\n", pid_dir.c_str());
 
-  Logger::nrf_app().info("- SBI Networking:");
+  Logger::nrf_app().info("- SBI Interface:");
   Logger::nrf_app().info("    Interface name ......: %s", sbi.if_name.c_str());
-  Logger::nrf_app().info("    IPv4 Addr ...........: %s",
-                         inet_ntoa(sbi.addr4));
+  Logger::nrf_app().info("    IPv4 Addr ...........: %s", inet_ntoa(sbi.addr4));
   Logger::nrf_app().info("    Port ................: %d", sbi.port);
   Logger::nrf_app().info("    HTTP2 port ..........: %d", sbi_http2_port);
-  Logger::nrf_app().info("    API version..........: %s", sbi_api_version.c_str());
+  Logger::nrf_app().info("    API version..........: %s",
+                         sbi_api_version.c_str());
 
 }
-
-
 
 //------------------------------------------------------------------------------
 nrf_config::~nrf_config() {
 }
-
 
