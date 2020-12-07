@@ -19,7 +19,7 @@
  *      contact@openairinterface.org
  */
 
-/*! \file nrf_app.hpp
+/*! \file nrf_profile.hpp
  \brief
  \author  Tien-Thinh NGUYEN
  \company Eurecom
@@ -27,35 +27,35 @@
  \email: tien-thinh.nguyen@eurecom.fr
  */
 
-#ifndef FILE_NRF_APP_HPP_SEEN
-#define FILE_NRF_APP_HPP_SEEN
+#ifndef FILE_NRF_PROFILE_HPP_SEEN
+#define FILE_NRF_PROFILE_HPP_SEEN
 
-#include <string>
-#include "NFProfile.h"
-#include "nrf_profile.hpp"
+#include <map>
+//#include <mutex>
+#include <shared_mutex>
+#include <memory>
+#include <utility>
+#include <vector>
+
 
 namespace oai {
-namespace nrf {
-class nrf_config;
-class nrf_app {
+namespace nrf{
+
+class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
 
  public:
-  explicit nrf_app(const std::string &config_file);
-  nrf_app(nrf_app const&) = delete;
-  void operator=(nrf_app const&) = delete;
+  nrf_profile()
+  {
+  }
 
-  void handle_nf_instance_registration_request(
-      const std::string &nfInstanceID,
-      oai::nrf::model::NFProfile &nf_profile,
-      int &http_code,
-      const uint8_t http_version);
+  nrf_profile(nrf_profile &b) = delete;
 
  private:
-  std::map<std::string, std::shared_ptr<nrf_profile>> instance_id2nrf_profile;
-  mutable std::shared_mutex m_instance_id2nrf_profile;
+  //lock
+  mutable std::shared_mutex m_nrf_profile;
+
 };
 }
 }
-#include "nrf_config.hpp"
 
-#endif /* FILE_SMF_APP_HPP_SEEN */
+#endif

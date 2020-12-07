@@ -19,7 +19,7 @@
  *      contact@openairinterface.org
  */
 
-/*! \file nrf_app.hpp
+/*! \file nrf_profile.cpp
  \brief
  \author  Tien-Thinh NGUYEN
  \company Eurecom
@@ -27,35 +27,12 @@
  \email: tien-thinh.nguyen@eurecom.fr
  */
 
-#ifndef FILE_NRF_APP_HPP_SEEN
-#define FILE_NRF_APP_HPP_SEEN
-
-#include <string>
-#include "NFProfile.h"
 #include "nrf_profile.hpp"
 
-namespace oai {
-namespace nrf {
-class nrf_config;
-class nrf_app {
 
- public:
-  explicit nrf_app(const std::string &config_file);
-  nrf_app(nrf_app const&) = delete;
-  void operator=(nrf_app const&) = delete;
 
-  void handle_nf_instance_registration_request(
-      const std::string &nfInstanceID,
-      oai::nrf::model::NFProfile &nf_profile,
-      int &http_code,
-      const uint8_t http_version);
+using namespace std;
+using namespace oai::nrf;
 
- private:
-  std::map<std::string, std::shared_ptr<nrf_profile>> instance_id2nrf_profile;
-  mutable std::shared_mutex m_instance_id2nrf_profile;
-};
-}
-}
-#include "nrf_config.hpp"
 
-#endif /* FILE_SMF_APP_HPP_SEEN */
+
