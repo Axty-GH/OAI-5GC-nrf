@@ -46,10 +46,10 @@
 #include "CompleteStoredSearchDocumentApiImpl.h"
 #include "NFInstancesStoreApiImpl.h"
 #include "StoredSearchDocumentApiImpl.h"
-
 #include "NFInstanceIDDocumentApiImpl.h"
 #include "SubscriptionIDDocumentApiImpl.h"
 #include "SubscriptionsCollectionApiImpl.h"
+#include "DiscNFInstancesStoreApiImpl.h"
 #include "nrf_app.hpp"
 
 using namespace oai::nrf::api;
@@ -73,6 +73,9 @@ class NRFApiServer {
         SubscriptionIDDocumentApiImpl>(m_router, nrf_app_inst, m_address);
     m_subscriptionsCollectionApiImpl = std::make_shared<
         SubscriptionsCollectionApiImpl>(m_router, nrf_app_inst, m_address);
+    m_discNFInstancesStoreApiImpl = std::make_shared<
+        DiscNFInstancesStoreApiImpl>(m_router, nrf_app_inst, m_address);
+
   }
   void init(size_t thr = 1);
   void start();
@@ -87,6 +90,7 @@ class NRFApiServer {
   std::shared_ptr<NFInstanceIDDocumentApiImpl> m_nfInstanceIDDocumentApiImpl;
   std::shared_ptr<SubscriptionIDDocumentApiImpl> m_subscriptionIDDocumentApiImpl;
   std::shared_ptr<SubscriptionsCollectionApiImpl> m_subscriptionsCollectionApiImpl;
+  std::shared_ptr<DiscNFInstancesStoreApiImpl> m_discNFInstancesStoreApiImpl;
   std::string m_address;
 };
 

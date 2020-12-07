@@ -639,11 +639,11 @@ void NFProfile::unsetAllowedPlmns()
 {
     m_AllowedPlmnsIsSet = false;
 }
-std::vector<NFType>& NFProfile::getAllowedNfTypes()
+std::vector<std::string>& NFProfile::getAllowedNfTypes()
 {
     return m_AllowedNfTypes;
 }
-void NFProfile::setAllowedNfTypes(std::vector<NFType> const& value)
+void NFProfile::setAllowedNfTypes(std::vector<std::string> const& value)
 {
     m_AllowedNfTypes = value;
     m_AllowedNfTypesIsSet = true;
@@ -757,23 +757,6 @@ bool NFProfile::localityIsSet() const
 void NFProfile::unsetLocality()
 {
     m_LocalityIsSet = false;
-}
-int32_t NFProfile::getPriority() const
-{
-    return m_Priority;
-}
-void NFProfile::setPriority(int32_t const value)
-{
-    m_Priority = value;
-    m_PriorityIsSet = true;
-}
-bool NFProfile::priorityIsSet() const
-{
-    return m_PriorityIsSet;
-}
-void NFProfile::unsetPriority()
-{
-    m_PriorityIsSet = false;
 }
 UdrInfo NFProfile::getUdrInfo() const
 {

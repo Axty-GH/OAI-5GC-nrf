@@ -26,7 +26,7 @@ NFInstancesStoreApiImpl::NFInstancesStoreApiImpl(
     m_nrf_app(nrf_app_inst),
     m_address(address) {
 }
-void NFInstancesStoreApiImpl::get_nf_instances(const Pistache::Optional<NFType> &nfType, const Pistache::Optional<int32_t> &limit, Pistache::Http::ResponseWriter &response) {
+void NFInstancesStoreApiImpl::get_nf_instances(const Pistache::Optional<std::string> &nfType, const Pistache::Optional<int32_t> &limit, Pistache::Http::ResponseWriter &response) {
     response.send(Pistache::Http::Code::Ok, "Do some magic\n");
 }
 void NFInstancesStoreApiImpl::options_nf_instances(Pistache::Http::ResponseWriter &response) {

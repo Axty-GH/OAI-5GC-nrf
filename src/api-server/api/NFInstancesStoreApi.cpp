@@ -13,6 +13,7 @@
 #include "NFInstancesStoreApi.h"
 #include "Helpers.h"
 #include "nrf_config.hpp"
+#include "logger.hpp"
 
 extern oai::nrf::nrf_config nrf_cfg;
 
@@ -45,10 +46,10 @@ void NFInstancesStoreApi::get_nf_instances_handler(const Pistache::Rest::Request
 
     // Getting the query params
     auto nfTypeQuery = request.query().get("nf-type");
-    Pistache::Optional<NFType> nfType;
+    Pistache::Optional<std::string> nfType;
     if(!nfTypeQuery.isEmpty()){
-        NFType valueQuery_instance;
-        if(fromStringValue(nfTypeQuery.get(), valueQuery_instance)){
+      std::string valueQuery_instance;
+        if(helpers::fromStringValue(nfTypeQuery.get(), valueQuery_instance)){
             nfType = Pistache::Some(valueQuery_instance);
         }
     }
@@ -56,7 +57,7 @@ void NFInstancesStoreApi::get_nf_instances_handler(const Pistache::Rest::Request
     Pistache::Optional<int32_t> limit;
     if(!limitQuery.isEmpty()){
         int32_t valueQuery_instance;
-        if(fromStringValue(limitQuery.get(), valueQuery_instance)){
+        if(helpers::fromStringValue(limitQuery.get(), valueQuery_instance)){
             limit = Pistache::Some(valueQuery_instance);
         }
     }

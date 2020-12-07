@@ -33,6 +33,10 @@
 #include "AccessType.h"
 #include "ComplexQuery.h"
 #include "AtsssCapability.h"
+#include "Tai.h"
+#include "Guami.h"
+#include "DataSetId.h"
+#include "Ipv6Prefix.h"
 
 namespace oai {
 namespace nrf {
@@ -61,6 +65,12 @@ namespace helpers {
     bool fromStringValue(const std::string &inStr, oai::nrf::model::AccessType &value);
     bool fromStringValue(const std::string &inStr, oai::nrf::model::ComplexQuery &value);
     bool fromStringValue(const std::string &inStr, oai::nrf::model::AtsssCapability &value);
+    bool fromStringValue(const std::string &inStr, oai::nrf::model::Tai &value);
+    bool fromStringValue(const std::string &inStr, oai::nrf::model::Guami &value);
+    bool fromStringValue(const std::string &inStr, oai::nrf::model::Ipv6Prefix &value);
+    bool fromStringValue(const std::string &inStr, oai::nrf::model::DataSetId &value);
+
+
 
     template<typename T>
     bool fromStringValue(const std::vector<std::string> &inStr, std::vector<T> &value){

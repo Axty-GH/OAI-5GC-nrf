@@ -86,6 +86,7 @@ void NRFApiServer::init(size_t thr) {
   m_nfInstanceIDDocumentApiImpl->init();
   m_subscriptionIDDocumentApiImpl->init();
   m_subscriptionsCollectionApiImpl->init();
+  m_discNFInstancesStoreApiImpl->init();
 }
 void NRFApiServer::start() {
   Logger::nrf_sbi().info("HTTP1 server started");

@@ -64,7 +64,7 @@ public:
                             std::string address);
     ~NFInstancesStoreApiImpl() {}
 
-    void get_nf_instances(const Pistache::Optional<NFType> &nfType, const Pistache::Optional<int32_t> &limit, Pistache::Http::ResponseWriter &response);
+    void get_nf_instances(const Pistache::Optional<std::string> &nfType, const Pistache::Optional<int32_t> &limit, Pistache::Http::ResponseWriter &response);
     void options_nf_instances(Pistache::Http::ResponseWriter &response);
 private:
     oai::nrf::nrf_app *m_nrf_app;

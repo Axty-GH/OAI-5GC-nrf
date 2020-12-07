@@ -134,6 +134,24 @@ bool fromStringValue(const std::string &inStr, oai::nrf::model::AtsssCapability 
   return true;
 }
 
+bool fromStringValue(const std::string &inStr, oai::nrf::model::Tai &value) {
+  //TODO
+  return true;
+}
+
+bool fromStringValue(const std::string &inStr, oai::nrf::model::Guami &value) {
+  //TODO
+  return true;
+}
+
+bool fromStringValue(const std::string &inStr, oai::nrf::model::Ipv6Prefix &value) {
+  //TODO
+  return true;
+}
+bool fromStringValue(const std::string &inStr, oai::nrf::model::DataSetId &value) {
+  //TODO
+  return true;
+}
 }
 }
 }

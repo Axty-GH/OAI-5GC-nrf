@@ -330,11 +330,11 @@ void NFService::unsetAllowedPlmns()
 {
     m_AllowedPlmnsIsSet = false;
 }
-std::vector<NFType>& NFService::getAllowedNfTypes()
+std::vector<std::string>& NFService::getAllowedNfTypes()
 {
     return m_AllowedNfTypes;
 }
-void NFService::setAllowedNfTypes(std::vector<NFType> const& value)
+void NFService::setAllowedNfTypes(std::vector<std::string> const& value)
 {
     m_AllowedNfTypes = value;
     m_AllowedNfTypesIsSet = true;
@@ -432,23 +432,7 @@ void NFService::unsetLoad()
 {
     m_LoadIsSet = false;
 }
-int32_t NFService::getPriority() const
-{
-    return m_Priority;
-}
-void NFService::setPriority(int32_t const value)
-{
-    m_Priority = value;
-    m_PriorityIsSet = true;
-}
-bool NFService::priorityIsSet() const
-{
-    return m_PriorityIsSet;
-}
-void NFService::unsetPriority()
-{
-    m_PriorityIsSet = false;
-}
+
 std::string NFService::getRecoveryTime() const
 {
     return m_RecoveryTime;

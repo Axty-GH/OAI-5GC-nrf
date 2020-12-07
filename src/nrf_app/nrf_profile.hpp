@@ -61,7 +61,7 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
    std::string nf_status;
 
 
-
+/*
    std::vector<PlmnId> m_PlmnList;
    bool m_PlmnListIsSet;
    std::vector<Snssai> m_SNssais;
@@ -130,7 +130,7 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
    bool m_NfServicesIsSet;
    std::vector<DefaultNotificationSubscription> m_DefaultNotificationSubscriptions;
    bool m_DefaultNotificationSubscriptionsIsSet;
-
+*/
 
 };
 }

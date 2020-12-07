@@ -156,8 +156,8 @@ public:
     /// <summary>
     /// 
     /// </summary>
-    std::vector<NFType>& getAllowedNfTypes();
-    void setAllowedNfTypes(std::vector<NFType> const& value);
+    std::vector<std::string>& getAllowedNfTypes();
+    void setAllowedNfTypes(std::vector<std::string> const& value);
     bool allowedNfTypesIsSet() const;
     void unsetAllowedNfTypes();
     /// <summary>
@@ -204,12 +204,6 @@ public:
     void unsetLocality();
     /// <summary>
     /// 
-    /// </summary>
-    int32_t getPriority() const;
-    void setPriority(int32_t const value);
-    bool priorityIsSet() const;
-    void unsetPriority();
-    /// <summary>
     /// 
     /// </summary>
     UdrInfo getUdrInfo() const;
@@ -430,14 +424,12 @@ protected:
     bool m_Ipv6AddressesIsSet;
     std::vector<PlmnId> m_AllowedPlmns;
     bool m_AllowedPlmnsIsSet;
-    std::vector<NFType> m_AllowedNfTypes;
+    std::vector<std::string> m_AllowedNfTypes;
     bool m_AllowedNfTypesIsSet;
     std::vector<std::string> m_AllowedNfDomains;
     bool m_AllowedNfDomainsIsSet;
     std::vector<Snssai> m_AllowedNssais;
     bool m_AllowedNssaisIsSet;
-    int32_t m_Priority;
-    bool m_PriorityIsSet;
     int32_t m_Capacity;
     bool m_CapacityIsSet;
     int32_t m_Load;
