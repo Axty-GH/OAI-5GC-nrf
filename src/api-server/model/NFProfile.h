@@ -1,6 +1,6 @@
 /**
-* NRF NFDiscovery Service
-* NRF NFDiscovery Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+* NRF NFManagement Service
+* NRF NFManagement Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
 *
 * The version of the OpenAPI document: 1.1.0.alpha-1
 * 
@@ -21,6 +21,7 @@
 
 #include "BsfInfo.h"
 #include "PcfInfo.h"
+#include "NrfInfo.h"
 #include "UdmInfo.h"
 #include "UpfInfo.h"
 #include "ChfInfo.h"
@@ -85,6 +86,13 @@ public:
     /// <summary>
     /// 
     /// </summary>
+    int32_t getHeartBeatTimer() const;
+    void setHeartBeatTimer(int32_t const value);
+    bool heartBeatTimerIsSet() const;
+    void unsetHeartBeatTimer();
+    /// <summary>
+    /// 
+    /// </summary>
     std::vector<PlmnId>& getPlmnList();
     void setPlmnList(std::vector<PlmnId> const& value);
     bool plmnListIsSet() const;
@@ -120,6 +128,13 @@ public:
     /// <summary>
     /// 
     /// </summary>
+    std::string getInterPlmnFqdn() const;
+    void setInterPlmnFqdn(std::string const& value);
+    bool interPlmnFqdnIsSet() const;
+    void unsetInterPlmnFqdn();
+    /// <summary>
+    /// 
+    /// </summary>
     std::vector<std::string>& getIpv4Addresses();
     void setIpv4Addresses(std::vector<std::string> const& value);
     bool ipv4AddressesIsSet() const;
@@ -131,6 +146,41 @@ public:
     void setIpv6Addresses(std::vector<Ipv6Addr> const& value);
     bool ipv6AddressesIsSet() const;
     void unsetIpv6Addresses();
+    /// <summary>
+    /// 
+    /// </summary>
+    std::vector<PlmnId>& getAllowedPlmns();
+    void setAllowedPlmns(std::vector<PlmnId> const& value);
+    bool allowedPlmnsIsSet() const;
+    void unsetAllowedPlmns();
+    /// <summary>
+    /// 
+    /// </summary>
+    std::vector<NFType>& getAllowedNfTypes();
+    void setAllowedNfTypes(std::vector<NFType> const& value);
+    bool allowedNfTypesIsSet() const;
+    void unsetAllowedNfTypes();
+    /// <summary>
+    /// 
+    /// </summary>
+    std::vector<std::string>& getAllowedNfDomains();
+    void setAllowedNfDomains(std::vector<std::string> const& value);
+    bool allowedNfDomainsIsSet() const;
+    void unsetAllowedNfDomains();
+    /// <summary>
+    /// 
+    /// </summary>
+    std::vector<Snssai>& getAllowedNssais();
+    void setAllowedNssais(std::vector<Snssai> const& value);
+    bool allowedNssaisIsSet() const;
+    void unsetAllowedNssais();
+    /// <summary>
+    /// 
+    /// </summary>
+    int32_t getPriority() const;
+    void setPriority(int32_t const value);
+    bool priorityIsSet() const;
+    void unsetPriority();
     /// <summary>
     /// 
     /// </summary>
@@ -288,6 +338,13 @@ public:
     /// <summary>
     /// 
     /// </summary>
+    NrfInfo getNrfInfo() const;
+    void setNrfInfo(NrfInfo const& value);
+    bool nrfInfoIsSet() const;
+    void unsetNrfInfo();
+    /// <summary>
+    /// 
+    /// </summary>
     NwdafInfo getNwdafInfo() const;
     void setNwdafInfo(NwdafInfo const& value);
     bool nwdafInfoIsSet() const;
@@ -323,6 +380,20 @@ public:
     /// <summary>
     /// 
     /// </summary>
+    bool isNfProfileChangesSupportInd() const;
+    void setNfProfileChangesSupportInd(bool const value);
+    bool nfProfileChangesSupportIndIsSet() const;
+    void unsetNfProfileChangesSupportInd();
+    /// <summary>
+    /// 
+    /// </summary>
+    bool isNfProfileChangesInd() const;
+    void setNfProfileChangesInd(bool const value);
+    bool nfProfileChangesIndIsSet() const;
+    void unsetNfProfileChangesInd();
+    /// <summary>
+    /// 
+    /// </summary>
     std::vector<DefaultNotificationSubscription>& getDefaultNotificationSubscriptions();
     void setDefaultNotificationSubscriptions(std::vector<DefaultNotificationSubscription> const& value);
     bool defaultNotificationSubscriptionsIsSet() const;
@@ -339,6 +410,8 @@ protected:
 
     NFStatus m_NfStatus;
 
+    int32_t m_HeartBeatTimer;
+    bool m_HeartBeatTimerIsSet;
     std::vector<PlmnId> m_PlmnList;
     bool m_PlmnListIsSet;
     std::vector<Snssai> m_SNssais;
@@ -349,10 +422,22 @@ protected:
     bool m_NsiListIsSet;
     std::string m_Fqdn;
     bool m_FqdnIsSet;
+    std::string m_InterPlmnFqdn;
+    bool m_InterPlmnFqdnIsSet;
     std::vector<std::string> m_Ipv4Addresses;
     bool m_Ipv4AddressesIsSet;
     std::vector<Ipv6Addr> m_Ipv6Addresses;
     bool m_Ipv6AddressesIsSet;
+    std::vector<PlmnId> m_AllowedPlmns;
+    bool m_AllowedPlmnsIsSet;
+    std::vector<NFType> m_AllowedNfTypes;
+    bool m_AllowedNfTypesIsSet;
+    std::vector<std::string> m_AllowedNfDomains;
+    bool m_AllowedNfDomainsIsSet;
+    std::vector<Snssai> m_AllowedNssais;
+    bool m_AllowedNssaisIsSet;
+    int32_t m_Priority;
+    bool m_PriorityIsSet;
     int32_t m_Capacity;
     bool m_CapacityIsSet;
     int32_t m_Load;
@@ -397,6 +482,8 @@ protected:
     bool m_ChfInfoIsSet;
     std::vector<ChfInfo> m_ChfInfoExt;
     bool m_ChfInfoExtIsSet;
+    NrfInfo m_NrfInfo;
+    bool m_NrfInfoIsSet;
     NwdafInfo m_NwdafInfo;
     bool m_NwdafInfoIsSet;
     //Object m_CustomInfo;
@@ -407,6 +494,10 @@ protected:
     bool m_NfServicePersistenceIsSet;
     std::vector<NFService> m_NfServices;
     bool m_NfServicesIsSet;
+    bool m_NfProfileChangesSupportInd;
+    bool m_NfProfileChangesSupportIndIsSet;
+    bool m_NfProfileChangesInd;
+    bool m_NfProfileChangesIndIsSet;
     std::vector<DefaultNotificationSubscription> m_DefaultNotificationSubscriptions;
     bool m_DefaultNotificationSubscriptionsIsSet;
 };

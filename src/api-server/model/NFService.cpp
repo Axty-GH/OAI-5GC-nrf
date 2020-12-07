@@ -1,6 +1,6 @@
 /**
-* NRF NFDiscovery Service
-* NRF NFDiscovery Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+* NRF NFManagement Service
+* NRF NFManagement Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
 *
 * The version of the OpenAPI document: 1.1.0.alpha-1
 * 
@@ -22,10 +22,18 @@ NFService::NFService()
     m_ServiceInstanceId = "";
     m_Fqdn = "";
     m_FqdnIsSet = false;
+    m_InterPlmnFqdn = "";
+    m_InterPlmnFqdnIsSet = false;
     m_IpEndPointsIsSet = false;
     m_ApiPrefix = "";
     m_ApiPrefixIsSet = false;
     m_DefaultNotificationSubscriptionsIsSet = false;
+    m_AllowedPlmnsIsSet = false;
+    m_AllowedNfTypesIsSet = false;
+    m_AllowedNfDomainsIsSet = false;
+    m_AllowedNssaisIsSet = false;
+    m_Priority = 0;
+    m_PriorityIsSet = false;
     m_Capacity = 0;
     m_CapacityIsSet = false;
     m_Load = 0;
@@ -59,12 +67,24 @@ void to_json(nlohmann::json& j, const NFService& o)
     j["nfServiceStatus"] = o.m_NfServiceStatus;
     if(o.fqdnIsSet())
         j["fqdn"] = o.m_Fqdn;
+    if(o.interPlmnFqdnIsSet())
+        j["interPlmnFqdn"] = o.m_InterPlmnFqdn;
     if(o.ipEndPointsIsSet() || !o.m_IpEndPoints.empty())
         j["ipEndPoints"] = o.m_IpEndPoints;
     if(o.apiPrefixIsSet())
         j["apiPrefix"] = o.m_ApiPrefix;
     if(o.defaultNotificationSubscriptionsIsSet() || !o.m_DefaultNotificationSubscriptions.empty())
         j["defaultNotificationSubscriptions"] = o.m_DefaultNotificationSubscriptions;
+    if(o.allowedPlmnsIsSet() || !o.m_AllowedPlmns.empty())
+        j["allowedPlmns"] = o.m_AllowedPlmns;
+    if(o.allowedNfTypesIsSet() || !o.m_AllowedNfTypes.empty())
+        j["allowedNfTypes"] = o.m_AllowedNfTypes;
+    if(o.allowedNfDomainsIsSet() || !o.m_AllowedNfDomains.empty())
+        j["allowedNfDomains"] = o.m_AllowedNfDomains;
+    if(o.allowedNssaisIsSet() || !o.m_AllowedNssais.empty())
+        j["allowedNssais"] = o.m_AllowedNssais;
+    if(o.priorityIsSet())
+        j["priority"] = o.m_Priority;
     if(o.capacityIsSet())
         j["capacity"] = o.m_Capacity;
     if(o.loadIsSet())
@@ -91,6 +111,11 @@ void from_json(const nlohmann::json& j, NFService& o)
         j.at("fqdn").get_to(o.m_Fqdn);
         o.m_FqdnIsSet = true;
     } 
+    if(j.find("interPlmnFqdn") != j.end())
+    {
+        j.at("interPlmnFqdn").get_to(o.m_InterPlmnFqdn);
+        o.m_InterPlmnFqdnIsSet = true;
+    } 
     if(j.find("ipEndPoints") != j.end())
     {
         j.at("ipEndPoints").get_to(o.m_IpEndPoints);
@@ -105,6 +130,31 @@ void from_json(const nlohmann::json& j, NFService& o)
     {
         j.at("defaultNotificationSubscriptions").get_to(o.m_DefaultNotificationSubscriptions);
         o.m_DefaultNotificationSubscriptionsIsSet = true;
+    } 
+    if(j.find("allowedPlmns") != j.end())
+    {
+        j.at("allowedPlmns").get_to(o.m_AllowedPlmns);
+        o.m_AllowedPlmnsIsSet = true;
+    } 
+    if(j.find("allowedNfTypes") != j.end())
+    {
+        j.at("allowedNfTypes").get_to(o.m_AllowedNfTypes);
+        o.m_AllowedNfTypesIsSet = true;
+    } 
+    if(j.find("allowedNfDomains") != j.end())
+    {
+        j.at("allowedNfDomains").get_to(o.m_AllowedNfDomains);
+        o.m_AllowedNfDomainsIsSet = true;
+    } 
+    if(j.find("allowedNssais") != j.end())
+    {
+        j.at("allowedNssais").get_to(o.m_AllowedNssais);
+        o.m_AllowedNssaisIsSet = true;
+    } 
+    if(j.find("priority") != j.end())
+    {
+        j.at("priority").get_to(o.m_Priority);
+        o.m_PriorityIsSet = true;
     } 
     if(j.find("capacity") != j.end())
     {
@@ -195,6 +245,23 @@ void NFService::unsetFqdn()
 {
     m_FqdnIsSet = false;
 }
+std::string NFService::getInterPlmnFqdn() const
+{
+    return m_InterPlmnFqdn;
+}
+void NFService::setInterPlmnFqdn(std::string const& value)
+{
+    m_InterPlmnFqdn = value;
+    m_InterPlmnFqdnIsSet = true;
+}
+bool NFService::interPlmnFqdnIsSet() const
+{
+    return m_InterPlmnFqdnIsSet;
+}
+void NFService::unsetInterPlmnFqdn()
+{
+    m_InterPlmnFqdnIsSet = false;
+}
 std::vector<IpEndPoint>& NFService::getIpEndPoints()
 {
     return m_IpEndPoints;
@@ -245,6 +312,91 @@ bool NFService::defaultNotificationSubscriptionsIsSet() const
 void NFService::unsetDefaultNotificationSubscriptions()
 {
     m_DefaultNotificationSubscriptionsIsSet = false;
+}
+std::vector<PlmnId>& NFService::getAllowedPlmns()
+{
+    return m_AllowedPlmns;
+}
+void NFService::setAllowedPlmns(std::vector<PlmnId> const& value)
+{
+    m_AllowedPlmns = value;
+    m_AllowedPlmnsIsSet = true;
+}
+bool NFService::allowedPlmnsIsSet() const
+{
+    return m_AllowedPlmnsIsSet;
+}
+void NFService::unsetAllowedPlmns()
+{
+    m_AllowedPlmnsIsSet = false;
+}
+std::vector<NFType>& NFService::getAllowedNfTypes()
+{
+    return m_AllowedNfTypes;
+}
+void NFService::setAllowedNfTypes(std::vector<NFType> const& value)
+{
+    m_AllowedNfTypes = value;
+    m_AllowedNfTypesIsSet = true;
+}
+bool NFService::allowedNfTypesIsSet() const
+{
+    return m_AllowedNfTypesIsSet;
+}
+void NFService::unsetAllowedNfTypes()
+{
+    m_AllowedNfTypesIsSet = false;
+}
+std::vector<std::string>& NFService::getAllowedNfDomains()
+{
+    return m_AllowedNfDomains;
+}
+void NFService::setAllowedNfDomains(std::vector<std::string> const& value)
+{
+    m_AllowedNfDomains = value;
+    m_AllowedNfDomainsIsSet = true;
+}
+bool NFService::allowedNfDomainsIsSet() const
+{
+    return m_AllowedNfDomainsIsSet;
+}
+void NFService::unsetAllowedNfDomains()
+{
+    m_AllowedNfDomainsIsSet = false;
+}
+std::vector<Snssai>& NFService::getAllowedNssais()
+{
+    return m_AllowedNssais;
+}
+void NFService::setAllowedNssais(std::vector<Snssai> const& value)
+{
+    m_AllowedNssais = value;
+    m_AllowedNssaisIsSet = true;
+}
+bool NFService::allowedNssaisIsSet() const
+{
+    return m_AllowedNssaisIsSet;
+}
+void NFService::unsetAllowedNssais()
+{
+    m_AllowedNssaisIsSet = false;
+}
+int32_t NFService::getPriority() const
+{
+    return m_Priority;
+}
+void NFService::setPriority(int32_t const value)
+{
+    m_Priority = value;
+    m_PriorityIsSet = true;
+}
+bool NFService::priorityIsSet() const
+{
+    return m_PriorityIsSet;
+}
+void NFService::unsetPriority()
+{
+    m_PriorityIsSet = false;
 }
 int32_t NFService::getCapacity() const
 {

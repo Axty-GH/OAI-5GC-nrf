@@ -19,43 +19,9 @@
  *      contact@openairinterface.org
  */
 
-/*! \file nrf_app.cpp
- \brief
- \author  Tien-Thinh NGUYEN
- \company Eurecom
- \date 2020
- \email: tien-thinh.nguyen@eurecom.fr
- */
+#ifndef FILE_NRF_SEEN
+#define FILE_NRF_SEEN
 
-#include "nrf_app.hpp"
-#include "common_defs.h"
-#include "nrf_config.hpp"
-#include "logger.hpp"
+#define HEART_BEAT_TIMER 10
 
-using namespace oai::nrf;
-
-extern nrf_app *nrf_app_inst;
-extern nrf_config nrf_cfg;
-
-//------------------------------------------------------------------------------
-nrf_app::nrf_app(const std::string &config_file) {
-  Logger::nrf_app().startup("Starting...");
-  Logger::nrf_app().startup("Started");
-}
-
-void nrf_app::handle_nf_instance_registration_request(
-    const std::string &nfInstanceID,
-    oai::nrf::model::NFProfile &nf_profile,
-    int &http_code,
-    const uint8_t http_version) {
-
-  Logger::nrf_app().info(
-      "Handle a NF Instance Registration Request (HTTP version %d)",
-      http_version);
-  //Check if nfInstanceID is a valid UUID (version 4)
-  //TODO
-  //Create NF and store
-  //location header - URI of created resource: can be used with ID - UUID
-
-}
-
+#endif

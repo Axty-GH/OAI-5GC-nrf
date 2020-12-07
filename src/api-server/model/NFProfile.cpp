@@ -22,14 +22,24 @@ NFProfile::NFProfile()
     m_NfInstanceId = "";
     m_NfInstanceName = "";
     m_NfInstanceNameIsSet = false;
+    m_HeartBeatTimer = 0;
+    m_HeartBeatTimerIsSet = false;
     m_PlmnListIsSet = false;
     m_SNssaisIsSet = false;
     m_PerPlmnSnssaiListIsSet = false;
     m_NsiListIsSet = false;
     m_Fqdn = "";
     m_FqdnIsSet = false;
+    m_InterPlmnFqdn = "";
+    m_InterPlmnFqdnIsSet = false;
     m_Ipv4AddressesIsSet = false;
     m_Ipv6AddressesIsSet = false;
+    m_AllowedPlmnsIsSet = false;
+    m_AllowedNfTypesIsSet = false;
+    m_AllowedNfDomainsIsSet = false;
+    m_AllowedNssaisIsSet = false;
+    m_Priority = 0;
+    m_PriorityIsSet = false;
     m_Capacity = 0;
     m_CapacityIsSet = false;
     m_Load = 0;
@@ -56,6 +66,7 @@ NFProfile::NFProfile()
     m_BsfInfoExtIsSet = false;
     m_ChfInfoIsSet = false;
     m_ChfInfoExtIsSet = false;
+    m_NrfInfoIsSet = false;
     m_NwdafInfoIsSet = false;
     //m_CustomInfoIsSet = false;
     m_RecoveryTime = "";
@@ -63,6 +74,10 @@ NFProfile::NFProfile()
     m_NfServicePersistence = false;
     m_NfServicePersistenceIsSet = false;
     m_NfServicesIsSet = false;
+    m_NfProfileChangesSupportInd = false;
+    m_NfProfileChangesSupportIndIsSet = false;
+    m_NfProfileChangesInd = false;
+    m_NfProfileChangesIndIsSet = false;
     m_DefaultNotificationSubscriptionsIsSet = false;
     
 }
@@ -84,6 +99,8 @@ void to_json(nlohmann::json& j, const NFProfile& o)
         j["nfInstanceName"] = o.m_NfInstanceName;
     j["nfType"] = o.m_NfType;
     j["nfStatus"] = o.m_NfStatus;
+    if(o.heartBeatTimerIsSet())
+        j["heartBeatTimer"] = o.m_HeartBeatTimer;
     if(o.plmnListIsSet() || !o.m_PlmnList.empty())
         j["plmnList"] = o.m_PlmnList;
     if(o.sNssaisIsSet() || !o.m_SNssais.empty())
@@ -94,10 +111,22 @@ void to_json(nlohmann::json& j, const NFProfile& o)
         j["nsiList"] = o.m_NsiList;
     if(o.fqdnIsSet())
         j["fqdn"] = o.m_Fqdn;
+    if(o.interPlmnFqdnIsSet())
+        j["interPlmnFqdn"] = o.m_InterPlmnFqdn;
     if(o.ipv4AddressesIsSet() || !o.m_Ipv4Addresses.empty())
         j["ipv4Addresses"] = o.m_Ipv4Addresses;
     if(o.ipv6AddressesIsSet() || !o.m_Ipv6Addresses.empty())
         j["ipv6Addresses"] = o.m_Ipv6Addresses;
+    if(o.allowedPlmnsIsSet() || !o.m_AllowedPlmns.empty())
+        j["allowedPlmns"] = o.m_AllowedPlmns;
+    if(o.allowedNfTypesIsSet() || !o.m_AllowedNfTypes.empty())
+        j["allowedNfTypes"] = o.m_AllowedNfTypes;
+    if(o.allowedNfDomainsIsSet() || !o.m_AllowedNfDomains.empty())
+        j["allowedNfDomains"] = o.m_AllowedNfDomains;
+    if(o.allowedNssaisIsSet() || !o.m_AllowedNssais.empty())
+        j["allowedNssais"] = o.m_AllowedNssais;
+    if(o.priorityIsSet())
+        j["priority"] = o.m_Priority;
     if(o.capacityIsSet())
         j["capacity"] = o.m_Capacity;
     if(o.loadIsSet())
@@ -142,6 +171,8 @@ void to_json(nlohmann::json& j, const NFProfile& o)
         j["chfInfo"] = o.m_ChfInfo;
     if(o.chfInfoExtIsSet() || !o.m_ChfInfoExt.empty())
         j["chfInfoExt"] = o.m_ChfInfoExt;
+    if(o.nrfInfoIsSet())
+        j["nrfInfo"] = o.m_NrfInfo;
     if(o.nwdafInfoIsSet())
         j["nwdafInfo"] = o.m_NwdafInfo;
     //if(o.customInfoIsSet())
@@ -152,6 +183,10 @@ void to_json(nlohmann::json& j, const NFProfile& o)
         j["nfServicePersistence"] = o.m_NfServicePersistence;
     if(o.nfServicesIsSet() || !o.m_NfServices.empty())
         j["nfServices"] = o.m_NfServices;
+    if(o.nfProfileChangesSupportIndIsSet())
+        j["nfProfileChangesSupportInd"] = o.m_NfProfileChangesSupportInd;
+    if(o.nfProfileChangesIndIsSet())
+        j["nfProfileChangesInd"] = o.m_NfProfileChangesInd;
     if(o.defaultNotificationSubscriptionsIsSet() || !o.m_DefaultNotificationSubscriptions.empty())
         j["defaultNotificationSubscriptions"] = o.m_DefaultNotificationSubscriptions;
 }
@@ -166,6 +201,11 @@ void from_json(const nlohmann::json& j, NFProfile& o)
     } 
     j.at("nfType").get_to(o.m_NfType);
     j.at("nfStatus").get_to(o.m_NfStatus);
+    if(j.find("heartBeatTimer") != j.end())
+    {
+        j.at("heartBeatTimer").get_to(o.m_HeartBeatTimer);
+        o.m_HeartBeatTimerIsSet = true;
+    } 
     if(j.find("plmnList") != j.end())
     {
         j.at("plmnList").get_to(o.m_PlmnList);
@@ -191,6 +231,11 @@ void from_json(const nlohmann::json& j, NFProfile& o)
         j.at("fqdn").get_to(o.m_Fqdn);
         o.m_FqdnIsSet = true;
     } 
+    if(j.find("interPlmnFqdn") != j.end())
+    {
+        j.at("interPlmnFqdn").get_to(o.m_InterPlmnFqdn);
+        o.m_InterPlmnFqdnIsSet = true;
+    } 
     if(j.find("ipv4Addresses") != j.end())
     {
         j.at("ipv4Addresses").get_to(o.m_Ipv4Addresses);
@@ -200,6 +245,31 @@ void from_json(const nlohmann::json& j, NFProfile& o)
     {
         j.at("ipv6Addresses").get_to(o.m_Ipv6Addresses);
         o.m_Ipv6AddressesIsSet = true;
+    } 
+    if(j.find("allowedPlmns") != j.end())
+    {
+        j.at("allowedPlmns").get_to(o.m_AllowedPlmns);
+        o.m_AllowedPlmnsIsSet = true;
+    } 
+    if(j.find("allowedNfTypes") != j.end())
+    {
+        j.at("allowedNfTypes").get_to(o.m_AllowedNfTypes);
+        o.m_AllowedNfTypesIsSet = true;
+    } 
+    if(j.find("allowedNfDomains") != j.end())
+    {
+        j.at("allowedNfDomains").get_to(o.m_AllowedNfDomains);
+        o.m_AllowedNfDomainsIsSet = true;
+    } 
+    if(j.find("allowedNssais") != j.end())
+    {
+        j.at("allowedNssais").get_to(o.m_AllowedNssais);
+        o.m_AllowedNssaisIsSet = true;
+    } 
+    if(j.find("priority") != j.end())
+    {
+        j.at("priority").get_to(o.m_Priority);
+        o.m_PriorityIsSet = true;
     } 
     if(j.find("capacity") != j.end())
     {
@@ -311,6 +381,11 @@ void from_json(const nlohmann::json& j, NFProfile& o)
         j.at("chfInfoExt").get_to(o.m_ChfInfoExt);
         o.m_ChfInfoExtIsSet = true;
     } 
+    if(j.find("nrfInfo") != j.end())
+    {
+        j.at("nrfInfo").get_to(o.m_NrfInfo);
+        o.m_NrfInfoIsSet = true;
+    } 
     if(j.find("nwdafInfo") != j.end())
     {
         j.at("nwdafInfo").get_to(o.m_NwdafInfo);
@@ -335,6 +410,16 @@ void from_json(const nlohmann::json& j, NFProfile& o)
     {
         j.at("nfServices").get_to(o.m_NfServices);
         o.m_NfServicesIsSet = true;
+    } 
+    if(j.find("nfProfileChangesSupportInd") != j.end())
+    {
+        j.at("nfProfileChangesSupportInd").get_to(o.m_NfProfileChangesSupportInd);
+        o.m_NfProfileChangesSupportIndIsSet = true;
+    } 
+    if(j.find("nfProfileChangesInd") != j.end())
+    {
+        j.at("nfProfileChangesInd").get_to(o.m_NfProfileChangesInd);
+        o.m_NfProfileChangesIndIsSet = true;
     } 
     if(j.find("defaultNotificationSubscriptions") != j.end())
     {
@@ -383,6 +468,23 @@ NFStatus NFProfile::getNfStatus() const
 void NFProfile::setNfStatus(NFStatus const& value)
 {
     m_NfStatus = value;
+}
+int32_t NFProfile::getHeartBeatTimer() const
+{
+    return m_HeartBeatTimer;
+}
+void NFProfile::setHeartBeatTimer(int32_t const value)
+{
+    m_HeartBeatTimer = value;
+    m_HeartBeatTimerIsSet = true;
+}
+bool NFProfile::heartBeatTimerIsSet() const
+{
+    return m_HeartBeatTimerIsSet;
+}
+void NFProfile::unsetHeartBeatTimer()
+{
+    m_HeartBeatTimerIsSet = false;
 }
 std::vector<PlmnId>& NFProfile::getPlmnList()
 {
@@ -469,6 +571,23 @@ void NFProfile::unsetFqdn()
 {
     m_FqdnIsSet = false;
 }
+std::string NFProfile::getInterPlmnFqdn() const
+{
+    return m_InterPlmnFqdn;
+}
+void NFProfile::setInterPlmnFqdn(std::string const& value)
+{
+    m_InterPlmnFqdn = value;
+    m_InterPlmnFqdnIsSet = true;
+}
+bool NFProfile::interPlmnFqdnIsSet() const
+{
+    return m_InterPlmnFqdnIsSet;
+}
+void NFProfile::unsetInterPlmnFqdn()
+{
+    m_InterPlmnFqdnIsSet = false;
+}
 std::vector<std::string>& NFProfile::getIpv4Addresses()
 {
     return m_Ipv4Addresses;
@@ -502,6 +621,91 @@ bool NFProfile::ipv6AddressesIsSet() const
 void NFProfile::unsetIpv6Addresses()
 {
     m_Ipv6AddressesIsSet = false;
+}
+std::vector<PlmnId>& NFProfile::getAllowedPlmns()
+{
+    return m_AllowedPlmns;
+}
+void NFProfile::setAllowedPlmns(std::vector<PlmnId> const& value)
+{
+    m_AllowedPlmns = value;
+    m_AllowedPlmnsIsSet = true;
+}
+bool NFProfile::allowedPlmnsIsSet() const
+{
+    return m_AllowedPlmnsIsSet;
+}
+void NFProfile::unsetAllowedPlmns()
+{
+    m_AllowedPlmnsIsSet = false;
+}
+std::vector<NFType>& NFProfile::getAllowedNfTypes()
+{
+    return m_AllowedNfTypes;
+}
+void NFProfile::setAllowedNfTypes(std::vector<NFType> const& value)
+{
+    m_AllowedNfTypes = value;
+    m_AllowedNfTypesIsSet = true;
+}
+bool NFProfile::allowedNfTypesIsSet() const
+{
+    return m_AllowedNfTypesIsSet;
+}
+void NFProfile::unsetAllowedNfTypes()
+{
+    m_AllowedNfTypesIsSet = false;
+}
+std::vector<std::string>& NFProfile::getAllowedNfDomains()
+{
+    return m_AllowedNfDomains;
+}
+void NFProfile::setAllowedNfDomains(std::vector<std::string> const& value)
+{
+    m_AllowedNfDomains = value;
+    m_AllowedNfDomainsIsSet = true;
+}
+bool NFProfile::allowedNfDomainsIsSet() const
+{
+    return m_AllowedNfDomainsIsSet;
+}
+void NFProfile::unsetAllowedNfDomains()
+{
+    m_AllowedNfDomainsIsSet = false;
+}
+std::vector<Snssai>& NFProfile::getAllowedNssais()
+{
+    return m_AllowedNssais;
+}
+void NFProfile::setAllowedNssais(std::vector<Snssai> const& value)
+{
+    m_AllowedNssais = value;
+    m_AllowedNssaisIsSet = true;
+}
+bool NFProfile::allowedNssaisIsSet() const
+{
+    return m_AllowedNssaisIsSet;
+}
+void NFProfile::unsetAllowedNssais()
+{
+    m_AllowedNssaisIsSet = false;
+}
+int32_t NFProfile::getPriority() const
+{
+    return m_Priority;
+}
+void NFProfile::setPriority(int32_t const value)
+{
+    m_Priority = value;
+    m_PriorityIsSet = true;
+}
+bool NFProfile::priorityIsSet() const
+{
+    return m_PriorityIsSet;
+}
+void NFProfile::unsetPriority()
+{
+    m_PriorityIsSet = false;
 }
 int32_t NFProfile::getCapacity() const
 {
@@ -877,6 +1081,23 @@ void NFProfile::unsetChfInfoExt()
 {
     m_ChfInfoExtIsSet = false;
 }
+NrfInfo NFProfile::getNrfInfo() const
+{
+    return m_NrfInfo;
+}
+void NFProfile::setNrfInfo(NrfInfo const& value)
+{
+    m_NrfInfo = value;
+    m_NrfInfoIsSet = true;
+}
+bool NFProfile::nrfInfoIsSet() const
+{
+    return m_NrfInfoIsSet;
+}
+void NFProfile::unsetNrfInfo()
+{
+    m_NrfInfoIsSet = false;
+}
 NwdafInfo NFProfile::getNwdafInfo() const
 {
     return m_NwdafInfo;
@@ -965,6 +1186,40 @@ bool NFProfile::nfServicesIsSet() const
 void NFProfile::unsetNfServices()
 {
     m_NfServicesIsSet = false;
+}
+bool NFProfile::isNfProfileChangesSupportInd() const
+{
+    return m_NfProfileChangesSupportInd;
+}
+void NFProfile::setNfProfileChangesSupportInd(bool const value)
+{
+    m_NfProfileChangesSupportInd = value;
+    m_NfProfileChangesSupportIndIsSet = true;
+}
+bool NFProfile::nfProfileChangesSupportIndIsSet() const
+{
+    return m_NfProfileChangesSupportIndIsSet;
+}
+void NFProfile::unsetNfProfileChangesSupportInd()
+{
+    m_NfProfileChangesSupportIndIsSet = false;
+}
+bool NFProfile::isNfProfileChangesInd() const
+{
+    return m_NfProfileChangesInd;
+}
+void NFProfile::setNfProfileChangesInd(bool const value)
+{
+    m_NfProfileChangesInd = value;
+    m_NfProfileChangesIndIsSet = true;
+}
+bool NFProfile::nfProfileChangesIndIsSet() const
+{
+    return m_NfProfileChangesIndIsSet;
+}
+void NFProfile::unsetNfProfileChangesInd()
+{
+    m_NfProfileChangesIndIsSet = false;
 }
 std::vector<DefaultNotificationSubscription>& NFProfile::getDefaultNotificationSubscriptions()
 {

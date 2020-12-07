@@ -1,6 +1,6 @@
 /**
-* NRF NFDiscovery Service
-* NRF NFDiscovery Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
+* NRF NFManagement Service
+* NRF NFManagement Service. © 2019, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC). All rights reserved. 
 *
 * The version of the OpenAPI document: 1.1.0.alpha-1
 * 
@@ -26,6 +26,8 @@
 #include "DefaultNotificationSubscription.h"
 #include "IpEndPoint.h"
 #include "UriScheme.h"
+#include "PlmnId.h"
+#include "Snssai.h"
 #include <vector>
 #include "ChfServiceInfo.h"
 #include <nlohmann/json.hpp>
@@ -83,6 +85,13 @@ public:
     /// <summary>
     /// 
     /// </summary>
+    std::string getInterPlmnFqdn() const;
+    void setInterPlmnFqdn(std::string const& value);
+    bool interPlmnFqdnIsSet() const;
+    void unsetInterPlmnFqdn();
+    /// <summary>
+    /// 
+    /// </summary>
     std::vector<IpEndPoint>& getIpEndPoints();
     void setIpEndPoints(std::vector<IpEndPoint> const& value);
     bool ipEndPointsIsSet() const;
@@ -101,6 +110,41 @@ public:
     void setDefaultNotificationSubscriptions(std::vector<DefaultNotificationSubscription> const& value);
     bool defaultNotificationSubscriptionsIsSet() const;
     void unsetDefaultNotificationSubscriptions();
+    /// <summary>
+    /// 
+    /// </summary>
+    std::vector<PlmnId>& getAllowedPlmns();
+    void setAllowedPlmns(std::vector<PlmnId> const& value);
+    bool allowedPlmnsIsSet() const;
+    void unsetAllowedPlmns();
+    /// <summary>
+    /// 
+    /// </summary>
+    std::vector<NFType>& getAllowedNfTypes();
+    void setAllowedNfTypes(std::vector<NFType> const& value);
+    bool allowedNfTypesIsSet() const;
+    void unsetAllowedNfTypes();
+    /// <summary>
+    /// 
+    /// </summary>
+    std::vector<std::string>& getAllowedNfDomains();
+    void setAllowedNfDomains(std::vector<std::string> const& value);
+    bool allowedNfDomainsIsSet() const;
+    void unsetAllowedNfDomains();
+    /// <summary>
+    /// 
+    /// </summary>
+    std::vector<Snssai>& getAllowedNssais();
+    void setAllowedNssais(std::vector<Snssai> const& value);
+    bool allowedNssaisIsSet() const;
+    void unsetAllowedNssais();
+    /// <summary>
+    /// 
+    /// </summary>
+    int32_t getPriority() const;
+    void setPriority(int32_t const value);
+    bool priorityIsSet() const;
+    void unsetPriority();
     /// <summary>
     /// 
     /// </summary>
@@ -159,12 +203,24 @@ protected:
 
     std::string m_Fqdn;
     bool m_FqdnIsSet;
+    std::string m_InterPlmnFqdn;
+    bool m_InterPlmnFqdnIsSet;
     std::vector<IpEndPoint> m_IpEndPoints;
     bool m_IpEndPointsIsSet;
     std::string m_ApiPrefix;
     bool m_ApiPrefixIsSet;
     std::vector<DefaultNotificationSubscription> m_DefaultNotificationSubscriptions;
     bool m_DefaultNotificationSubscriptionsIsSet;
+    std::vector<PlmnId> m_AllowedPlmns;
+    bool m_AllowedPlmnsIsSet;
+    std::vector<NFType> m_AllowedNfTypes;
+    bool m_AllowedNfTypesIsSet;
+    std::vector<std::string> m_AllowedNfDomains;
+    bool m_AllowedNfDomainsIsSet;
+    std::vector<Snssai> m_AllowedNssais;
+    bool m_AllowedNssaisIsSet;
+    int32_t m_Priority;
+    bool m_PriorityIsSet;
     int32_t m_Capacity;
     bool m_CapacityIsSet;
     int32_t m_Load;
