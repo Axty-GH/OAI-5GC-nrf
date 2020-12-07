@@ -19,20 +19,21 @@
  *      contact@openairinterface.org
  */
 
-/*! \file smf_app.hpp
+/*! \file nrf_app.hpp
  \brief
- \author  Lionel GAUTHIER, Tien-Thinh NGUYEN
+ \author  Tien-Thinh NGUYEN
  \company Eurecom
- \date 2019
- \email: lionel.gauthier@eurecom.fr, tien-thinh.nguyen@eurecom.fr
+ \date 2020
+ \email: tien-thinh.nguyen@eurecom.fr
  */
 
 #ifndef FILE_NRF_APP_HPP_SEEN
 #define FILE_NRF_APP_HPP_SEEN
 
 #include <string>
+#include "NFProfile.h"
 
-namespace oai{
+namespace oai {
 namespace nrf {
 class nrf_config;
 class nrf_app {
@@ -41,6 +42,12 @@ class nrf_app {
   explicit nrf_app(const std::string &config_file);
   nrf_app(nrf_app const&) = delete;
   void operator=(nrf_app const&) = delete;
+
+  void handle_nf_instance_registration_request(
+      const std::string &nfInstanceID,
+      oai::nrf::model::NFProfile &nf_profile,
+      int &http_code,
+      const uint8_t http_version);
 
 };
 }

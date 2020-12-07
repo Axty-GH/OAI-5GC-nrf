@@ -21,10 +21,10 @@
 
 /*! \file nrf_app.cpp
  \brief
- \author  Lionel GAUTHIER, Tien-Thinh NGUYEN
+ \author  Tien-Thinh NGUYEN
  \company Eurecom
- \date 2019
- \email: lionel.gauthier@eurecom.fr, tien-thinh.nguyen@eurecom.fr
+ \date 2020
+ \email: tien-thinh.nguyen@eurecom.fr
  */
 
 #include "nrf_app.hpp"
@@ -38,9 +38,19 @@ extern nrf_app *nrf_app_inst;
 extern nrf_config nrf_cfg;
 
 //------------------------------------------------------------------------------
-nrf_app::nrf_app(const std::string &config_file)
- {
+nrf_app::nrf_app(const std::string &config_file) {
   Logger::nrf_app().startup("Starting...");
   Logger::nrf_app().startup("Started");
+}
+
+void nrf_app::handle_nf_instance_registration_request(
+    const std::string &nfInstanceID,
+    oai::nrf::model::NFProfile &nf_profile,
+    int &http_code,
+    const uint8_t http_version) {
+
+  Logger::nrf_app().info(
+      "Handle a NF Instance Registration Request (HTTP version %d)",
+      http_version);
 }
 

@@ -13,6 +13,7 @@
 #include "NFInstanceIDDocumentApi.h"
 #include "Helpers.h"
 #include "nrf_config.hpp"
+#include "logger.hpp"
 
 extern oai::nrf::nrf_config nrf_cfg;
 

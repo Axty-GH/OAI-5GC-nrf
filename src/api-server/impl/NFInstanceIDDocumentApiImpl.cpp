@@ -11,6 +11,8 @@
 */
 
 #include "NFInstanceIDDocumentApiImpl.h"
+#include "logger.hpp"
+#include "nrf_app.hpp"
 
 namespace oai {
 namespace nrf {
@@ -32,7 +34,15 @@ void NFInstanceIDDocumentApiImpl::get_nf_instance(const std::string &nfInstanceI
     response.send(Pistache::Http::Code::Ok, "Do some magic\n");
 }
 void NFInstanceIDDocumentApiImpl::register_nf_instance(const std::string &nfInstanceID, const NFProfile &nFProfile, const Pistache::Optional<Pistache::Http::Header::Raw> &contentEncoding, Pistache::Http::ResponseWriter &response) {
-    response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+  Logger::nrf_sbi().info("Got a request to register an NF instance, Instance ID: %s", nfInstanceID.c_str());
+
+  NFProfile nf_profile = nFProfile;
+  int http_code = 0;
+  m_nrf_app->handle_nf_instance_registration_request(nfInstanceID, nf_profile, http_code, 1);
+
+  nlohmann::json json_data = { };
+  to_json(json_data, nf_profile);
+  response.send(Pistache::Http::Code::Ok, json_data.dump().c_str());
 }
 void NFInstanceIDDocumentApiImpl::update_nf_instance(const std::string &nfInstanceID, const std::vector<PatchItem> &patchItem, Pistache::Http::ResponseWriter &response) {
     response.send(Pistache::Http::Code::Ok, "Do some magic\n");
