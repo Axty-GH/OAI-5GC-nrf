@@ -29,10 +29,27 @@
 
 #include "nrf_profile.hpp"
 
-
-
 using namespace std;
 using namespace oai::nrf;
 
+//------------------------------------------------------------------------------
+void nrf_profile::set_nf_instance_id(const std::string &instance_id) {
+  nf_instance_id = instance_id;
+}
+
+//------------------------------------------------------------------------------
+void nrf_profile::get_nf_instance_id(std::string &instance_id) const {
+  instance_id = nf_instance_id;
+}
+
+//------------------------------------------------------------------------------
+void nrf_profile::set_nf_instance_name(const std::string &instance_name) {
+  nf_instance_name = instance_name;
+}
+
+//------------------------------------------------------------------------------
+void nrf_profile::get_nf_instance_name(std::string &instance_name) const {
+  instance_name = nf_instance_name;
+}
 
 

@@ -21,7 +21,78 @@
 
 #ifndef FILE_NRF_SEEN
 #define FILE_NRF_SEEN
+#include "3gpp_23.003.h"
 
 #define HEART_BEAT_TIMER 10
+
+typedef enum nf_type_s {
+  NF_TYPE_NRF = 0,
+  NF_TYPE_AMF = 1,
+  NF_TYPE_SMF = 2,
+  NF_TYPE_AUSF = 3,
+  NF_TYPE_NEF = 4,
+  NF_TYPE_PCF = 5,
+  NF_TYPE_SMSF = 6,
+  NF_TYPE_NSSF = 7,
+  NF_TYPE_UDR = 8,
+  NF_TYPE_LMF = 9,
+  NF_TYPE_GMLC = 10,
+  NF_TYPE_5G_EIR = 11,
+  NF_TYPE_SEPP = 12,
+  NF_TYPE_UPF = 13,
+  NF_TYPE_N3IWF = 14,
+  NF_TYPE_AF = 15,
+  NF_TYPE_UDSF = 16,
+  NF_TYPE_BSF = 17,
+  NF_TYPE_CHF = 18,
+  NF_TYPE_NWDAF = 19,
+  NF_TYPE_UNKNOWN = 20
+} nf_type_t;
+
+
+typedef struct s_nssai  // section 28.4, TS23.003
+{
+  uint8_t sST;
+  //uint32_t sD:24;
+  std::string sD;
+  //s_nssai(const uint8_t& sst,  const uint32_t sd) : sST(sst), sD(sd) {}
+  s_nssai(const uint8_t &sst, const std::string sd)
+      :
+      sST(sst),
+      sD(sd) {
+  }
+  s_nssai()
+      :
+      sST(),
+      sD() {
+  }
+  s_nssai(const s_nssai &p)
+      :
+      sST(p.sST),
+      sD(p.sD) {
+  }
+  bool operator==(const struct s_nssai &s) const {
+    if ((s.sST == this->sST) && (s.sD.compare(this->sD) == 0)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+} snssai_t;
+
+typedef struct guami_s {
+  plmn_t plmn;
+  std::string amf_id;
+} guami_t;
+
+
+
+
+typedef struct amf_info_s {
+  std::string amf_set_id;
+  std::string amf_region_id;
+  std::vector<guami_t> guami_list;
+} amf_info_t;
 
 #endif

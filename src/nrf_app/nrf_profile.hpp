@@ -30,38 +30,92 @@
 #ifndef FILE_NRF_PROFILE_HPP_SEEN
 #define FILE_NRF_PROFILE_HPP_SEEN
 
+#include <arpa/inet.h>
+#include <netinet/in.h>
 #include <map>
-//#include <mutex>
 #include <shared_mutex>
 #include <memory>
 #include <utility>
 #include <vector>
 
+#include "nrf.h"
 
 namespace oai {
-namespace nrf{
+namespace nrf {
+
+using namespace std;
 
 class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
 
  public:
-  nrf_profile()
-  {
+  nrf_profile() = delete;
+  nrf_profile(const nf_type_t type)
+      :
+      heartBeat_timer(0),
+      snssais(),
+      ipv4_addresses(),
+      priority(0),
+      capacity(0) {
+    nf_type = type;
+    nf_instance_name = "";
+    nf_status = "";
+  }
+
+  nrf_profile(const std::string &id)
+      :
+      nf_instance_id(id),
+      heartBeat_timer(0),
+      snssais(),
+      ipv4_addresses(),
+      priority(0),
+      capacity(0) {
+    nf_instance_name = "";
+    nf_status = "";
+    nf_type = NF_TYPE_UNKNOWN;
   }
 
   nrf_profile(nrf_profile &b) = delete;
 
+  /*
+   * Set NF instance ID
+   * @param [const std::string &] instance_id: instance id
+   * @return void
+   */
+  void set_nf_instance_id(const std::string &instance_id);
+  /*
+   * Get NF instance ID
+   * @param [std::string &] instance_id: instance id
+   * @return void:
+   */
+  void get_nf_instance_id(std::string &instance_id) const;
+
+  /*
+   * Set NF instance name
+   * @param [const std::string &] instance_name: instance name
+   * @return void
+   */
+  void set_nf_instance_name(const std::string &instance_name);
+  /*
+   * Get NF instance ID
+   * @param [std::string &] instance_name: instance name
+   * @return void:
+   */
+  void get_nf_instance_name(std::string &instance_name) const;
+
+
  private:
-  //lock
-  mutable std::shared_mutex m_nrf_profile;
-
   //From NFProfile (Section 6.1.6.2.2@3GPP TS 29.510 V16.0.0 (2019-06))
-   std::string nf_instance_id;
-   std::string nf_instance_name;
-   std::string nf_type;
-   std::string nf_status;
+  std::string nf_instance_id;
+  std::string nf_instance_name;
+  nf_type_t nf_type;
+  std::string nf_status;
+  int32_t heartBeat_timer;
+  std::vector<snssai_t> snssais;
+  std::vector<struct in_addr> ipv4_addresses;
+  uint16_t priority;
+  uint16_t capacity;
 
-
-/*
+  /*
    std::vector<PlmnId> m_PlmnList;
    bool m_PlmnListIsSet;
    std::vector<Snssai> m_SNssais;
@@ -72,18 +126,12 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
    bool m_NsiListIsSet;
    std::string m_Fqdn;
    bool m_FqdnIsSet;
-   std::vector<std::string> m_Ipv4Addresses;
-   bool m_Ipv4AddressesIsSet;
    std::vector<Ipv6Addr> m_Ipv6Addresses;
    bool m_Ipv6AddressesIsSet;
-   int32_t m_Capacity;
-   bool m_CapacityIsSet;
    int32_t m_Load;
    bool m_LoadIsSet;
    std::string m_Locality;
    bool m_LocalityIsSet;
-   int32_t m_Priority;
-   bool m_PriorityIsSet;
    UdrInfo m_UdrInfo;
    bool m_UdrInfoIsSet;
    std::vector<UdrInfo> m_UdrInfoExt;
@@ -130,9 +178,31 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
    bool m_NfServicesIsSet;
    std::vector<DefaultNotificationSubscription> m_DefaultNotificationSubscriptions;
    bool m_DefaultNotificationSubscriptionsIsSet;
-*/
+   */
 
 };
+
+class amf_profile : public nrf_profile {
+
+ public:
+  amf_profile()
+      :
+      nrf_profile(NF_TYPE_AMF) {
+    amf_info = { };
+  }
+
+  amf_profile(const std::string &id)
+      :
+      nrf_profile(id) {
+    amf_info = { };
+  }
+
+  amf_profile(amf_profile &b) = delete;
+
+ private:
+  std::vector<amf_info_t> amf_info;
+};
+
 }
 }
 

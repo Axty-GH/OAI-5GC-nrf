@@ -45,10 +45,42 @@ class nrf_app {
   void operator=(nrf_app const&) = delete;
 
   void handle_nf_instance_registration_request(
-      const std::string &nfInstanceID,
+      const std::string &nf_instance_id,
       oai::nrf::model::NFProfile &nf_profile,
       int &http_code,
       const uint8_t http_version);
+
+  /*
+   * Insert a nrf profile
+   * @param [const std::string &] profile_id: Profile ID
+   * @param [std::shared_ptr<nrf_profile> &] p: profile to be added
+   * @return true if successful, otherwise, return false
+   */
+  bool add_nf_profile(const std::string &profile_id, const std::shared_ptr<nrf_profile> &p);
+
+  /*
+   * Find a nf profile with its ID
+   * @param [const std::string &] profile_id: Profile ID
+   * @param [std::shared_ptr<nrf_profile> &] snp: Stored nf profile if found
+   * @return void
+   */
+  bool find_nf_profile(const std::string &profile_id,
+                      const std::shared_ptr<nrf_profile> &snp);
+
+  /*
+   * Remove a nf profile from the list
+   * @param [std::shared_ptr<nrf_profile> &] snp: profile to be removed
+   * @return true if successful, otherwise, return false
+   */
+  bool remove_nf_profile(std::shared_ptr<nrf_profile> &snp);
+
+  /*
+   * Remove a nf profile from the list
+   * @param [std::string &] profile_id: ID of the profile to be removed
+   * @return true if successful, otherwise, return false
+   */
+  bool remove_nf_profile(std::string &profile_id);
+
 
  private:
   std::map<std::string, std::shared_ptr<nrf_profile>> instance_id2nrf_profile;
