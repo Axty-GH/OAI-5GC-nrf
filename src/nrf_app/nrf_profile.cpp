@@ -52,4 +52,63 @@ void nrf_profile::get_nf_instance_name(std::string &instance_name) const {
   instance_name = nf_instance_name;
 }
 
+//------------------------------------------------------------------------------
+void nrf_profile::set_nf_status(const std::string &status) {
+  nf_status = status;
+}
+
+//------------------------------------------------------------------------------
+void nrf_profile::get_nf_status(std::string &status) const {
+  status = nf_status;
+}
+
+//------------------------------------------------------------------------------
+void nrf_profile::set_nf_heartBeat_timer(const int32_t &timer) {
+  heartBeat_timer = timer;
+}
+
+//------------------------------------------------------------------------------
+void nrf_profile::get_nf_hertBeat_timer(int32_t &timer) const {
+  timer = heartBeat_timer;
+}
+
+//------------------------------------------------------------------------------
+void nrf_profile::set_nf_priority(const uint16_t &p) {
+  priority = p;
+}
+
+//------------------------------------------------------------------------------
+void nrf_profile::get_nf_priority(uint16_t &p) const {
+  p = priority;
+}
+
+//------------------------------------------------------------------------------
+void nrf_profile::set_nf_capacity(const uint16_t &c) {
+  capacity = c;
+}
+
+//------------------------------------------------------------------------------
+void nrf_profile::get_nf_capacity(uint16_t &c) const {
+  c = capacity;
+}
+
+//------------------------------------------------------------------------------
+void nrf_profile::set_nf_snssais(const std::vector<snssai_t> &s) {
+  snssais = s;
+}
+
+//------------------------------------------------------------------------------
+void nrf_profile::get_nf_snssais(std::vector<snssai_t> &s) const {
+  s = snssais;
+}
+
+//------------------------------------------------------------------------------
+void nrf_profile::set_nf_ipv4_addresses(const std::vector<struct in_addr> &a) {
+  ipv4_addresses = a;
+}
+
+//------------------------------------------------------------------------------
+void nrf_profile::get_nf_ipv4_addresses(std::vector<struct in_addr> &a) const {
+  a = ipv4_addresses;
+}
 

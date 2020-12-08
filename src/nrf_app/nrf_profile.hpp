@@ -84,7 +84,7 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
   void set_nf_instance_id(const std::string &instance_id);
   /*
    * Get NF instance ID
-   * @param [std::string &] instance_id: instance id
+   * @param [std::string &] instance_id: store instance id
    * @return void:
    */
   void get_nf_instance_id(std::string &instance_id) const;
@@ -97,11 +97,88 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
   void set_nf_instance_name(const std::string &instance_name);
   /*
    * Get NF instance ID
-   * @param [std::string &] instance_name: instance name
+   * @param [std::string &] instance_name: store instance name
    * @return void:
    */
   void get_nf_instance_name(std::string &instance_name) const;
 
+  /*
+   * Set NF instance status
+   * @param [const std::string &] status: instance status
+   * @return void
+   */
+  void set_nf_status(const std::string &status);
+  /*
+   * Get NF instance status
+   * @param [std::string &] status: store instance status
+   * @return void:
+   */
+  void get_nf_status(std::string &status) const;
+
+  /*
+   * Set NF instance heartBeat_timer
+   * @param [const std::string &] timer: heartBeat_timer
+   * @return void
+   */
+  void set_nf_heartBeat_timer(const int32_t &timer);
+  /*
+   * Get NF instance heartBeat_timer
+   * @param [std::string &] timer: store heartBeat_timer
+   * @return void:
+   */
+  void get_nf_hertBeat_timer(int32_t &timer) const;
+
+  /*
+   * Set NF instance priority
+   * @param [const uint16_t] p: instance priority
+   * @return void
+   */
+  void set_nf_priority(const uint16_t &p);
+  /*
+   * Get NF instance priority
+   * @param [uint16_t] p: store instance priority
+   * @return void:
+   */
+  void get_nf_priority(uint16_t &p) const;
+
+  /*
+   * Set NF instance capacity
+   * @param [const uint16_t] c: instance capacity
+   * @return void
+   */
+  void set_nf_capacity(const uint16_t &c);
+  /*
+   * Get NF instance priority
+   * @param [uint16_t ] c: store instance capacity
+   * @return void:
+   */
+  void get_nf_capacity(uint16_t &c) const;
+
+  /*
+   * Set NF instance SNSSAIs
+   * @param [std::vector<snssai_t> &] s: SNSSAIs
+   * @return void
+   */
+  void set_nf_snssais(const std::vector<snssai_t> &s);
+  /*
+   * Get NF instance SNSSAIs
+   * @param [std::vector<snssai_t> &] s: store instance's SNSSAIs
+   * @return void:
+   */
+  void get_nf_snssais(std::vector<snssai_t> &s) const;
+
+  /*
+   * Set NF instance ipv4_addresses
+   * @param [std::vector<struct in_addr> &] a: ipv4_addresses
+   * @return void
+   */
+  void set_nf_ipv4_addresses(const std::vector<struct in_addr> &a);
+  /*
+   * Get NF instance ipv4_addresses
+   * @param [std::vector<struct in_addr> &] a: store instance's ipv4_addresses
+   * @return void:
+   */
+  void get_nf_ipv4_addresses(std::vector<struct in_addr> &a) const;
 
  private:
   //From NFProfile (Section 6.1.6.2.2@3GPP TS 29.510 V16.0.0 (2019-06))
