@@ -30,7 +30,7 @@
 #include "nrf_profile.hpp"
 
 using namespace std;
-using namespace oai::nrf;
+using namespace oai::nrf::app;
 
 //------------------------------------------------------------------------------
 void nrf_profile::set_nf_instance_id(const std::string &instance_id) {
@@ -52,6 +52,13 @@ void nrf_profile::get_nf_instance_name(std::string &instance_name) const {
   instance_name = nf_instance_name;
 }
 
+std::string nrf_profile::get_nf_instance_name() const {
+	return nf_instance_name;
+}
+
+nf_type_t nrf_profile::get_nf_type() const {
+	return nf_type;
+}
 //------------------------------------------------------------------------------
 void nrf_profile::set_nf_status(const std::string &status) {
   nf_status = status;
@@ -60,6 +67,10 @@ void nrf_profile::set_nf_status(const std::string &status) {
 //------------------------------------------------------------------------------
 void nrf_profile::get_nf_status(std::string &status) const {
   status = nf_status;
+}
+
+std::string nrf_profile::get_nf_status() const {
+	return nf_status;
 }
 
 //------------------------------------------------------------------------------
@@ -72,6 +83,10 @@ void nrf_profile::get_nf_hertBeat_timer(int32_t &timer) const {
   timer = heartBeat_timer;
 }
 
+int32_t nrf_profile::get_nf_hertBeat_timer() const {
+	return heartBeat_timer;
+}
+
 //------------------------------------------------------------------------------
 void nrf_profile::set_nf_priority(const uint16_t &p) {
   priority = p;
@@ -81,6 +96,10 @@ void nrf_profile::set_nf_priority(const uint16_t &p) {
 void nrf_profile::get_nf_priority(uint16_t &p) const {
   p = priority;
 }
+uint16_t nrf_profile::get_nf_priority() const {
+	return priority;
+}
+
 
 //------------------------------------------------------------------------------
 void nrf_profile::set_nf_capacity(const uint16_t &c) {
@@ -90,6 +109,10 @@ void nrf_profile::set_nf_capacity(const uint16_t &c) {
 //------------------------------------------------------------------------------
 void nrf_profile::get_nf_capacity(uint16_t &c) const {
   c = capacity;
+}
+
+uint16_t nrf_profile::get_nf_capacity() const {
+  return capacity;
 }
 
 //------------------------------------------------------------------------------
@@ -103,10 +126,17 @@ void nrf_profile::get_nf_snssais(std::vector<snssai_t> &s) const {
 }
 
 //------------------------------------------------------------------------------
+void nrf_profile::add_snssai(const snssai_t &s) {
+	snssais.push_back(s);
+}
+//------------------------------------------------------------------------------
 void nrf_profile::set_nf_ipv4_addresses(const std::vector<struct in_addr> &a) {
   ipv4_addresses = a;
 }
 
+void nrf_profile::add_nf_ipv4_addresses(const struct in_addr &a) {
+	ipv4_addresses.push_back(a);
+}
 //------------------------------------------------------------------------------
 void nrf_profile::get_nf_ipv4_addresses(std::vector<struct in_addr> &a) const {
   a = ipv4_addresses;

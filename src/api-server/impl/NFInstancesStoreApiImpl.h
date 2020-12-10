@@ -56,18 +56,19 @@ namespace nrf {
 namespace api {
 
 using namespace oai::nrf::model;
+using namespace oai::nrf::app;
 
 class NFInstancesStoreApiImpl : public oai::nrf::api::NFInstancesStoreApi {
 public:
     NFInstancesStoreApiImpl(std::shared_ptr<Pistache::Rest::Router>,
-                            oai::nrf::nrf_app *nrf_app_inst,
+                            nrf_app *nrf_app_inst,
                             std::string address);
     ~NFInstancesStoreApiImpl() {}
 
     void get_nf_instances(const Pistache::Optional<std::string> &nfType, const Pistache::Optional<int32_t> &limit, Pistache::Http::ResponseWriter &response);
     void options_nf_instances(Pistache::Http::ResponseWriter &response);
 private:
-    oai::nrf::nrf_app *m_nrf_app;
+    nrf_app *m_nrf_app;
     std::string m_address;
 };
 

@@ -18,10 +18,11 @@ namespace nrf {
 namespace api {
 
 using namespace oai::nrf::model;
+using namespace oai::nrf::app;
 
 DiscNFInstancesStoreApiImpl::DiscNFInstancesStoreApiImpl(
     std::shared_ptr<Pistache::Rest::Router> rtr,
-    oai::nrf::nrf_app *nrf_app_inst, std::string address)
+    nrf_app *nrf_app_inst, std::string address)
     :
     DiscNFInstancesStoreApi(rtr),
     m_nrf_app(nrf_app_inst),

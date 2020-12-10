@@ -15,13 +15,13 @@
 #include "nrf_config.hpp"
 #include "logger.hpp"
 
-extern oai::nrf::nrf_config nrf_cfg;
+extern oai::nrf::app::nrf_config nrf_cfg;
 
 namespace oai {
 namespace nrf {
 namespace api {
 
-using namespace oai::nrf;
+using namespace oai::nrf::app;
 using namespace oai::nrf::model;
 
 NFInstancesStoreApi::NFInstancesStoreApi(std::shared_ptr<Pistache::Rest::Router> rtr) { 

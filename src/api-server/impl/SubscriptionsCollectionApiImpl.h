@@ -38,17 +38,18 @@ namespace nrf {
 namespace api {
 
 using namespace oai::nrf::model;
+using namespace oai::nrf::app;
 
 class SubscriptionsCollectionApiImpl : public oai::nrf::api::SubscriptionsCollectionApi {
 public:
     SubscriptionsCollectionApiImpl(std::shared_ptr<Pistache::Rest::Router>,
-                                   oai::nrf::nrf_app *nrf_app_inst,
+                                   nrf_app *nrf_app_inst,
                                    std::string address);
     ~SubscriptionsCollectionApiImpl() {}
 
     void create_subscription(const SubscriptionData &subscriptionData, Pistache::Http::ResponseWriter &response);
 private:
-    oai::nrf::nrf_app *m_nrf_app;
+    nrf_app *m_nrf_app;
     std::string m_address;
 };
 

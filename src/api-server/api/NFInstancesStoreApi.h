@@ -57,7 +57,7 @@ public:
     virtual ~NFInstancesStoreApi() {}
     void init();
 
-    const std::string base = "/nnrf-nfm/v1";
+    const std::string base = "/nnrf-nfm/";
 
 private:
     void setupRoutes();

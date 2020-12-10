@@ -53,9 +53,10 @@
 #include "nrf_app.hpp"
 
 using namespace oai::nrf::api;
+using namespace oai::nrf::app;
 class NRFApiServer {
  public:
-  NRFApiServer(Pistache::Address address, oai::nrf::nrf_app *nrf_app_inst)
+  NRFApiServer(Pistache::Address address, nrf_app *nrf_app_inst)
       :
       m_httpEndpoint(std::make_shared<Pistache::Http::Endpoint>(address)) {
     m_router = std::make_shared<Pistache::Rest::Router>();

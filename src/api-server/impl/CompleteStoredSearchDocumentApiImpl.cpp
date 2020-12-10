@@ -17,9 +17,10 @@ namespace nrf {
 namespace api {
 
 using namespace oai::nrf::model;
+using namespace oai::nrf::app;
 
 CompleteStoredSearchDocumentApiImpl::CompleteStoredSearchDocumentApiImpl(
-    std::shared_ptr<Pistache::Rest::Router> rtr, nrf::nrf_app *nrf_app_inst,
+    std::shared_ptr<Pistache::Rest::Router> rtr, nrf_app *nrf_app_inst,
     std::string address)
     :
     CompleteStoredSearchDocumentApi(rtr),

@@ -1,1 +1,2 @@
 curl -X PUT -H "Content-Type: application/json" -d @amf_registration.json http://192.168.1.88/nnrf-nfm/v1/nf-instances/343a924e-6494-4927-860b-d45692c95c2d 
+curl -X GET  "http://192.168.1.23/nnrf-nfm/v1/nf-instances?nf-type="serviceId1"&limit=100"

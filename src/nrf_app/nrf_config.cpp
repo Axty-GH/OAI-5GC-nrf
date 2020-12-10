@@ -53,7 +53,7 @@
 
 using namespace std;
 using namespace libconfig;
-using namespace oai::nrf;
+using namespace oai::nrf::app;
 
 extern nrf_config nrf_cfg;
 

@@ -17,9 +17,10 @@ namespace nrf {
 namespace api {
 
 using namespace oai::nrf::model;
+using namespace oai::nrf::app;
 
 SubscriptionsCollectionApiImpl::SubscriptionsCollectionApiImpl(
-    std::shared_ptr<Pistache::Rest::Router> rtr, oai::nrf::nrf_app *nrf_app_inst,
+    std::shared_ptr<Pistache::Rest::Router> rtr, nrf_app *nrf_app_inst,
     std::string address)
     :
     SubscriptionsCollectionApi(rtr),

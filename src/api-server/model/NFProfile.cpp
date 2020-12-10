@@ -461,11 +461,11 @@ void NFProfile::setNfType(std::string const& value)
 {
     m_NfType = value;
 }
-NFStatus NFProfile::getNfStatus() const
+std::string NFProfile::getNfStatus() const
 {
     return m_NfStatus;
 }
-void NFProfile::setNfStatus(NFStatus const& value)
+void NFProfile::setNfStatus(std::string const& value)
 {
     m_NfStatus = value;
 }
@@ -503,9 +503,11 @@ void NFProfile::unsetPlmnList()
 {
     m_PlmnListIsSet = false;
 }
-std::vector<Snssai>& NFProfile::getSNssais()
+std::vector<Snssai> NFProfile::getSNssais() const
 {
+	std::vector<Snssai> s = m_SNssais;
     return m_SNssais;
+	//return s;
 }
 void NFProfile::setSNssais(std::vector<Snssai> const& value)
 {
@@ -588,7 +590,7 @@ void NFProfile::unsetInterPlmnFqdn()
 {
     m_InterPlmnFqdnIsSet = false;
 }
-std::vector<std::string>& NFProfile::getIpv4Addresses()
+std::vector<std::string> NFProfile::getIpv4Addresses() const
 {
     return m_Ipv4Addresses;
 }

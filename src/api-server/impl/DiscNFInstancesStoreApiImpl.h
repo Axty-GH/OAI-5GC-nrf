@@ -54,11 +54,12 @@ namespace nrf {
 namespace api {
 
 using namespace oai::nrf::model;
+using namespace oai::nrf::app;
 
 class DiscNFInstancesStoreApiImpl : public oai::nrf::api::DiscNFInstancesStoreApi {
  public:
   DiscNFInstancesStoreApiImpl(std::shared_ptr<Pistache::Rest::Router>,
-                          oai::nrf::nrf_app *nrf_app_inst, std::string address);
+                          nrf_app *nrf_app_inst, std::string address);
   ~DiscNFInstancesStoreApiImpl() {
   }
 
@@ -112,7 +113,7 @@ class DiscNFInstancesStoreApiImpl : public oai::nrf::api::DiscNFInstancesStoreAp
       const Pistache::Optional<Pistache::Http::Header::Raw> &ifNoneMatch,
       Pistache::Http::ResponseWriter &response);
  private:
-  oai::nrf::nrf_app *m_nrf_app;
+  nrf_app *m_nrf_app;
   std::string m_address;
 };
 

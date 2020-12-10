@@ -19,9 +19,11 @@ namespace nrf {
 namespace api {
 
 using namespace oai::nrf::model;
+using namespace oai::nrf::app;
+using namespace oai::nrf;
 
 NFInstanceIDDocumentApiImpl::NFInstanceIDDocumentApiImpl(std::shared_ptr<Pistache::Rest::Router> rtr,
-                                                         oai::nrf::nrf_app *nrf_app_inst,
+                                                         nrf_app *nrf_app_inst,
                                                              std::string address)
     : NFInstanceIDDocumentApi(rtr), m_nrf_app(nrf_app_inst),
       m_address(address)
@@ -38,7 +40,7 @@ void NFInstanceIDDocumentApiImpl::register_nf_instance(const std::string &nfInst
 
   NFProfile nf_profile = nFProfile;
   int http_code = 0;
-  m_nrf_app->handle_nf_instance_registration_request(nfInstanceID, nf_profile, http_code, 1);
+  m_nrf_app->handle_nf_instance_registration_request(nfInstanceID, nFProfile, http_code, 1);
 
   nlohmann::json json_data = { };
   to_json(json_data, nf_profile);

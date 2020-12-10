@@ -31,69 +31,205 @@
 #include "common_defs.h"
 #include "nrf_config.hpp"
 #include "logger.hpp"
+#include "api_conversions.hpp"
 
-using namespace oai::nrf;
+using namespace oai::nrf::app;
+using namespace oai::nrf::model;
 
 extern nrf_app *nrf_app_inst;
 extern nrf_config nrf_cfg;
 
 //------------------------------------------------------------------------------
 nrf_app::nrf_app(const std::string &config_file) {
-  Logger::nrf_app().startup("Starting...");
-  Logger::nrf_app().startup("Started");
+	Logger::nrf_app().startup("Starting...");
+	Logger::nrf_app().startup("Started");
 }
 
 //------------------------------------------------------------------------------
 void nrf_app::handle_nf_instance_registration_request(
-    const std::string &nf_instance_id, oai::nrf::model::NFProfile &nf_profile,
-    int &http_code, const uint8_t http_version) {
+		const std::string &nf_instance_id,
+		const oai::nrf::model::NFProfile &nf_profile, int &http_code,
+		const uint8_t http_version) {
 
-  Logger::nrf_app().info(
-      "Handle a NF Instance Registration Request (HTTP version %d)",
-      http_version);
-  //Check if nfInstanceID is a valid UUID (version 4)
-  //TODO
+	Logger::nrf_app().info(
+			"Handle a NF Instance Registration Request (HTTP version %d)",
+			http_version);
+	//Check if nfInstanceID is a valid UUID (version 4)
+	//TODO
 
-  //Create NF and store
-  std::shared_ptr<amf_profile> sa = { };
-  if (find_nf_profile(nf_instance_id, sa)) {
-    //if a profile exist with this ID, return error
-  } else {
-    //create
-    Logger::nrf_app().debug("Create a new NF Profile with ID %s",
-                            nf_instance_id);
-    sa = std::shared_ptr < amf_profile > (new amf_profile(nf_instance_id));
-    //sa.get()->
-    add_nf_profile(nf_instance_id, sa);
-  }
+	//Create NF and store
+	//std::shared_ptr<nrf_profile> sn = { };
+	//sn = find_nf_profile(nf_instance_id);
+	//if (sn.get() != nullptr) {
+	if (is_profile_exist(nf_instance_id)) {
+		//if (find_nf_profile(nf_instance_id, sn)) {
+		//if a profile exist with this ID, return error
+		//sa = std::static_pointer_cast <amf_profile> (sn);
+		//update_nf_profile(nf_instance_id, sa);
+	} else {
+		//create a new NF profile
+		Logger::nrf_app().debug("NF Profile with (ID %s, NF type %s)",
+				nf_instance_id.c_str(), nf_profile.getNfType().c_str());
 
-  //location header - URI of created resource: can be used with ID - UUID
+		std::shared_ptr<amf_profile> sa = { };
+		if (nf_profile.getNfType().compare("AMF") == 0) {
+			sa = std::shared_ptr < amf_profile
+					> (new amf_profile(nf_instance_id));
+			if (!api_conv::profile_api_to_amf_profile(nf_profile, sa)) {
+				//error, TODO
+			}
+		}
+		add_nf_profile(nf_instance_id, sa);
+	}
 
+	//location header - URI of created resource: can be used with ID - UUID
+
+}
+
+//------------------------------------------------------------------------------
+void nrf_app::handle_get_nf_instances(const std::string &nf_type,
+		const uint32_t limit_item, int &http_code, const uint8_t http_version) {
+	Logger::nrf_app().info(
+			"Handle Retrieve a collection of NF Instances (HTTP version %d)",
+			http_version);
+
+	std::vector < std::shared_ptr < nrf_profile >> profiles = { };
+
+	find_nf_profiles(nf_type, profiles);
+
+	for (auto profile : profiles) {
+
+		Logger::nrf_app().debug("AMF profile, instance name %s",
+				profile.get()->get_nf_instance_name().c_str());
+		Logger::nrf_app().debug("AMF profile, status %s",
+				profile.get()->get_nf_status().c_str());
+		Logger::nrf_app().debug("AMF profile, status %d",
+				profile.get()->get_nf_hertBeat_timer());
+		Logger::nrf_app().debug("AMF profile, priority %d",
+				profile.get()->get_nf_priority());
+		Logger::nrf_app().debug("AMF profile, capacity %d",
+				profile.get()->get_nf_capacity());
+		//SNSSAIs
+		std::vector<snssai_t> sn = { };
+		profile.get()->get_nf_snssais(sn);
+		for (auto s : sn) {
+			Logger::nrf_app().debug("AMF profile, snssai %d, %s", s.sST,
+					s.sD.c_str());
+		}
+		//IPv4 Addresses
+		std::vector<struct in_addr> addr4 = { };
+		profile.get()->get_nf_ipv4_addresses(addr4);
+		for (auto address : addr4) {
+			Logger::nrf_app().debug("AMF profile, IPv4 Addr %s",
+					inet_ntoa(address));
+		}
+	}
 }
 
 //------------------------------------------------------------------------------
 bool nrf_app::add_nf_profile(const std::string &profile_id,
-                             const std::shared_ptr<nrf_profile> &p) {
-  return true;
+		const std::shared_ptr<nrf_profile> &p) {
+	std::unique_lock lock(m_instance_id2nrf_profile);
+	//if profile with this id exist, return false
+	if (instance_id2nrf_profile.count(profile_id) > 0)
+		return false;
+	//if not, add to the list
+	Logger::nrf_app().info("Insert a NF profile to the list (profile ID %s)",
+			profile_id.c_str());
+	instance_id2nrf_profile.emplace(profile_id, p);
+	return true;
+}
+
+//------------------------------------------------------------------------------
+bool nrf_app::update_nf_profile(const std::string &profile_id,
+		const std::shared_ptr<nrf_profile> &p) {
+	std::unique_lock lock(m_instance_id2nrf_profile);
+	//if profile with this id exist, return false
+	if (instance_id2nrf_profile.count(profile_id) > 0) {
+		//if not, update to the list
+		Logger::nrf_app().info(
+				"Update a NF profile to the list (profile ID %s)",
+				profile_id.c_str());
+		instance_id2nrf_profile.at(profile_id) = p;
+		return true;
+	} else {
+		Logger::nrf_app().info("NF profile (ID %d) not found",
+				profile_id.c_str());
+		return false;
+	}
+
+}
+
+//------------------------------------------------------------------------------
+std::shared_ptr<nrf_profile> nrf_app::find_nf_profile(
+		const std::string &profile_id) const {
+
+	Logger::nrf_app().info("Find a NF profile with ID %s", profile_id.c_str());
+
+	std::unique_lock lock(m_instance_id2nrf_profile);
+	if (instance_id2nrf_profile.count(profile_id) > 0) {
+		return instance_id2nrf_profile.at(profile_id);
+	} else {
+		Logger::nrf_app().info("NF profile (ID %s) not found",
+				profile_id.c_str());
+		return nullptr;
+	}
+
 }
 
 //------------------------------------------------------------------------------
 bool nrf_app::find_nf_profile(const std::string &profile_id,
-                              const std::shared_ptr<nrf_profile> &snp) {
-  //TODO
-  return true;
+		std::shared_ptr<nrf_profile> &p) const {
+	Logger::nrf_app().info("Find a NF profile with ID %s", profile_id.c_str());
+
+	std::unique_lock lock(m_instance_id2nrf_profile);
+	if (instance_id2nrf_profile.count(profile_id) > 0) {
+		p = instance_id2nrf_profile.at(profile_id);
+		return true;
+	} else {
+		Logger::nrf_app().info("NF profile (ID %d) not found",
+				profile_id.c_str());
+		return false;
+	}
+
+}
+
+//------------------------------------------------------------------------------
+bool nrf_app::find_nf_profiles(const std::string &nf_type,
+		std::vector<std::shared_ptr<nrf_profile>> &profiles) const {
+	for (auto profile : instance_id2nrf_profile) {
+		nf_type_t type = profile.second.get()->get_nf_type();
+		//if (type == NF_TYPE_AMF)
+		profiles.push_back(profile.second);
+	}
+	return true;
+}
+
+//------------------------------------------------------------------------------
+bool nrf_app::is_profile_exist(const std::string &profile_id) const {
+	Logger::nrf_app().info("Check if a profile with this ID %d exist",
+			profile_id.c_str());
+
+	std::unique_lock lock(m_instance_id2nrf_profile);
+	if (instance_id2nrf_profile.count(profile_id) > 0) {
+		return true;
+	} else {
+		Logger::nrf_app().info("NF profile (ID %d) not found",
+				profile_id.c_str());
+		return false;
+	}
 
 }
 
 //------------------------------------------------------------------------------
 bool nrf_app::remove_nf_profile(std::shared_ptr<nrf_profile> &snp) {
-  //TODO
-  return true;
+	//TODO
+	return true;
 }
 
 //------------------------------------------------------------------------------
 bool nrf_app::remove_nf_profile(std::string &profile_id) {
-  //TODO
-  return true;
+	//TODO
+	return true;
 }
 

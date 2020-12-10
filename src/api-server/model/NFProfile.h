@@ -81,8 +81,8 @@ public:
     /// <summary>
     /// 
     /// </summary>
-    NFStatus getNfStatus() const;
-    void setNfStatus(NFStatus const& value);
+    std::string getNfStatus() const;
+    void setNfStatus(std::string const& value);
     /// <summary>
     /// 
     /// </summary>
@@ -100,7 +100,7 @@ public:
     /// <summary>
     /// 
     /// </summary>
-    std::vector<Snssai>& getSNssais();
+    std::vector<Snssai> getSNssais() const;
     void setSNssais(std::vector<Snssai> const& value);
     bool sNssaisIsSet() const;
     void unsetSNssais();
@@ -135,7 +135,7 @@ public:
     /// <summary>
     /// 
     /// </summary>
-    std::vector<std::string>& getIpv4Addresses();
+    std::vector<std::string> getIpv4Addresses() const;
     void setIpv4Addresses(std::vector<std::string> const& value);
     bool ipv4AddressesIsSet() const;
     void unsetIpv4Addresses();
@@ -402,7 +402,7 @@ protected:
     bool m_NfInstanceNameIsSet;
     std::string m_NfType;
 
-    NFStatus m_NfStatus;
+    std::string m_NfStatus;
 
     int32_t m_HeartBeatTimer;
     bool m_HeartBeatTimerIsSet;

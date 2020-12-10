@@ -73,6 +73,7 @@ void setUpUnixSignals(std::vector<int> quitSignals) {
 #endif
 
 using namespace oai::nrf::api;
+using namespace oai::nrf::app;
 
 void NRFApiServer::init(size_t thr) {
   auto opts = Pistache::Http::Endpoint::options().threads(thr);

@@ -32,7 +32,7 @@
 
 #include "logger.hpp"
 
-using namespace oai::nrf;
+using namespace oai::nrf::app;
 using namespace util;
 using namespace std;
 

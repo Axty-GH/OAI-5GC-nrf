@@ -37,12 +37,13 @@ namespace nrf {
 namespace api {
 
 using namespace oai::nrf::model;
+using namespace oai::nrf::app;
 
 class CompleteStoredSearchDocumentApiImpl :
     public oai::nrf::api::CompleteStoredSearchDocumentApi {
  public:
   CompleteStoredSearchDocumentApiImpl(std::shared_ptr<Pistache::Rest::Router>,
-                                      oai::nrf::nrf_app *nrf_app_inst,
+                                      nrf_app *nrf_app_inst,
                                       std::string address);
   ~CompleteStoredSearchDocumentApiImpl() {
   }
@@ -50,7 +51,7 @@ class CompleteStoredSearchDocumentApiImpl :
   void retrieve_complete_search(const std::string &searchId,
                                 Pistache::Http::ResponseWriter &response);
  private:
-  oai::nrf::nrf_app *m_nrf_app;
+  nrf_app *m_nrf_app;
   std::string m_address;
 };
 

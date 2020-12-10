@@ -50,6 +50,7 @@
 
 namespace oai {
 namespace nrf {
+namespace app {
 
 typedef struct interface_cfg_s {
   std::string if_name;
@@ -102,6 +103,7 @@ class nrf_config {
   void display();
 };
 
+}
 }  // namespace nrf
 }
 

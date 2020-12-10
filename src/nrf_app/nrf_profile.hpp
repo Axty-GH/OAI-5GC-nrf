@@ -42,6 +42,7 @@
 
 namespace oai {
 namespace nrf {
+namespace app {
 
 using namespace std;
 
@@ -102,6 +103,7 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
    */
   void get_nf_instance_name(std::string &instance_name) const;
 
+  std::string get_nf_instance_name() const;
   /*
    * Set NF instance status
    * @param [const std::string &] status: instance status
@@ -114,6 +116,9 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
    * @return void:
    */
   void get_nf_status(std::string &status) const;
+  std::string get_nf_status() const;
+
+  nf_type_t get_nf_type() const;
 
   /*
    * Set NF instance heartBeat_timer
@@ -127,6 +132,7 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
    * @return void:
    */
   void get_nf_hertBeat_timer(int32_t &timer) const;
+  int32_t get_nf_hertBeat_timer() const;
 
   /*
    * Set NF instance priority
@@ -140,7 +146,7 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
    * @return void:
    */
   void get_nf_priority(uint16_t &p) const;
-
+  uint16_t get_nf_priority() const;
   /*
    * Set NF instance capacity
    * @param [const uint16_t] c: instance capacity
@@ -153,13 +159,21 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
    * @return void:
    */
   void get_nf_capacity(uint16_t &c) const;
-
+  uint16_t get_nf_capacity() const;
   /*
    * Set NF instance SNSSAIs
    * @param [std::vector<snssai_t> &] s: SNSSAIs
    * @return void
    */
   void set_nf_snssais(const std::vector<snssai_t> &s);
+
+  /*
+   * Add SNSSAI
+   * @param [snssai_t &] s: SNSSAI
+   * @return void
+   */
+  void add_snssai(const snssai_t &s);
+
   /*
    * Get NF instance SNSSAIs
    * @param [std::vector<snssai_t> &] s: store instance's SNSSAIs
@@ -173,6 +187,7 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
    * @return void
    */
   void set_nf_ipv4_addresses(const std::vector<struct in_addr> &a);
+  void add_nf_ipv4_addresses(const struct in_addr &a);
   /*
    * Get NF instance ipv4_addresses
    * @param [std::vector<struct in_addr> &] a: store instance's ipv4_addresses
@@ -180,7 +195,7 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
    */
   void get_nf_ipv4_addresses(std::vector<struct in_addr> &a) const;
 
- private:
+ protected:
   //From NFProfile (Section 6.1.6.2.2@3GPP TS 29.510 V16.0.0 (2019-06))
   std::string nf_instance_id;
   std::string nf_instance_name;
@@ -271,6 +286,7 @@ class amf_profile : public nrf_profile {
   amf_profile(const std::string &id)
       :
       nrf_profile(id) {
+	  nf_type = NF_TYPE_AMF;
     amf_info = { };
   }
 
@@ -280,6 +296,7 @@ class amf_profile : public nrf_profile {
   std::vector<amf_info_t> amf_info;
 };
 
+}
 }
 }
 

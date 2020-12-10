@@ -15,7 +15,7 @@
 #include "nrf_config.hpp"
 #include "logger.hpp"
 
-extern oai::nrf::nrf_config nrf_cfg;
+extern oai::nrf::app::nrf_config nrf_cfg;
 
 namespace oai {
 namespace nrf {
