@@ -95,7 +95,7 @@ void nrf_app::handle_register_nf_instance(const std::string &nf_instance_id,
 	 add_nf_profile(nf_instance_id, sa);
 	 }
 	 */
-
+/*
 	//create/Update NF profile
 	Logger::nrf_app().debug("NF Profile with (ID %s, NF type %s)",
 			nf_instance_id.c_str(), nf_profile.getNfType().c_str());
@@ -113,6 +113,71 @@ void nrf_app::handle_register_nf_instance(const std::string &nf_instance_id,
 			add_nf_profile(nf_instance_id, sa);
 			http_code = 200;
 		}
+	}
+*/
+
+	//create/Update NF profile
+	Logger::nrf_app().debug("NF Profile with (ID %s, NF type %s)",
+			nf_instance_id.c_str(), nf_profile.getNfType().c_str());
+
+	std::shared_ptr<nrf_profile> sn = std::make_shared<amf_profile>();;
+    //sn = find_nf_profile(nf_instance_id);
+
+	if (nf_profile.getNfType().compare("AMF") == 0) {
+		//std::shared_ptr<amf_profile> sa = { };
+		//sa = std::shared_ptr < amf_profile > (new amf_profile(nf_instance_id));
+		if (!api_conv::profile_api_to_amf_profile(nf_profile, sn)) {
+			//error, TODO
+			Logger::nrf_app().warn(
+					"Cannot convert a NF profile generated from OpenAPI to an AMF profile (profile ID %s)",
+					nf_instance_id.c_str());
+			http_code = 412; //Precondition Failed
+		} else {
+			add_nf_profile(nf_instance_id, sn);
+			http_code = 200;
+		}
+	}
+
+
+	std::vector < std::shared_ptr < nrf_profile >> profiles = { };
+	find_nf_profiles("AMF", profiles);
+	for (auto profile : profiles) {
+		(std::static_pointer_cast<amf_profile>(profile)).get()->display();
+
+		/*
+		Logger::nrf_app().debug("AMF profile, instance name %s",
+				profile.get()->get_nf_instance_name().c_str());
+		Logger::nrf_app().debug("AMF profile, status %s",
+				profile.get()->get_nf_status().c_str());
+		Logger::nrf_app().debug("AMF profile, status %d",
+				profile.get()->get_nf_hertBeat_timer());
+		Logger::nrf_app().debug("AMF profile, priority %d",
+				profile.get()->get_nf_priority());
+		Logger::nrf_app().debug("AMF profile, capacity %d",
+				profile.get()->get_nf_capacity());
+		//SNSSAIs
+		std::vector<snssai_t> sn = { };
+		profile.get()->get_nf_snssais(sn);
+		for (auto s : sn) {
+			Logger::nrf_app().debug("AMF profile, snssai %d, %s", s.sST,
+					s.sD.c_str());
+		}
+		//IPv4 Addresses
+		std::vector<struct in_addr> addr4 = { };
+		profile.get()->get_nf_ipv4_addresses(addr4);
+		for (auto address : addr4) {
+			Logger::nrf_app().debug("AMF profile, IPv4 Addr %s",
+					inet_ntoa(address));
+		}
+
+			std::vector<amf_info_t> infos = {};
+
+	      (std::static_pointer_cast<amf_profile>(profile)).get()->get_amf_infos(infos);
+	      for (auto i: infos) {
+				Logger::nrf_app().debug("AMF Info, Set ID %s, region ID %s",
+						i.amf_set_id.c_str(), i.amf_region_id.c_str());
+	      }
+	      */
 	}
 
 	//location header - URI of created resource: can be used with ID - UUID

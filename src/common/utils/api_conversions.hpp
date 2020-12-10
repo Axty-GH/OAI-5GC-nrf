@@ -42,7 +42,10 @@ namespace nrf {
 namespace api_conv {
 
 bool profile_api_to_amf_profile(const NFProfile &api_profile,
-		std::shared_ptr<amf_profile> &profile);
+		std::shared_ptr<nrf_profile> &profile);
+
+//bool profile_api_to_amf_profile(const NFProfile &api_profile,
+//		std::shared_ptr<amf_profile> &profile);
 
 }  // namespace api_conv
 }

@@ -37,6 +37,7 @@
 #include <memory>
 #include <utility>
 #include <vector>
+#include "nrf.h"
 
 #include "nrf.h"
 
@@ -194,7 +195,7 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
    * @return void:
    */
   void get_nf_ipv4_addresses(std::vector<struct in_addr> &a) const;
-
+  void display();
  protected:
   //From NFProfile (Section 6.1.6.2.2@3GPP TS 29.510 V16.0.0 (2019-06))
   std::string nf_instance_id;
@@ -280,20 +281,24 @@ class amf_profile : public nrf_profile {
   amf_profile()
       :
       nrf_profile(NF_TYPE_AMF) {
-    amf_info = { };
+	  amf_infos = { };
   }
 
   amf_profile(const std::string &id)
       :
       nrf_profile(id) {
 	  nf_type = NF_TYPE_AMF;
-    amf_info = { };
+	  amf_infos = { };
   }
 
   amf_profile(amf_profile &b) = delete;
 
+ void add_amf_info(const amf_info_t &info);
+ void get_amf_infos(std::vector<amf_info_t> &infos) const;
+ void display();
+
  private:
-  std::vector<amf_info_t> amf_info;
+  std::vector<amf_info_t> amf_infos;
 };
 
 }
