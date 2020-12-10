@@ -166,8 +166,8 @@ int get_inet_addr_from_iface(const std::string &if_name,
   close(fd);
   struct sockaddr_in *ipaddr = (struct sockaddr_in*) &ifr.ifr_addr;
   // check
-  if (inet_ntop(AF_INET, (const void*) &ipaddr->sin_addr, str,
-                INET_ADDRSTRLEN) == NULL) {
+  if (inet_ntop(AF_INET, (const void*) &ipaddr->sin_addr, str, INET_ADDRSTRLEN)
+      == NULL) {
     return RETURNerror ;
   }
   inet_addr.s_addr = ipaddr->sin_addr.s_addr;
@@ -218,8 +218,8 @@ int get_inet_addr_infos_from_iface(const std::string &if_name,
   }
   struct sockaddr_in *ipaddr = (struct sockaddr_in*) &ifr.ifr_addr;
   // check
-  if (inet_ntop(AF_INET, (const void*) &ipaddr->sin_addr, str,
-                INET_ADDRSTRLEN) == NULL) {
+  if (inet_ntop(AF_INET, (const void*) &ipaddr->sin_addr, str, INET_ADDRSTRLEN)
+      == NULL) {
     close(fd);
     return RETURNerror ;
   }
@@ -237,8 +237,8 @@ int get_inet_addr_infos_from_iface(const std::string &if_name,
   }
   ipaddr = (struct sockaddr_in*) &ifr.ifr_netmask;
   // check
-  if (inet_ntop(AF_INET, (const void*) &ipaddr->sin_addr, str,
-                INET_ADDRSTRLEN) == NULL) {
+  if (inet_ntop(AF_INET, (const void*) &ipaddr->sin_addr, str, INET_ADDRSTRLEN)
+      == NULL) {
     close(fd);
     return RETURNerror ;
   }

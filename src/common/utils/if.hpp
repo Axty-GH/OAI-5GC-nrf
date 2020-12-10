@@ -19,7 +19,6 @@
  *      contact@openairinterface.org
  */
 
-
 /*! \file get_gateway_netlink.h
  \brief
  \author Lionel Gauthier

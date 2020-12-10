@@ -58,24 +58,25 @@ class NRFApiServer {
  public:
   NRFApiServer(Pistache::Address address, nrf_app *nrf_app_inst)
       :
-      m_httpEndpoint(std::make_shared<Pistache::Http::Endpoint>(address)) {
+      m_httpEndpoint(std::make_shared < Pistache::Http::Endpoint > (address)) {
     m_router = std::make_shared<Pistache::Rest::Router>();
     m_address = address.host() + ":" + (address.port()).toString();
 
-    m_completeStoredSearchDocumentApiImpl = std::make_shared<
-        CompleteStoredSearchDocumentApiImpl>(m_router, nrf_app_inst, m_address);
-    m_nfInstancesStoreApiImpl = std::make_shared<NFInstancesStoreApiImpl>(
-        m_router, nrf_app_inst, m_address);
-    m_storedSearchDocumentApiImpl = std::make_shared<
-        StoredSearchDocumentApiImpl>(m_router, nrf_app_inst, m_address);
-    m_nfInstanceIDDocumentApiImpl = std::make_shared<
-        NFInstanceIDDocumentApiImpl>(m_router, nrf_app_inst, m_address);
-    m_subscriptionIDDocumentApiImpl = std::make_shared<
-        SubscriptionIDDocumentApiImpl>(m_router, nrf_app_inst, m_address);
-    m_subscriptionsCollectionApiImpl = std::make_shared<
-        SubscriptionsCollectionApiImpl>(m_router, nrf_app_inst, m_address);
-    m_discNFInstancesStoreApiImpl = std::make_shared<
-        DiscNFInstancesStoreApiImpl>(m_router, nrf_app_inst, m_address);
+    m_completeStoredSearchDocumentApiImpl = std::make_shared
+        < CompleteStoredSearchDocumentApiImpl
+        > (m_router, nrf_app_inst, m_address);
+    m_nfInstancesStoreApiImpl = std::make_shared < NFInstancesStoreApiImpl
+        > (m_router, nrf_app_inst, m_address);
+    m_storedSearchDocumentApiImpl = std::make_shared
+        < StoredSearchDocumentApiImpl > (m_router, nrf_app_inst, m_address);
+    m_nfInstanceIDDocumentApiImpl = std::make_shared
+        < NFInstanceIDDocumentApiImpl > (m_router, nrf_app_inst, m_address);
+    m_subscriptionIDDocumentApiImpl = std::make_shared
+        < SubscriptionIDDocumentApiImpl > (m_router, nrf_app_inst, m_address);
+    m_subscriptionsCollectionApiImpl = std::make_shared
+        < SubscriptionsCollectionApiImpl > (m_router, nrf_app_inst, m_address);
+    m_discNFInstancesStoreApiImpl = std::make_shared
+        < DiscNFInstancesStoreApiImpl > (m_router, nrf_app_inst, m_address);
 
   }
   void init(size_t thr = 1);

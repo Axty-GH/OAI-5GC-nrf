@@ -50,7 +50,7 @@ std::string util::string_format(const char *format, ...) {
   va_list args;
 
   va_start(args, format);
-  size_t size = vsnprintf( NULL, 0, format, args) + 1;  // Extra space for '\0'
+  size_t size = vsnprintf(NULL, 0, format, args) + 1;  // Extra space for '\0'
   va_end(args);
 
   Buffer<char> buf(size);

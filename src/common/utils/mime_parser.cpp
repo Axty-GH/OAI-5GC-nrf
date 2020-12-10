@@ -99,12 +99,10 @@ unsigned char* mime_parser::format_string_as_hex(const std::string &str) {
 }
 
 //------------------------------------------------------------------------------
-void mime_parser::create_multipart_related_content(std::string &body,
-                                               const std::string &json_part,
-                                               const std::string boundary,
-                                               const std::string &n1_message,
-                                               const std::string &n2_message,
-                                               std::string json_format) {
+void mime_parser::create_multipart_related_content(
+    std::string &body, const std::string &json_part, const std::string boundary,
+    const std::string &n1_message, const std::string &n2_message,
+    std::string json_format) {
 
   //TODO: provide Content-Ids as function parameters
 
@@ -114,7 +112,7 @@ void mime_parser::create_multipart_related_content(std::string &body,
 
   std::string CRLF = "\r\n";
   body.append("--" + boundary + CRLF);
-  body.append("Content-Type: "+ json_format + CRLF);
+  body.append("Content-Type: " + json_format + CRLF);
   body.append(CRLF);
   body.append(json_part + CRLF);
 
@@ -136,7 +134,8 @@ void mime_parser::create_multipart_related_content(std::string &body,
 //------------------------------------------------------------------------------
 void mime_parser::create_multipart_related_content(
     std::string &body, const std::string &json_part, const std::string boundary,
-    const std::string &message, const multipart_related_content_part_e content_type,
+    const std::string &message,
+    const multipart_related_content_part_e content_type,
     std::string json_format) {
 
   //TODO: provide Content-Id as function parameters
@@ -163,5 +162,4 @@ void mime_parser::create_multipart_related_content(
   body.append(std::string((char*) msg_hex, message.length() / 2) + CRLF);
   body.append("--" + boundary + "--" + CRLF);
 }
-
 

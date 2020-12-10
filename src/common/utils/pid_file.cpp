@@ -77,8 +77,7 @@ int util::lockfile(int fd, int lock_type) {
 bool util::is_pid_file_lock_success(const char *pid_file_name) {
   char pid_dec[64] = { 0 };
 
-  g_fd_pid_file = open(pid_file_name,
-  O_RDWR | O_CREAT,
+  g_fd_pid_file = open(pid_file_name, O_RDWR | O_CREAT,
                        S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH); /* Read/write by owner, read by grp, others */
   if (0 > g_fd_pid_file) {
     Logger::nrf_app().error("open filename %s failed %d:%s\n", pid_file_name,
@@ -89,7 +88,7 @@ bool util::is_pid_file_lock_success(const char *pid_file_name) {
   if (0 > util::lockfile(g_fd_pid_file, F_TLOCK)) {
     Logger::nrf_app().error("lockfile filename %s failed %d:%s\n",
                             pid_file_name, errno, strerror(errno));
-    if ( EACCES == errno || EAGAIN == errno) {
+    if (EACCES == errno || EAGAIN == errno) {
       close(g_fd_pid_file);
     }
     return false;
@@ -104,7 +103,7 @@ bool util::is_pid_file_lock_success(const char *pid_file_name) {
   // write PID in file
   g_pid = getpid();
   snprintf(pid_dec, 64 /* should be big enough */, "%ld", (long) g_pid);
-  if ((ssize_t) -1 == write(g_fd_pid_file, pid_dec, strlen(pid_dec))) {
+  if ((ssize_t) - 1 == write(g_fd_pid_file, pid_dec, strlen(pid_dec))) {
     Logger::nrf_app().error("write PID to filename %s failed %d:%s\n",
                             pid_file_name, errno, strerror(errno));
     return false;

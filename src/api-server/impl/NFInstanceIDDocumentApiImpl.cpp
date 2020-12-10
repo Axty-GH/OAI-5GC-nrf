@@ -23,53 +23,56 @@ using namespace oai::nrf::app;
 using namespace oai::nrf;
 
 NFInstanceIDDocumentApiImpl::NFInstanceIDDocumentApiImpl(
-		std::shared_ptr<Pistache::Rest::Router> rtr, nrf_app *nrf_app_inst,
-		std::string address) :
-		NFInstanceIDDocumentApi(rtr), m_nrf_app(nrf_app_inst), m_address(
-				address) {
+    std::shared_ptr<Pistache::Rest::Router> rtr, nrf_app *nrf_app_inst,
+    std::string address)
+    :
+    NFInstanceIDDocumentApi(rtr),
+    m_nrf_app(nrf_app_inst),
+    m_address(address) {
 }
 
 void NFInstanceIDDocumentApiImpl::deregister_nf_instance(
-		const std::string &nfInstanceID,
-		Pistache::Http::ResponseWriter &response) {
-	response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+    const std::string &nfInstanceID, Pistache::Http::ResponseWriter &response) {
+  response.send(Pistache::Http::Code::Ok, "Do some magic\n");
 }
 void NFInstanceIDDocumentApiImpl::get_nf_instance(
-		const std::string &nfInstanceID,
-		Pistache::Http::ResponseWriter &response) {
-	response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+    const std::string &nfInstanceID, Pistache::Http::ResponseWriter &response) {
+  response.send(Pistache::Http::Code::Ok, "Do some magic\n");
 }
 void NFInstanceIDDocumentApiImpl::register_nf_instance(
-		const std::string &nfInstanceID, const NFProfile &nFProfile,
-		const Pistache::Optional<Pistache::Http::Header::Raw> &contentEncoding,
-		Pistache::Http::ResponseWriter &response) {
-	Logger::nrf_sbi().info(
-			"Got a request to register an NF instance, Instance ID: %s",
-			nfInstanceID.c_str());
+    const std::string &nfInstanceID, const NFProfile &nFProfile,
+    const Pistache::Optional<Pistache::Http::Header::Raw> &contentEncoding,
+    Pistache::Http::ResponseWriter &response) {
+  Logger::nrf_sbi().info(
+      "Got a request to register an NF instance, Instance ID: %s",
+      nfInstanceID.c_str());
 
-	NFProfile nf_profile = nFProfile;
-	int http_code = 0;
-	m_nrf_app->handle_register_nf_instance(nfInstanceID, nFProfile,
-			http_code, 1);
+  NFProfile nf_profile = nFProfile;
+  int http_code = 0;
+  m_nrf_app->handle_register_nf_instance(nfInstanceID, nFProfile, http_code, 1);
 
-	nlohmann::json json_data = { };
-	to_json(json_data, nf_profile);
-	response.send(Pistache::Http::Code::Ok, json_data.dump().c_str());
+  nlohmann::json json_data = { };
+  to_json(json_data, nf_profile);
+  //Location header
+  response.headers().add < Pistache::Http::Header::Location
+      > (m_address + base + nrf_cfg.sbi_api_version + "/nf-instances/"
+          + nfInstanceID);
+
+  response.send(Pistache::Http::Code::Ok, json_data.dump().c_str());
 }
 void NFInstanceIDDocumentApiImpl::update_nf_instance(
-		const std::string &nfInstanceID,
-		const std::vector<PatchItem> &patchItem,
-		Pistache::Http::ResponseWriter &response) {
-	Logger::nrf_sbi().info(
-			"Got a request to register an NF instance, Instance ID: %s",
-			nfInstanceID.c_str());
+    const std::string &nfInstanceID, const std::vector<PatchItem> &patchItem,
+    Pistache::Http::ResponseWriter &response) {
+  Logger::nrf_sbi().info(
+      "Got a request to register an NF instance, Instance ID: %s",
+      nfInstanceID.c_str());
 
-	int http_code = 0;
-	m_nrf_app->handle_update_nf_instance(nfInstanceID, patchItem, http_code, 1);
+  int http_code = 0;
+  m_nrf_app->handle_update_nf_instance(nfInstanceID, patchItem, http_code, 1);
 
-	nlohmann::json json_data = { };
-	//to_json(json_data, nf_profile);
-	response.send(Pistache::Http::Code::Ok, json_data.dump().c_str());
+  nlohmann::json json_data = { };
+  //to_json(json_data, nf_profile);
+  response.send(Pistache::Http::Code::Ok, json_data.dump().c_str());
 }
 
 }

@@ -32,8 +32,7 @@
 #include "assertions.h"
 
 //------------------------------------------------------------------------------
-void free_wrapper(void **ptr)
-{
+void free_wrapper(void **ptr) {
   // for debug only
   AssertFatal(ptr, "Trying to free NULL ptr");
   if (ptr) {
@@ -43,8 +42,7 @@ void free_wrapper(void **ptr)
 }
 
 //------------------------------------------------------------------------------
-void bdestroy_wrapper(bstring *b)
-{
+void bdestroy_wrapper(bstring *b) {
   if ((b) && (*b)) {
     bdestroy(*b);
     *b = NULL;

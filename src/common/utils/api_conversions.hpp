@@ -27,7 +27,6 @@
  \email: tien-thinh.nguyen@eurecom.fr
  */
 
-
 #ifndef FILE_API_CONVERSIONS_HPP_SEEN
 #define FILE_API_CONVERSIONS_HPP_SEEN
 
@@ -42,12 +41,12 @@ namespace nrf {
 namespace api_conv {
 
 bool profile_api_to_amf_profile(const NFProfile &api_profile,
-		std::shared_ptr<nrf_profile> &profile);
+                                std::shared_ptr<nrf_profile> &profile);
 
 //bool profile_api_to_amf_profile(const NFProfile &api_profile,
 //		std::shared_ptr<amf_profile> &profile);
 
-}  // namespace api_conv
+}// namespace api_conv
 }
 }
 

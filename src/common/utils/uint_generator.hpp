@@ -55,11 +55,11 @@ template<class UINT> class uint_generator {
   void operator=(uint_generator const&) = delete;
 
   UINT get_uid() {
-    std::unique_lock<std::mutex> lr(m_uid_generator);
+    std::unique_lock < std::mutex > lr(m_uid_generator);
     UINT uid = ++uid_generator;
     while (true) {
       // may happen race conditions here
-      std::unique_lock<std::mutex> ld(m_uid_generated);
+      std::unique_lock < std::mutex > ld(m_uid_generated);
       if (uid_generated.count(uid) == 0) {
         uid_generated.insert(uid);
         ld.unlock();
@@ -71,7 +71,7 @@ template<class UINT> class uint_generator {
   }
 
   void free_uid(UINT uid) {
-    std::unique_lock<std::mutex> l(m_uid_generated);
+    std::unique_lock < std::mutex > l(m_uid_generated);
     uid_generated.erase(uid);
     l.unlock();
   }
@@ -104,11 +104,11 @@ template<class UINT> class uint_uid_generator {
   void operator=(uint_uid_generator const&) = delete;
 
   UINT get_uid() {
-    std::unique_lock<std::mutex> lr(m_uid_generator);
+    std::unique_lock < std::mutex > lr(m_uid_generator);
     UINT uid = ++uid_generator;
     while (true) {
       // may happen race conditions here
-      std::unique_lock<std::mutex> ld(m_uid_generated);
+      std::unique_lock < std::mutex > ld(m_uid_generated);
       if (uid_generated.count(uid) == 0) {
         uid_generated.insert(uid);
         lr.unlock();
@@ -120,7 +120,7 @@ template<class UINT> class uint_uid_generator {
   }
 
   void free_uid(UINT uid) {
-    std::unique_lock<std::mutex> l(m_uid_generated);
+    std::unique_lock < std::mutex > l(m_uid_generated);
     uid_generated.erase(uid);
     l.unlock();
   }

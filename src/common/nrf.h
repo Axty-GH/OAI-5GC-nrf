@@ -49,6 +49,12 @@ typedef enum nf_type_s {
   NF_TYPE_UNKNOWN = 20
 } nf_type_t;
 
+static const std::vector<std::string> nf_type_e2str = { "NF_TYPE_NRF",
+    "NF_TYPE_AMF", "NF_TYPE_SMF", "NF_TYPE_AUSF", "NF_TYPE_NEF", "NF_TYPE_PCF",
+    "NF_TYPE_SMSF", "NF_TYPE_NSSF", "NF_TYPE_UDR", "NF_TYPE_LMF",
+    "NF_TYPE_GMLC", "NF_TYPE_5G_EIR", "NF_TYPE_SEPP", "NF_TYPE_UPF",
+    "NF_TYPE_N3IWF", "NF_TYPE_AF", "NF_TYPE_UDSF", "NF_TYPE_BSF", "NF_TYPE_CHF",
+    "NF_TYPE_NWDAF", "NF_TYPE_UNKNOWN" };
 
 typedef struct s_nssai  // section 28.4, TS23.003
 {
@@ -85,9 +91,6 @@ typedef struct guami_s {
   plmn_t plmn;
   std::string amf_id;
 } guami_t;
-
-
-
 
 typedef struct amf_info_s {
   std::string amf_set_id;

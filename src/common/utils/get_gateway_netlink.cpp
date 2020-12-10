@@ -70,7 +70,7 @@ bool util::get_gateway_and_iface(std::string &gw, std::string &iface) {
   char msgbuf[BUFFER_SIZE], buffer[BUFFER_SIZE];
   char *ptr = buffer;
   struct timeval tv;
-  int rv = 0; //RETURNok;
+  int rv = 0;  //RETURNok;
 
   if ((sock = socket(AF_NETLINK, SOCK_RAW, NETLINK_ROUTE)) < 0) {
     perror("socket failed");

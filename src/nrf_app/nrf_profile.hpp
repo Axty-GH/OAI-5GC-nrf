@@ -97,6 +97,7 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
    * @return void
    */
   void set_nf_instance_name(const std::string &instance_name);
+
   /*
    * Get NF instance ID
    * @param [std::string &] instance_name: store instance name
@@ -104,21 +105,39 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
    */
   void get_nf_instance_name(std::string &instance_name) const;
 
+  /*
+   * Get NF instance name
+   * @param
+   * @return [std::string] instance name
+   */
   std::string get_nf_instance_name() const;
+
   /*
    * Set NF instance status
    * @param [const std::string &] status: instance status
    * @return void
    */
   void set_nf_status(const std::string &status);
+
   /*
    * Get NF instance status
    * @param [std::string &] status: store instance status
    * @return void:
    */
   void get_nf_status(std::string &status) const;
+
+  /*
+   * Get NF status
+   * @param
+   * @return [std::string] instance status
+   */
   std::string get_nf_status() const;
 
+  /*
+   * Get NF type
+   * @param
+   * @return [nf_type_t] nf type
+   */
   nf_type_t get_nf_type() const;
 
   /*
@@ -127,12 +146,19 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
    * @return void
    */
   void set_nf_heartBeat_timer(const int32_t &timer);
+
   /*
    * Get NF instance heartBeat_timer
    * @param [std::string &] timer: store heartBeat_timer
    * @return void:
    */
   void get_nf_hertBeat_timer(int32_t &timer) const;
+
+  /*
+   * Get NF heartBeat_timer
+   * @param void
+   * @return heartBeat_timer
+   */
   int32_t get_nf_hertBeat_timer() const;
 
   /*
@@ -141,26 +167,42 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
    * @return void
    */
   void set_nf_priority(const uint16_t &p);
+
   /*
    * Get NF instance priority
    * @param [uint16_t] p: store instance priority
    * @return void:
    */
   void get_nf_priority(uint16_t &p) const;
+
+  /*
+   * Get NF instance priority
+   * @param void
+   * @return [uint16_t] instance priority
+   */
   uint16_t get_nf_priority() const;
+
   /*
    * Set NF instance capacity
    * @param [const uint16_t] c: instance capacity
    * @return void
    */
   void set_nf_capacity(const uint16_t &c);
+
   /*
    * Get NF instance priority
    * @param [uint16_t ] c: store instance capacity
    * @return void:
    */
   void get_nf_capacity(uint16_t &c) const;
+
+  /*
+   * Get NF instance priority
+   * @param void
+   * @return [uint16_t ] instance capacity
+   */
   uint16_t get_nf_capacity() const;
+
   /*
    * Set NF instance SNSSAIs
    * @param [std::vector<snssai_t> &] s: SNSSAIs
@@ -188,14 +230,28 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
    * @return void
    */
   void set_nf_ipv4_addresses(const std::vector<struct in_addr> &a);
+
+  /*
+   * Add an IPv4 address to the list of addresses
+   * @param [const struct in_addr &] a: ipv4_address
+   * @return void
+   */
   void add_nf_ipv4_addresses(const struct in_addr &a);
+
   /*
    * Get NF instance ipv4_addresses
    * @param [std::vector<struct in_addr> &] a: store instance's ipv4_addresses
    * @return void:
    */
   void get_nf_ipv4_addresses(std::vector<struct in_addr> &a) const;
+
+  /*
+   * Print related-information for NF profile
+   * @param void
+   * @return void:
+   */
   void display();
+
  protected:
   //From NFProfile (Section 6.1.6.2.2@3GPP TS 29.510 V16.0.0 (2019-06))
   std::string nf_instance_id;
@@ -272,7 +328,6 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
    std::vector<DefaultNotificationSubscription> m_DefaultNotificationSubscriptions;
    bool m_DefaultNotificationSubscriptionsIsSet;
    */
-
 };
 
 class amf_profile : public nrf_profile {
@@ -281,24 +336,35 @@ class amf_profile : public nrf_profile {
   amf_profile()
       :
       nrf_profile(NF_TYPE_AMF) {
-	  amf_infos = { };
+    amf_info = { };
   }
 
   amf_profile(const std::string &id)
       :
       nrf_profile(id) {
-	  nf_type = NF_TYPE_AMF;
-	  amf_infos = { };
+    nf_type = NF_TYPE_AMF;
+    amf_info = { };
   }
 
   amf_profile(amf_profile &b) = delete;
 
- void add_amf_info(const amf_info_t &info);
- void get_amf_infos(std::vector<amf_info_t> &infos) const;
- void display();
+  /*
+   * Add an AMF info
+   * @param [const amf_info_t &] info: AMF info
+   * @return void
+   */
+  void add_amf_info(const amf_info_t &info);
+
+  /*
+   * Get list of AMF infos an AMF info
+   * @param [const amf_info_t &] info: AMF info
+   * @return void
+   */
+  void get_amf_info(amf_info_t &infos) const;
+  void display();
 
  private:
-  std::vector<amf_info_t> amf_infos;
+  amf_info_t amf_info;
 };
 
 }

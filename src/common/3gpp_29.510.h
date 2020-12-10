@@ -22,14 +22,12 @@
 #ifndef FILE_3GPP_29_510_NRF_SEEN
 #define FILE_3GPP_29_510_NRF_SEEN
 
-
 enum class nf_status_e {
   REGISTERED = 0,
   SUSPENDED = 1,
-  UNDISCOVERABLE =2
+  UNDISCOVERABLE = 2
 };
 
-static const std::vector<std::string> nf_status_e2str =
-    { "REGISTERED", "SUSPENDED",
-        "UNDISCOVERABLE" };
+static const std::vector<std::string> nf_status_e2str = { "REGISTERED",
+    "SUSPENDED", "UNDISCOVERABLE" };
 #endif

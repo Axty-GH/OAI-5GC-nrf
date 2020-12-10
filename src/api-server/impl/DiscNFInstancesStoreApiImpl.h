@@ -56,10 +56,11 @@ namespace api {
 using namespace oai::nrf::model;
 using namespace oai::nrf::app;
 
-class DiscNFInstancesStoreApiImpl : public oai::nrf::api::DiscNFInstancesStoreApi {
+class DiscNFInstancesStoreApiImpl :
+    public oai::nrf::api::DiscNFInstancesStoreApi {
  public:
   DiscNFInstancesStoreApiImpl(std::shared_ptr<Pistache::Rest::Router>,
-                          nrf_app *nrf_app_inst, std::string address);
+                              nrf_app *nrf_app_inst, std::string address);
   ~DiscNFInstancesStoreApiImpl() {
   }
 
