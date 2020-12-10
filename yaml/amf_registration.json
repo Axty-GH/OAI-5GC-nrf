@@ -3,7 +3,7 @@
     "nfInstanceId" : "343a924e-6494-4927-860b-d45692c95c2d",
     "nfType"       : "AMF",
     "nfStatus"     : "REGISTERED",
-    "nfInstanceName": "OAI-AMF",
+    "nfInstanceName": "OAI-AMF-NEW",
     "heartBeatTimer":  10,
     "sNssais": [
        { "sst": 100,

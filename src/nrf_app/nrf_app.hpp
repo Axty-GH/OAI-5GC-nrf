@@ -33,10 +33,13 @@
 #include <string>
 #include "NFProfile.h"
 #include "nrf_profile.hpp"
+#include "PatchItem.h"
 
 namespace oai {
 namespace nrf {
 namespace app {
+
+using namespace oai::nrf::model;
 class nrf_config;
 class nrf_app {
 
@@ -45,7 +48,7 @@ public:
 	nrf_app(nrf_app const&) = delete;
 	void operator=(nrf_app const&) = delete;
 
-	void handle_nf_instance_registration_request(
+	void handle_register_nf_instance(
 			const std::string &nf_instance_id,
 			const oai::nrf::model::NFProfile &nf_profile, int &http_code,
 			const uint8_t http_version);
@@ -53,6 +56,8 @@ public:
 	void handle_get_nf_instances(const std::string &nf_type,
 			const uint32_t limit_item, int &http_code,
 			const uint8_t http_version);
+
+	void handle_update_nf_instance(const std::string & nf_instance_id,const std::vector<PatchItem> &patchItem, int &http_code, const uint8_t http_version);
 	/*
 	 * Insert a nrf profile
 	 * @param [const std::string &] profile_id: Profile ID
