@@ -41,7 +41,7 @@ void NFInstancesStoreApiImpl::get_nf_instances(
   if (!nfType.isEmpty()) {
     nf_type = nfType.get();
     Logger::nrf_sbi().debug(
-        "Retrieve  a collection of NF Instances, NF type:  %s",
+        ".........................................NF type:  %s",
         nf_type.c_str());
   }
 
@@ -49,9 +49,8 @@ void NFInstancesStoreApiImpl::get_nf_instances(
   if (!limit.isEmpty()) {
     limit_item = limit.get();
     Logger::nrf_sbi().debug(
-        "Retrieve  a collection of NF Instances, limit number of items: %d",
+        ".........................................Limit number of items: %d",
         limit_item);
-
   }
 
   int http_code = 0;

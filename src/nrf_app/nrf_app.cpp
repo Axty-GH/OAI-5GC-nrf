@@ -32,6 +32,7 @@
 #include "nrf_config.hpp"
 #include "logger.hpp"
 #include "api_conversions.hpp"
+#include "3gpp_29.500.h"
 
 using namespace oai::nrf::app;
 using namespace oai::nrf::model;
@@ -51,7 +52,7 @@ void nrf_app::handle_register_nf_instance(
     const oai::nrf::model::NFProfile &nf_profile, int &http_code,
     const uint8_t http_version) {
 
-  Logger::nrf_app().info("Handle NF Instance Registration(HTTP version %d)",
+  Logger::nrf_app().info("Handle NF Instance Registration (HTTP version %d)",
                          http_version);
   //Check if nfInstanceID is a valid UUID (version 4)
   //TODO
@@ -116,21 +117,45 @@ void nrf_app::handle_register_nf_instance(
    }
    */
 
+  nf_type_t type = api_conv::string_to_nf_type(nf_profile.getNfType());
   //Create a new NF profile or Update an existing NF profile
   Logger::nrf_app().debug("NF Profile with (ID %s, NF type %s)",
                           nf_instance_id.c_str(),
                           nf_profile.getNfType().c_str());
 
+
   std::shared_ptr<nrf_profile> sn = { };
 
+  switch (type) {
+    case NF_TYPE_AMF:
+      sn = std::make_shared<amf_profile>();
+      break;
+    case NF_TYPE_SMF:
+      //TODO
+      break;
+    default:
+      sn = std::make_shared<nrf_profile>();
+  }
+  /*
   if (nf_profile.getNfType().compare("AMF") == 0) {
     sn = std::make_shared<amf_profile>();
-  }
+  } else if (nf_profile.getNfType().compare("SMF") == 0) {
+    //TODO:
 
+  } else {
+    //default
+    sn = std::make_shared<nrf_profile>();
+  }
+*/
   //convert to nrf_profile
   if (api_conv::profile_api_to_amf_profile(nf_profile, sn)) {
     add_nf_profile(nf_instance_id, sn);
     http_code = HTTP_STATUS_CODE_201_CREATED;
+
+    Logger::nrf_app().debug("Added NF Profile to the DB");
+    if (nf_profile.getNfType().compare("AMF") == 0)
+      std::static_pointer_cast < amf_profile > (sn).get()->display();
+
   } else {
     //error
     Logger::nrf_app().warn(
@@ -140,12 +165,12 @@ void nrf_app::handle_register_nf_instance(
   }
 
   //For Debug purpose
-  std::vector < std::shared_ptr < nrf_profile >> profiles = { };
-  find_nf_profiles("AMF", profiles);
-  for (auto profile : profiles) {
-    (std::static_pointer_cast < amf_profile > (profile)).get()->display();
-  }
-
+  /*      std::vector < std::shared_ptr < nrf_profile >> profiles = { };
+   find_nf_profiles("AMF", profiles);
+   for (auto profile : profiles) {
+   (std::static_pointer_cast < amf_profile > (profile)).get()->display();
+   }
+   */
 
 }
 
@@ -190,7 +215,11 @@ void nrf_app::handle_get_nf_instances(const std::string &nf_type,
       http_version);
 
   std::vector < std::shared_ptr < nrf_profile >> profiles = { };
-  find_nf_profiles("AMF", profiles);
+  nf_type_t type = api_conv::string_to_nf_type(nf_type);
+  find_nf_profiles(type, profiles);
+  if (profiles.size() == 0) {
+    Logger::nrf_app().debug("No profile found with type %s", nf_type.c_str());
+  }
   for (auto profile : profiles) {
     (std::static_pointer_cast < amf_profile > (profile)).get()->display();
   }
@@ -271,15 +300,16 @@ bool nrf_app::find_nf_profile(const std::string &profile_id,
 }
 
 //------------------------------------------------------------------------------
-bool nrf_app::find_nf_profiles(
-    const std::string &nf_type,
+void nrf_app::find_nf_profiles(
+    const nf_type_t &nf_type,
     std::vector<std::shared_ptr<nrf_profile>> &profiles) const {
   for (auto profile : instance_id2nrf_profile) {
-    nf_type_t type = profile.second.get()->get_nf_type();
-    //if (type == NF_TYPE_AMF)
-    profiles.push_back(profile.second);
+    //std::string type = profile.second.get()->get_nf_type();
+    if (profile.second.get()->get_nf_type() == nf_type) {
+      profiles.push_back(profile.second);
+    }
   }
-  return true;
+  //return true;
 }
 
 //------------------------------------------------------------------------------

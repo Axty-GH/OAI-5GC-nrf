@@ -13,6 +13,9 @@
 #include "NFInstanceIDDocumentApiImpl.h"
 #include "logger.hpp"
 #include "nrf_app.hpp"
+#include "nrf_config.hpp"
+
+extern oai::nrf::app::nrf_config nrf_cfg;
 
 namespace oai {
 namespace nrf {

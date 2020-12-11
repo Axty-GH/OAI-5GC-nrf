@@ -57,7 +57,7 @@ void my_app_signal_handler(int s) {
     delete nrf_app_inst;
   nrf_app_inst = nullptr;
   std::cout << "NRF APP memory done." << std::endl;
-  std::cout << "Freeing Allocated memory done" << std::endl;
+  std::cout << "Freeing allocated memory done" << std::endl;
 
   exit(0);
 }

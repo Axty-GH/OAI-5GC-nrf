@@ -50,15 +50,24 @@ using namespace std;
 class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
 
  public:
-  nrf_profile() = delete;
-  nrf_profile(const nf_type_t type)
+  nrf_profile()
       :
+      nf_type(NF_TYPE_UNKNOWN),
       heartBeat_timer(0),
       snssais(),
       ipv4_addresses(),
       priority(0),
       capacity(0) {
-    nf_type = type;
+    nf_instance_name = "";
+    nf_status = "";
+  }
+  nrf_profile(const nf_type_t type)
+      :nf_type(type),
+      heartBeat_timer(0),
+      snssais(),
+      ipv4_addresses(),
+      priority(0),
+      capacity(0) {
     nf_instance_name = "";
     nf_status = "";
   }
@@ -70,10 +79,10 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
       snssais(),
       ipv4_addresses(),
       priority(0),
-      capacity(0) {
+      capacity(0),
+      nf_type(NF_TYPE_UNKNOWN){
     nf_instance_name = "";
     nf_status = "";
-    nf_type = NF_TYPE_UNKNOWN;
   }
 
   nrf_profile(nrf_profile &b) = delete;
@@ -136,9 +145,16 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
   /*
    * Get NF type
    * @param
-   * @return [nf_type_t] nf type
+   * @return [std::string] nf type
    */
   nf_type_t get_nf_type() const;
+
+  /*
+   * Set NF type
+   * @param [const nf_type_t &] type: nf type
+   * @return void
+   */
+  void set_nf_type(const nf_type_t &type);
 
   /*
    * Set NF instance heartBeat_timer
@@ -152,14 +168,14 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
    * @param [std::string &] timer: store heartBeat_timer
    * @return void:
    */
-  void get_nf_hertBeat_timer(int32_t &timer) const;
+  void get_nf_heartBeat_timer(int32_t &timer) const;
 
   /*
    * Get NF heartBeat_timer
    * @param void
    * @return heartBeat_timer
    */
-  int32_t get_nf_hertBeat_timer() const;
+  int32_t get_nf_heartBeat_timer() const;
 
   /*
    * Set NF instance priority

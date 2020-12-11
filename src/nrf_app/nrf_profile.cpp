@@ -59,6 +59,11 @@ std::string nrf_profile::get_nf_instance_name() const {
 }
 
 //------------------------------------------------------------------------------
+void nrf_profile::set_nf_type(const nf_type_t &type) {
+  nf_type = type;
+}
+
+//------------------------------------------------------------------------------
 nf_type_t nrf_profile::get_nf_type() const {
   return nf_type;
 }
@@ -83,12 +88,12 @@ void nrf_profile::set_nf_heartBeat_timer(const int32_t &timer) {
 }
 
 //------------------------------------------------------------------------------
-void nrf_profile::get_nf_hertBeat_timer(int32_t &timer) const {
+void nrf_profile::get_nf_heartBeat_timer(int32_t &timer) const {
   timer = heartBeat_timer;
 }
 
 //------------------------------------------------------------------------------
-int32_t nrf_profile::get_nf_hertBeat_timer() const {
+int32_t nrf_profile::get_nf_heartBeat_timer() const {
   return heartBeat_timer;
 }
 
@@ -153,24 +158,26 @@ void nrf_profile::get_nf_ipv4_addresses(std::vector<struct in_addr> &a) const {
 //------------------------------------------------------------------------------
 void nrf_profile::display() {
 
-  Logger::nrf_app().debug("NF profile, instance ID %s", nf_instance_id.c_str());
+  Logger::nrf_app().debug("............Instance ID: %s",
+                          nf_instance_id.c_str());
 
-  Logger::nrf_app().debug("NF profile, instance name %s",
+  Logger::nrf_app().debug("............Instance name: %s",
                           nf_instance_name.c_str());
-  Logger::nrf_app().debug("NF profile, instance type %s",
+  Logger::nrf_app().debug("............Instance type: %s",
                           nf_type_e2str[nf_type].c_str());
-  Logger::nrf_app().debug("NF profile, status %s", nf_status.c_str());
-  Logger::nrf_app().debug("NF profile, status %d", heartBeat_timer);
-  Logger::nrf_app().debug("NF profile, priority %d", priority);
-  Logger::nrf_app().debug("NF profile, capacity %d", capacity);
+  Logger::nrf_app().debug("............Status: %s", nf_status.c_str());
+  Logger::nrf_app().debug("............HeartBeat timer: %d", heartBeat_timer);
+  Logger::nrf_app().debug("............Priority: %d", priority);
+  Logger::nrf_app().debug("............Capacity: %d", capacity);
   //SNSSAIs
   for (auto s : snssais) {
-    Logger::nrf_app().debug("NF profile, SNSSAI %d, %s", s.sST, s.sD.c_str());
+    Logger::nrf_app().debug("............NNSSAI(SST, SD): %d, %s", s.sST,
+                            s.sD.c_str());
   }
 
   //IPv4 Addresses
   for (auto address : ipv4_addresses) {
-    Logger::nrf_app().debug("NF profile, IPv4 Addr %s", inet_ntoa(address));
+    Logger::nrf_app().debug("............IPv4 Addr: %s", inet_ntoa(address));
   }
 }
 
@@ -188,8 +195,16 @@ void amf_profile::get_amf_info(amf_info_t &infos) const {
 void amf_profile::display() {
 
   nrf_profile::display();
-  Logger::nrf_app().debug("AMF Info: AMF Set ID %s, AMF Region ID %s",
+
+  Logger::nrf_app().debug("............AMF Set ID: %s, AMF Region ID: %s",
                           amf_info.amf_set_id.c_str(),
                           amf_info.amf_region_id.c_str());
+
+  for (auto g : amf_info.guami_list) {
+    Logger::nrf_app().debug("............AMF GUAMI, AMF_ID:  %s",
+                            g.amf_id.c_str());
+    Logger::nrf_app().debug("....................., PLMN (MCC: %s, MNC: %s)",
+                            g.plmn.mcc.c_str(), g.plmn.mnc.c_str());
+  }
 
 }

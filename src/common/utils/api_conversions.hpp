@@ -32,6 +32,7 @@
 
 #include "NFProfile.h"
 #include "nrf_profile.hpp"
+#include "nrf.h"
 
 using namespace oai::nrf::model;
 using namespace oai::nrf::app;
@@ -43,10 +44,8 @@ namespace api_conv {
 bool profile_api_to_amf_profile(const NFProfile &api_profile,
                                 std::shared_ptr<nrf_profile> &profile);
 
-//bool profile_api_to_amf_profile(const NFProfile &api_profile,
-//		std::shared_ptr<amf_profile> &profile);
-
-}// namespace api_conv
+nf_type_t string_to_nf_type(const std::string &str);
+}  // namespace api_conv
 }
 }
 

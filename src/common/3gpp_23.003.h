@@ -29,7 +29,7 @@
 #define FILE_3GPP_23_003_SEEN
 
 #include <stdint.h>
-
+/*
 typedef struct plmn_s {
   uint8_t mcc_digit2 :4;
   uint8_t mcc_digit1 :4;
@@ -38,6 +38,13 @@ typedef struct plmn_s {
   uint8_t mnc_digit2 :4;
   uint8_t mnc_digit1 :4;
 } plmn_t;
+*/
+
+typedef struct plmn_s {
+std::string mcc;
+std::string mnc;
+} plmn_t;
+
 
 #define INVALID_TAC_0000                  (uint16_t)0x0000
 #define INVALID_TAC_FFFE                  (uint16_t)0xFFFE

@@ -93,8 +93,8 @@ class nrf_app {
   bool find_nf_profile(const std::string &profile_id,
                        std::shared_ptr<nrf_profile> &p) const;
 
-  bool find_nf_profiles(
-      const std::string &nf_type,
+  void find_nf_profiles(
+      const nf_type_t &nf_type,
       std::vector<std::shared_ptr<nrf_profile>> &profiles) const;
 
   bool is_profile_exist(const std::string &profile_id) const;
