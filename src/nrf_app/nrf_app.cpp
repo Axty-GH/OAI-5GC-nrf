@@ -50,10 +50,12 @@ nrf_app::nrf_app(const std::string &config_file) {
 void nrf_app::handle_register_nf_instance(
     const std::string &nf_instance_id,
     const oai::nrf::model::NFProfile &nf_profile, int &http_code,
-    const uint8_t http_version, oai::nrf::model::ProblemDetails &problem_details) {
+    const uint8_t http_version,
+    oai::nrf::model::ProblemDetails &problem_details) {
 
-  Logger::nrf_app().info("Handle NF Instance Registration (HTTP version %d)",
-                         http_version);
+  Logger::nrf_app().info(
+      "Handle Register NF Instance/Update NF Instance (HTTP version %d)",
+      http_version);
 
   if (!api_conv::validate_uuid(nf_instance_id)) {
     http_code = HTTP_STATUS_CODE_400_BAD_REQUEST;
@@ -91,19 +93,41 @@ void nrf_app::handle_register_nf_instance(
 
   //convert to nrf_profile
   if (api_conv::profile_api_to_amf_profile(nf_profile, sn)) {
+    //set default value for hearbeattimer
+    sn.get()->set_nf_heartBeat_timer(HEART_BEAT_TIMER);
+    if (is_profile_exist(nf_instance_id))
+      http_code = HTTP_STATUS_CODE_200_OK;
+    else
+      http_code = HTTP_STATUS_CODE_201_CREATED;
+    //add to the DB
     add_nf_profile(nf_instance_id, sn);
-    http_code = HTTP_STATUS_CODE_201_CREATED;
-    Logger::nrf_app().debug("Added NF Profile to the DB");
-    if (nf_profile.getNfType().compare("AMF") == 0)
-      std::static_pointer_cast < amf_profile > (sn).get()->display();
+    Logger::nrf_app().debug("Added/Updated NF Profile to the DB");
+
+    switch (type) {
+      case NF_TYPE_AMF: {
+        std::static_pointer_cast < amf_profile > (sn).get()->display();
+      }
+        break;
+
+      case NF_TYPE_SMF: {
+        std::static_pointer_cast < smf_profile > (sn).get()->display();
+      }
+        break;
+
+      default: {
+        sn.get()->display();
+      }
+    }
+
   } else {
     //error
     Logger::nrf_app().warn(
         "Cannot convert a NF profile generated from OpenAPI to an AMF profile (profile ID %s)",
         nf_instance_id.c_str());
-    http_code = HTTP_STATUS_CODE_412_PRECONDITION_FAILED;
+    http_code = HTTP_STATUS_CODE_400_BAD_REQUEST;
+    problem_details.setCause(
+        protocol_application_error_e2str[MANDATORY_IE_INCORRECT]);
   }
-
 }
 
 //------------------------------------------------------------------------------
@@ -145,7 +169,42 @@ void nrf_app::handle_update_nf_instance(const std::string &nf_instance_id,
           }
         }
         case PATCH_OP_ADD: {
+          switch (sn.get()->get_nf_type()) {
+            case NF_TYPE_AMF: {
+              Logger::nrf_app().debug("Update a AMF profile");
+              if (std::static_pointer_cast < amf_profile
+                  > (sn)->add_profile_info(path, p.getValue()))
+                update_nf_profile(nf_instance_id, sn);
+            }
+              break;
+            case NF_TYPE_SMF: {
 
+            }
+              break;
+            default: {
+              Logger::nrf_app().warn("Unknown NF type!");
+            }
+
+          }
+        }
+        case PATCH_OP_REMOVE: {
+          switch (sn.get()->get_nf_type()) {
+            case NF_TYPE_AMF: {
+              Logger::nrf_app().debug("Update a AMF profile");
+              if (std::static_pointer_cast < amf_profile
+                  > (sn)->remove_profile_info(path))
+                update_nf_profile(nf_instance_id, sn);
+            }
+              break;
+            case NF_TYPE_SMF: {
+
+            }
+              break;
+            default: {
+              Logger::nrf_app().warn("Unknown NF type!");
+            }
+
+          }
         }
           break;
         default: {
@@ -230,7 +289,7 @@ std::shared_ptr<nrf_profile> nrf_app::find_nf_profile(
 
   Logger::nrf_app().info("Find a NF profile with ID %s", profile_id.c_str());
 
-  std::unique_lock lock(m_instance_id2nrf_profile);
+  std::shared_lock lock(m_instance_id2nrf_profile);
   if (instance_id2nrf_profile.count(profile_id) > 0) {
     return instance_id2nrf_profile.at(profile_id);
   } else {
@@ -245,7 +304,7 @@ bool nrf_app::find_nf_profile(const std::string &profile_id,
                               std::shared_ptr<nrf_profile> &p) const {
   Logger::nrf_app().info("Find a NF profile with ID %s", profile_id.c_str());
 
-  std::unique_lock lock(m_instance_id2nrf_profile);
+  std::shared_lock lock(m_instance_id2nrf_profile);
   if (instance_id2nrf_profile.count(profile_id) > 0) {
     p = instance_id2nrf_profile.at(profile_id);
     return true;
@@ -260,6 +319,7 @@ bool nrf_app::find_nf_profile(const std::string &profile_id,
 void nrf_app::find_nf_profiles(
     const nf_type_t &nf_type,
     std::vector<std::shared_ptr<nrf_profile>> &profiles) const {
+  std::shared_lock lock(m_instance_id2nrf_profile);
   for (auto profile : instance_id2nrf_profile) {
     if (profile.second.get()->get_nf_type() == nf_type) {
       profiles.push_back(profile.second);
@@ -272,7 +332,7 @@ bool nrf_app::is_profile_exist(const std::string &profile_id) const {
   Logger::nrf_app().info("Check if a profile with this ID %d exist",
                          profile_id.c_str());
 
-  std::unique_lock lock(m_instance_id2nrf_profile);
+  std::shared_lock lock(m_instance_id2nrf_profile);
   if (instance_id2nrf_profile.count(profile_id) > 0) {
     return true;
   } else {

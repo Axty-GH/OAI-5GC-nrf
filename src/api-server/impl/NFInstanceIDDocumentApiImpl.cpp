@@ -49,7 +49,7 @@ void NFInstanceIDDocumentApiImpl::register_nf_instance(
     const Pistache::Optional<Pistache::Http::Header::Raw> &contentEncoding,
     Pistache::Http::ResponseWriter &response) {
   Logger::nrf_sbi().info(
-      "Got a request to register an NF instance, Instance ID: %s",
+      "Got a request to register an NF instance/Update an NF instance, Instance ID: %s",
       nfInstanceID.c_str());
 
   NFProfile nf_profile = nFProfile;

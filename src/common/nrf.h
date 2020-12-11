@@ -112,4 +112,18 @@ typedef struct amf_info_s {
   std::vector<guami_t> guami_list;
 } amf_info_t;
 
+typedef struct dnn_smf_info_item_s {
+  std::string dnn;
+} dnn_smf_info_item_t;
+
+typedef struct snssai_smf_info_item_s {
+  snssai_t snssai;
+  std::vector<dnn_smf_info_item_t> dnn_smf_info_list;
+
+} snssai_smf_info_item_t;
+
+typedef struct smf_info_s {
+  std::vector<snssai_smf_info_item_t> snssai_smf_info_list;
+} smf_info_t;
+
 #endif

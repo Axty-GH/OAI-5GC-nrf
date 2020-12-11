@@ -37,6 +37,7 @@
 #include <memory>
 #include <utility>
 #include <vector>
+#include <nlohmann/json.hpp>
 #include "nrf.h"
 
 #include "nrf.h"
@@ -60,6 +61,7 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
       capacity(0) {
     nf_instance_name = "";
     nf_status = "";
+    json_data = { };
   }
   nrf_profile(const nf_type_t type)
       :
@@ -71,6 +73,7 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
       capacity(0) {
     nf_instance_name = "";
     nf_status = "";
+    json_data = { };
   }
 
   nrf_profile(const std::string &id)
@@ -84,6 +87,7 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
       nf_type(NF_TYPE_UNKNOWN) {
     nf_instance_name = "";
     nf_status = "";
+    json_data = { };
   }
 
   nrf_profile(nrf_profile &b) = delete;
@@ -263,6 +267,20 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
   void get_nf_ipv4_addresses(std::vector<struct in_addr> &a) const;
 
   /*
+   * Set json data
+   * @param [const nlohmann::json &] data: Json data to be set
+   * @return void
+   */
+  void set_json_data(const nlohmann::json &data);
+
+  /*
+   * Get json data
+   * @param [nlohmann::json &] data: Store json data
+   * @return void
+   */
+  void get_json_data(nlohmann::json &data) const;
+
+  /*
    * Print related-information for NF profile
    * @param void
    * @return void:
@@ -273,9 +291,25 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
    * Update a new value for a member of NF profile
    * @param [const std::string &] path: member name
    * @param [const std::string &] value: new value
-   * @return void
+   * @return true if success, otherwise false
    */
   bool replace_profile_info(const std::string &path, const std::string &value);
+
+  /*
+   * Add a new value for a member of NF profile
+   * @param [const std::string &] path: member name
+   * @param [const std::string &] value: new value
+   * @return true if success, otherwise false
+   */
+  bool add_profile_info(const std::string &path, const std::string &value);
+
+  /*
+   * Remove value of a member of NF profile
+   * @param [const std::string &] path: member name
+   * @param [const std::string &] value: new value
+   * @return true if success, otherwise false
+   */
+  bool remove_profile_info(const std::string &path);
 
  protected:
   //From NFProfile (Section 6.1.6.2.2@3GPP TS 29.510 V16.0.0 (2019-06))
@@ -288,6 +322,7 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
   std::vector<struct in_addr> ipv4_addresses;
   uint16_t priority;
   uint16_t capacity;
+  nlohmann::json json_data;  //store extra json data
 
   /*
    std::vector<PlmnId> m_PlmnList;
@@ -402,10 +437,91 @@ class amf_profile : public nrf_profile {
    */
   bool replace_profile_info(const std::string &path, const std::string &value);
 
+  /*
+   * Add a new value for a member of NF profile
+   * @param [const std::string &] path: member name
+   * @param [const std::string &] value: new value
+   * @return true if success, otherwise false
+   */
+  bool add_profile_info(const std::string &path, const std::string &value);
+
+  /*
+   * Remove value of a member of NF profile
+   * @param [const std::string &] path: member name
+   * @param [const std::string &] value: new value
+   * @return true if success, otherwise false
+   */
+  bool remove_profile_info(const std::string &path);
  private:
   amf_info_t amf_info;
 };
 
+class smf_profile : public nrf_profile {
+
+ public:
+  smf_profile()
+      :
+      nrf_profile(NF_TYPE_SMF) {
+    smf_info = { };
+  }
+
+  smf_profile(const std::string &id)
+      :
+      nrf_profile(id) {
+    nf_type = NF_TYPE_SMF;
+    smf_info = { };
+  }
+
+  smf_profile(smf_profile &b) = delete;
+
+  /*
+   * Add a SMF info
+   * @param [const smf_info_t &] info: SMF info
+   * @return void
+   */
+  void add_smf_info(const smf_info_t &info);
+
+  /*
+   * Get list of SMF infos a SMF info
+   * @param [const smf_info_t &] info: SMF info
+   * @return void
+   */
+  void get_smf_info(smf_info_t &infos) const;
+
+  /*
+   * Print related-information for a SMF profile
+   * @param void
+   * @return void:
+   */
+  void display();
+
+  /*
+   * Update a new value for a member of SMF profile
+   * @param [const std::string &] path: member name
+   * @param [const std::string &] value: new value
+   * @return void
+   */
+  bool replace_profile_info(const std::string &path, const std::string &value);
+
+  /*
+   * Add a new value for a member of NF profile
+   * @param [const std::string &] path: member name
+   * @param [const std::string &] value: new value
+   * @return true if success, otherwise false
+   */
+  bool add_profile_info(const std::string &path, const std::string &value);
+
+  /*
+   * Remove value of a member of NF profile
+   * @param [const std::string &] path: member name
+   * @param [const std::string &] value: new value
+   * @return true if success, otherwise false
+   */
+  bool remove_profile_info(const std::string &path);
+
+ private:
+  smf_info_t smf_info;
+};
 }
 }
 }
