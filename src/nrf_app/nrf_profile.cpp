@@ -29,6 +29,7 @@
 
 #include "nrf_profile.hpp"
 #include "logger.hpp"
+#include "api_conversions.hpp"
 
 using namespace std;
 using namespace oai::nrf::app;
@@ -181,6 +182,59 @@ void nrf_profile::display() {
   }
 }
 
+bool nrf_profile::replace_profile_info(const std::string &path,
+                                       const std::string &value) {
+
+  Logger::nrf_app().debug("Replace member %s with new value %s", path.c_str(),
+                          value.c_str());
+  if (path.compare("nfInstanceName") == 0) {
+    nf_instance_name = value;
+    return true;
+  }
+  if (path.compare("nfStatus") == 0) {
+    nf_status = value;
+    return true;
+  }
+  if (path.compare("nfStatus") == 0) {
+    nf_status = value;
+    return true;
+  }
+  if (path.compare("nfType") == 0) {
+    nf_type = api_conv::string_to_nf_type(value);
+    return true;
+  }
+
+  if (path.compare("heartBeatTimer") == 0) {
+    try {
+      heartBeat_timer = std::stoi(value);
+      return true;
+    } catch (const std::exception &err) {
+      return false;
+    }
+  }
+
+  if (path.compare("priority") == 0) {
+    try {
+      priority = (uint16_t) std::stoi(value);
+      return true;
+    } catch (const std::exception &err) {
+      return false;
+    }
+  }
+
+  if (path.compare("capacity") == 0) {
+    try {
+      capacity = (uint16_t) std::stoi(value);
+      return true;
+    } catch (const std::exception &err) {
+      return false;
+    }
+  }
+
+  Logger::nrf_app().debug("Member (%s) not found!", path.c_str());
+  return false;
+}
+
 //------------------------------------------------------------------------------
 void amf_profile::add_amf_info(const amf_info_t &info) {
   amf_info = info;
@@ -206,5 +260,12 @@ void amf_profile::display() {
     Logger::nrf_app().debug("....................., PLMN (MCC: %s, MNC: %s)",
                             g.plmn.mcc.c_str(), g.plmn.mnc.c_str());
   }
+
+}
+
+bool amf_profile::replace_profile_info(const std::string &path,
+                                       const std::string &value) {
+  nrf_profile::replace_profile_info(path, value);
+  //TODO with AMF part
 
 }

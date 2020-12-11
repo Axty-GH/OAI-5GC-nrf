@@ -43,8 +43,8 @@ class PatchItem {
   /// <summary>
   /// 
   /// </summary>
-  PatchOperation getOp() const;
-  void setOp(PatchOperation const &value);
+  std::string getOp() const;
+  void setOp(std::string const &value);
   /// <summary>
   /// 
   /// </summary>
@@ -68,7 +68,7 @@ class PatchItem {
   friend void to_json(nlohmann::json &j, const PatchItem &o);
   friend void from_json(const nlohmann::json &j, PatchItem &o);
  protected:
-  PatchOperation m_Op;
+  std::string m_Op;
 
   std::string m_Path;
 

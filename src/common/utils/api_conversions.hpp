@@ -41,10 +41,29 @@ namespace oai {
 namespace nrf {
 namespace api_conv {
 
+/*
+ * Convert a json-type profile to a NF profile
+ * @param [const NFProfile &] NFProfile: Json-type profile from OpenAPITool
+ * @param [std::shared_ptr<nrf_profile> &] profile: NF profile
+ * @return true if successful, otherwise, return false
+ */
 bool profile_api_to_amf_profile(const NFProfile &api_profile,
                                 std::shared_ptr<nrf_profile> &profile);
 
+/*
+ * Convert a string to nf type
+ * @param [const std::string &] str: string input
+ * @return the corresponding nf_type
+ */
 nf_type_t string_to_nf_type(const std::string &str);
+
+/*
+ * Convert a string to Patch operation
+ * @param [const std::string &] str: string input
+ * @return the corresponding Patch operation
+ */
+patch_op_type_t string_to_patch_operation(const std::string &str);
+
 }  // namespace api_conv
 }
 }

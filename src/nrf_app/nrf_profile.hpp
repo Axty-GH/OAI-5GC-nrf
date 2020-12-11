@@ -62,7 +62,8 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
     nf_status = "";
   }
   nrf_profile(const nf_type_t type)
-      :nf_type(type),
+      :
+      nf_type(type),
       heartBeat_timer(0),
       snssais(),
       ipv4_addresses(),
@@ -80,7 +81,7 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
       ipv4_addresses(),
       priority(0),
       capacity(0),
-      nf_type(NF_TYPE_UNKNOWN){
+      nf_type(NF_TYPE_UNKNOWN) {
     nf_instance_name = "";
     nf_status = "";
   }
@@ -268,6 +269,14 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
    */
   void display();
 
+  /*
+   * Update a new value for a member of NF profile
+   * @param [const std::string &] path: member name
+   * @param [const std::string &] value: new value
+   * @return void
+   */
+  bool replace_profile_info(const std::string &path, const std::string &value);
+
  protected:
   //From NFProfile (Section 6.1.6.2.2@3GPP TS 29.510 V16.0.0 (2019-06))
   std::string nf_instance_id;
@@ -377,7 +386,21 @@ class amf_profile : public nrf_profile {
    * @return void
    */
   void get_amf_info(amf_info_t &infos) const;
+
+  /*
+   * Print related-information for an AMF profile
+   * @param void
+   * @return void:
+   */
   void display();
+
+  /*
+   * Update a new value for a member of AMF profile
+   * @param [const std::string &] path: member name
+   * @param [const std::string &] value: new value
+   * @return void
+   */
+  bool replace_profile_info(const std::string &path, const std::string &value);
 
  private:
   amf_info_t amf_info;

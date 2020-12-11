@@ -56,6 +56,20 @@ static const std::vector<std::string> nf_type_e2str = { "NF_TYPE_NRF",
     "NF_TYPE_N3IWF", "NF_TYPE_AF", "NF_TYPE_UDSF", "NF_TYPE_BSF", "NF_TYPE_CHF",
     "NF_TYPE_NWDAF", "NF_TYPE_UNKNOWN" };
 
+typedef enum patch_op_type_s {
+  PATCH_OP_ADD = 0,
+  PATCH_OP_REMOVE = 1,
+  PATCH_OP_REPLACE = 2,
+  PATCH_OP_MOVE = 3,
+  PATCH_OP_COPY = 4,
+  PATCH_OP_TEST = 5,
+  PATCH_OP_UNKNOWN = 6
+
+} patch_op_type_t;
+
+static const std::vector<std::string> patch_op_type_e2str = { "ADD", "REMOVE",
+    "REPLACE", "MOVE", "COPY", "TEST", "UNKNOWN" };
+
 typedef struct s_nssai  // section 28.4, TS23.003
 {
   uint8_t sST;

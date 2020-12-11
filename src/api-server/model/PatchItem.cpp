@@ -54,10 +54,10 @@ void from_json(const nlohmann::json &j, PatchItem &o) {
   }
 }
 
-PatchOperation PatchItem::getOp() const {
+std::string PatchItem::getOp() const {
   return m_Op;
 }
-void PatchItem::setOp(PatchOperation const &value) {
+void PatchItem::setOp(std::string const &value) {
   m_Op = value;
 }
 std::string PatchItem::getPath() const {

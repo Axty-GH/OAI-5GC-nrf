@@ -35,69 +35,16 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
-#include "api_conversions.hpp"
-#include "string.hpp"
-#include "nrf.h"
+
 #include  "AmfInfo.h"
+#include "api_conversions.hpp"
 #include "logger.hpp"
+#include "nrf.h"
+#include "string.hpp"
 
 using namespace oai::nrf::model;
 using namespace oai::nrf::app;
 using namespace oai::nrf;
-
-//------------------------------------------------------------------------------
-/*
- bool api_conv::profile_api_to_amf_profile(const NFProfile &api_profile,
- std::shared_ptr<amf_profile> &profile) {
-
- Logger::nrf_app().debug(
- "Convert a NF profile generated from OpenAPI to an AMF profile (profile name %s)",
- api_profile.getNfInstanceName().c_str());
- profile.get()->set_nf_instance_name(api_profile.getNfInstanceName());
- Logger::nrf_app().debug("AMF profile, instance name %s",
- profile.get()->get_nf_instance_name().c_str());
- profile.get()->set_nf_status(api_profile.getNfStatus());
- Logger::nrf_app().debug("AMF profile, status %s",
- profile.get()->get_nf_status().c_str());
- profile.get()->set_nf_heartBeat_timer(api_profile.getHeartBeatTimer());
- Logger::nrf_app().debug("AMF profile, status %d",
- profile.get()->get_nf_hertBeat_timer());
- profile.get()->set_nf_priority(api_profile.getPriority());
- Logger::nrf_app().debug("AMF profile, priority %d",
- profile.get()->get_nf_priority());
- profile.get()->set_nf_capacity(api_profile.getCapacity());
- Logger::nrf_app().debug("AMF profile, capacity %d",
- profile.get()->get_nf_capacity());
- //SNSSAIs
- std::vector<Snssai> snssai = api_profile.getSNssais();
- for (auto s : snssai) {
- snssai_t sn = { };
- sn.sD = s.getSd();
- sn.sST = s.getSst();
- profile.get()->add_snssai(sn);
- Logger::nrf_app().debug("AMF profile, snssai %d, %s", sn.sST,
- sn.sD.c_str());
- }
-
-
- std::vector < std::string > ipv4_addr_str = api_profile.getIpv4Addresses();
- for (auto address : ipv4_addr_str) {
- struct in_addr addr4 = { };
- unsigned char buf_in_addr[sizeof(struct in_addr)];
- if (inet_pton(AF_INET, util::trim(address).c_str(), buf_in_addr) == 1) {
- memcpy(&addr4, buf_in_addr, sizeof(struct in_addr));
- } else {
- Logger::nrf_app().warn("NF IPv4 Addr conversion: Bad value %s",
- util::trim(address).c_str());
- }
-
- Logger::nrf_app().debug("AMF profile, IPv4 Addr %s", address.c_str());
- profile.get()->add_nf_ipv4_addresses(addr4);
- }
-
- return true;
- }
- */
 
 //------------------------------------------------------------------------------
 bool api_conv::profile_api_to_amf_profile(
@@ -191,35 +138,7 @@ bool api_conv::profile_api_to_amf_profile(
     }
 
   }
-  /*
-   if (api_profile.getNfType().compare("AMF") == 0) {
-   Logger::nrf_app().debug("............AMF profile, AMF Info");
-   profile.get()->set_nf_type("AMF");
-   amf_info_t info = { };
-   AmfInfo amf_info_api = api_profile.getAmfInfo();
-   info.amf_region_id = amf_info_api.getAmfRegionId();
-   info.amf_set_id = amf_info_api.getAmfSetId();
 
-   Logger::nrf_app().debug("............AMF Set ID: %s, AMF Region ID: %s",
-   info.amf_set_id.c_str(),
-   info.amf_region_id.c_str());
-
-   for (auto g : amf_info_api.getGuamiList()) {
-   guami_t guami = { };
-   guami.amf_id = g.getAmfId();
-   guami.plmn.mcc = g.getPlmnId().getMcc();
-   guami.plmn.mnc = g.getPlmnId().getMnc();
-   info.guami_list.push_back(guami);
-   Logger::nrf_app().debug("............AMF GUAMI, AMF_ID:  %s",
-   guami.amf_id.c_str());
-   Logger::nrf_app().debug("....................., PLMN (MCC: %s, MNC: %s)",
-   guami.plmn.mcc.c_str(), guami.plmn.mnc.c_str());
-
-   }
-   (std::static_pointer_cast < amf_profile > (profile)).get()->add_amf_info(
-   info);
-   }
-   */
   return true;
 }
 
@@ -267,4 +186,22 @@ nf_type_t api_conv::string_to_nf_type(const std::string &str) {
     return NF_TYPE_NWDAF;
   //default
   return NF_TYPE_UNKNOWN;
+}
+
+//------------------------------------------------------------------------------
+patch_op_type_t api_conv::string_to_patch_operation(const std::string &str) {
+  if (str.compare("add") == 0)
+    return PATCH_OP_ADD;
+  if (str.compare("copy") == 0)
+    return PATCH_OP_COPY;
+  if (str.compare("move") == 0)
+    return PATCH_OP_MOVE;
+  if (str.compare("remove") == 0)
+    return PATCH_OP_REMOVE;
+  if (str.compare("replace") == 0)
+    return PATCH_OP_REPLACE;
+  if (str.compare("test") == 0)
+    return PATCH_OP_TEST;
+  //default
+  return PATCH_OP_UNKNOWN;
 }
