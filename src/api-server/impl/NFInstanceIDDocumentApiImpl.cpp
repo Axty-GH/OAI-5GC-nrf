@@ -14,6 +14,8 @@
 #include "logger.hpp"
 #include "nrf_app.hpp"
 #include "nrf_config.hpp"
+#include "ProblemDetails.h"
+#include "3gpp_29.500.h"
 
 extern oai::nrf::app::nrf_config nrf_cfg;
 
@@ -52,10 +54,25 @@ void NFInstanceIDDocumentApiImpl::register_nf_instance(
 
   NFProfile nf_profile = nFProfile;
   int http_code = 0;
-  m_nrf_app->handle_register_nf_instance(nfInstanceID, nFProfile, http_code, 1);
+  ProblemDetails problem_details = { };
+  m_nrf_app->handle_register_nf_instance(nfInstanceID, nFProfile, http_code, 1,
+                                         problem_details);
 
   nlohmann::json json_data = { };
-  to_json(json_data, nf_profile);
+  std::string content_type = "application/json";
+
+  if ((http_code != HTTP_STATUS_CODE_200_OK)
+      and (http_code != HTTP_STATUS_CODE_201_CREATED)
+      and (http_code != HTTP_STATUS_CODE_202_ACCEPTED)) {
+    to_json(json_data, problem_details);
+    content_type = "application/problem+json";
+  } else {
+    to_json(json_data, nf_profile);
+  }
+
+  //content type
+  response.headers().add < Pistache::Http::Header::ContentType
+      > (Pistache::Http::Mime::MediaType(content_type));
   //Location header
   response.headers().add < Pistache::Http::Header::Location
       > (m_address + base + nrf_cfg.sbi_api_version + "/nf-instances/"

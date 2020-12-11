@@ -32,11 +32,12 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <regex>
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
 
-#include  "AmfInfo.h"
+#include "AmfInfo.h"
 #include "api_conversions.hpp"
 #include "logger.hpp"
 #include "nrf.h"
@@ -204,4 +205,11 @@ patch_op_type_t api_conv::string_to_patch_operation(const std::string &str) {
     return PATCH_OP_TEST;
   //default
   return PATCH_OP_UNKNOWN;
+}
+
+
+bool api_conv::validate_uuid(const std::string &str) {
+  //should be verified with Capital letter
+  static const std::regex e("[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}");
+    return regex_match(str, e);
 }

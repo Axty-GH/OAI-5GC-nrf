@@ -34,6 +34,7 @@
 #include "NFProfile.h"
 #include "nrf_profile.hpp"
 #include "PatchItem.h"
+#include "ProblemDetails.h"
 
 namespace oai {
 namespace nrf {
@@ -56,9 +57,11 @@ class nrf_app {
    * @param [const uint8_t] http_version: HTTP version
    * @return void
    */
-  void handle_register_nf_instance(const std::string &nf_instance_id,
-                                   const oai::nrf::model::NFProfile &nf_profile,
-                                   int &http_code, const uint8_t http_version);
+  void handle_register_nf_instance(
+      const std::string &nf_instance_id,
+      const oai::nrf::model::NFProfile &nf_profile, int &http_code,
+      const uint8_t http_version,
+      oai::nrf::model::ProblemDetails &problem_details);
 
   /*
    * Handle a Get NF Instance Information

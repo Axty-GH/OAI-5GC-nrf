@@ -64,6 +64,9 @@ nf_type_t string_to_nf_type(const std::string &str);
  */
 patch_op_type_t string_to_patch_operation(const std::string &str);
 
+
+bool validate_uuid(const std::string &str);
+
 }  // namespace api_conv
 }
 }

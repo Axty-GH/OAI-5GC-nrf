@@ -50,10 +50,19 @@ nrf_app::nrf_app(const std::string &config_file) {
 void nrf_app::handle_register_nf_instance(
     const std::string &nf_instance_id,
     const oai::nrf::model::NFProfile &nf_profile, int &http_code,
-    const uint8_t http_version) {
+    const uint8_t http_version, oai::nrf::model::ProblemDetails &problem_details) {
 
   Logger::nrf_app().info("Handle NF Instance Registration (HTTP version %d)",
                          http_version);
+
+  if (!api_conv::validate_uuid(nf_instance_id)) {
+    http_code = HTTP_STATUS_CODE_400_BAD_REQUEST;
+    Logger::nrf_app().debug("Bad UUID format for NF Instance ID (%s)",
+                            nf_instance_id.c_str());
+    problem_details.setCause(
+        protocol_application_error_e2str[MANDATORY_QUERY_PARAM_INCORRECT]);
+    return;
+  }
   //Check if nfInstanceID is a valid UUID (version 4)
   //TODO
 
@@ -166,7 +175,7 @@ void nrf_app::handle_get_nf_instances(const std::string &nf_type,
   find_nf_profiles(type, profiles);
 
   if (profiles.size() == 0) {
-    Logger::nrf_app().debug("No profile found with type %s", nf_type.c_str());
+    Logger::nrf_app().debug("No profile found (NF type: %s)", nf_type.c_str());
   }
 
   for (auto profile : profiles) {
