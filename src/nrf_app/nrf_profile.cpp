@@ -202,6 +202,7 @@ void nrf_profile::display() {
   }
 }
 
+//------------------------------------------------------------------------------
 bool nrf_profile::replace_profile_info(const std::string &path,
                                        const std::string &value) {
 
@@ -227,6 +228,7 @@ bool nrf_profile::replace_profile_info(const std::string &path,
       heartBeat_timer = std::stoi(value);
       return true;
     } catch (const std::exception &err) {
+      Logger::nrf_app().debug("Bad value!");
       return false;
     }
   }
@@ -236,6 +238,7 @@ bool nrf_profile::replace_profile_info(const std::string &path,
       priority = (uint16_t) std::stoi(value);
       return true;
     } catch (const std::exception &err) {
+      Logger::nrf_app().debug("Bad value!");
       return false;
     }
   }
@@ -245,11 +248,22 @@ bool nrf_profile::replace_profile_info(const std::string &path,
       capacity = (uint16_t) std::stoi(value);
       return true;
     } catch (const std::exception &err) {
+      Logger::nrf_app().debug("Bad value!");
       return false;
     }
   }
 
-  Logger::nrf_app().debug("Member (%s) not found!", path.c_str());
+  //Replace an array
+  if (path.compare("ipv4Addresses") == 0) {
+    Logger::nrf_app().info("Does not support this operation for ipv4Addresses");
+    return false;
+  }
+
+  if (path.compare("sNssais") == 0) {
+    Logger::nrf_app().info("Does not support this operation for sNssais");
+    return false;
+  }
+
   return false;
 }
 
@@ -260,6 +274,53 @@ bool nrf_profile::add_profile_info(const std::string &path,
       "Add an array element (value, array member), or a new member (value, member):  %s, %s",
       value.c_str(), path.c_str());
 
+  //update an existing member
+  if (path.compare("nfInstanceName") == 0) {
+    nf_instance_name = value;
+    return true;
+  }
+
+  if (path.compare("nfStatus") == 0) {
+    nf_status = value;
+    return true;
+  }
+
+  if (path.compare("nfType") == 0) {
+    nf_type = api_conv::string_to_nf_type(value);
+    return true;
+  }
+
+  if (path.compare("heartBeatTimer") == 0) {
+    try {
+      heartBeat_timer = std::stoi(value);
+      return true;
+    } catch (const std::exception &err) {
+      Logger::nrf_app().debug("Bad value!");
+      return false;
+    }
+  }
+
+  if (path.compare("priority") == 0) {
+    try {
+      priority = (uint16_t) std::stoi(value);
+      return true;
+    } catch (const std::exception &err) {
+      Logger::nrf_app().debug("Bad value!");
+      return false;
+    }
+  }
+
+  if (path.compare("capacity") == 0) {
+    try {
+      capacity = (uint16_t) std::stoi(value);
+      return true;
+    } catch (const std::exception &err) {
+      Logger::nrf_app().debug("Bad value!");
+      return false;
+    }
+  }
+
+  //add an element to a list
   if (path.compare("ipv4Addresses") == 0) {
     std::string address = value;
     struct in_addr addr4 = { };
@@ -269,32 +330,25 @@ bool nrf_profile::add_profile_info(const std::string &path,
     } else {
       Logger::nrf_app().warn("Address conversion: Bad value %s",
                              util::trim(address).c_str());
+      return false;
     }
     Logger::nrf_app().debug("Added IPv4 Addr: %s", address.c_str());
     ipv4_addresses.push_back(addr4);
     return true;
   }
 
-  if (path.compare("snssais") == 0) {
+  //add an element to a list of json object
+  if (path.compare("sNssais") == 0) {
     Logger::nrf_app().info("Does not support this operation for snssais");
     return false;
   }
 
-  if ((path.compare("nfInstanceName") == 0) or (path.compare("nfStatus") == 0)
-      or (path.compare("nfType") == 0) or (path.compare("heartBeatTimer") == 0)
-      or (path.compare("priority") == 0) or (path.compare("capacity") == 0)) {
-    Logger::nrf_app().info("Does not support this operation, member (%s) exit!",
-                           path.c_str());
-    return false;
-  }
-
-  //add new member
-  json_data[path] = value;
-  return true;
+  return false;
 }
 
 //------------------------------------------------------------------------------
-bool nrf_profile::remove_profile_info(const std::string &path) {
+bool nrf_profile::remove_profile_info(
+    const std::string &path) {
 
   Logger::nrf_app().debug("Remove an array element or a member: %s",
                           path.c_str());
@@ -356,13 +410,42 @@ bool nrf_profile::remove_profile_info(const std::string &path) {
     }
   }
 
-  if (path.find("snssais") != std::string::npos) {
+  if (path.find("sNssais") != std::string::npos) {
     Logger::nrf_app().info("Does not support this operation for snssais");
     return false;
   }
 
   Logger::nrf_app().debug("Member (%s) not found!", path.c_str());
   return false;
+}
+
+//------------------------------------------------------------------------------
+void nrf_profile::to_json(nlohmann::json &data) const {
+
+  data["nfInstanceId"] = nf_instance_id;
+  data["nfInstanceName"] = nf_instance_name;
+  data["nfType"] = nf_type_e2str[nf_type];
+  data["nfStatus"] = nf_status;
+  data["heartBeatTimer"] = heartBeat_timer;
+  //SNSSAIs
+  data["sNssais"] = nlohmann::json::array();
+  for (auto s : snssais) {
+    nlohmann::json tmp = { };
+    tmp["sst"] = s.sST;
+    tmp["sd"] = s.sD;
+    ;
+    data["sNssais"].push_back(tmp);
+  }
+  //ipv4_addresses
+  data["ipv4Addresses"] = nlohmann::json::array();
+  for (auto address : ipv4_addresses) {
+    nlohmann::json tmp = inet_ntoa(address);
+    data["ipv4Addresses"].push_back(tmp);
+  }
+
+  data["priority"] = priority;
+  data["capacity"] = capacity;
+  data["json_data"] = json_data;
 }
 
 //------------------------------------------------------------------------------
@@ -379,40 +462,123 @@ void amf_profile::get_amf_info(amf_info_t &infos) const {
 void amf_profile::display() {
 
   nrf_profile::display();
-
-  Logger::nrf_app().debug("............AMF Set ID: %s, AMF Region ID: %s",
-                          amf_info.amf_set_id.c_str(),
-                          amf_info.amf_region_id.c_str());
+  Logger::nrf_app().debug("............AMF Info");
+  Logger::nrf_app().debug(
+      ".....................AMF Set ID: %s, AMF Region ID: %s",
+      amf_info.amf_set_id.c_str(), amf_info.amf_region_id.c_str());
 
   for (auto g : amf_info.guami_list) {
-    Logger::nrf_app().debug("............AMF GUAMI, AMF_ID:  %s",
+    Logger::nrf_app().debug(".....................AMF GUAMI List, AMF_ID:  %s",
                             g.amf_id.c_str());
-    Logger::nrf_app().debug("....................., PLMN (MCC: %s, MNC: %s)",
-                            g.plmn.mcc.c_str(), g.plmn.mnc.c_str());
+    Logger::nrf_app().debug(
+        "........................AMF GUAMI List, PLMN (MCC: %s, MNC: %s)",
+        g.plmn.mcc.c_str(), g.plmn.mnc.c_str());
   }
-
 }
 
 //------------------------------------------------------------------------------
 bool amf_profile::replace_profile_info(const std::string &path,
                                        const std::string &value) {
-  nrf_profile::replace_profile_info(path, value);
-  //TODO with AMF part
 
+  bool result = nrf_profile::replace_profile_info(path, value);
+  if (result)
+    return true;
+  //for AMF info
+  if (path.compare("amfInfo") == 0) {
+    Logger::nrf_app().debug("Does not support this operation for amfInfo");
+    return false;
+  }
+
+  if ((path.compare("nfInstanceId") != 0)
+      and (path.compare("nfInstanceName") != 0)
+      and (path.compare("nfType") != 0) and (path.compare("nfStatus") != 0)
+      and (path.compare("heartBeatTimer") != 0)
+      and (path.compare("sNssais") != 0)
+      and (path.compare("ipv4Addresses") != 0)
+      and (path.compare("priority") != 0) and (path.compare("capacity") != 0)
+      and (path.compare("priority") != 0) and (path.compare("amfInfo") != 0)) {
+    Logger::nrf_app().debug("Member (%s) not found!", path.c_str());
+    return false;
+  }
+
+  return false;
 }
 
 //------------------------------------------------------------------------------
 bool amf_profile::add_profile_info(const std::string &path,
                                    const std::string &value) {
-  nrf_profile::add_profile_info(path, value);
-  //TODO with AMF part
+  bool result = nrf_profile::add_profile_info(path, value);
+  if (result)
+    return true;
+
+  //add an element to a list of json object
+  if (path.compare("amfInfo") == 0) {
+    Logger::nrf_app().info("Does not support this operation for amfInfo");
+    return false;
+  }
+
+  if ((path.compare("nfInstanceId") != 0)
+      and (path.compare("nfInstanceName") != 0)
+      and (path.compare("nfType") != 0) and (path.compare("nfStatus") != 0)
+      and (path.compare("heartBeatTimer") != 0)
+      and (path.compare("sNssais") != 0)
+      and (path.compare("ipv4Addresses") != 0)
+      and (path.compare("priority") != 0) and (path.compare("capacity") != 0)
+      and (path.compare("priority") != 0) and (path.compare("amfInfo") != 0)) {
+    Logger::nrf_app().debug("Add new member: %s", path.c_str());
+    //add new member
+    json_data[path] = value;
+    return true;
+  }
+
+  return false;
+}
+
+//------------------------------------------------------------------------------
+bool amf_profile::remove_profile_info(
+    const std::string &path) {
+
+  bool result = nrf_profile::remove_profile_info(path);
+  if (result)
+    return true;
+  //for AMF info
+  if (path.compare("amfInfo") == 0) {
+    Logger::nrf_app().debug("Does not support this operation for amfInfo");
+    return false;
+  }
+
+  if ((path.compare("nfInstanceId") != 0)
+      and (path.compare("nfInstanceName") != 0)
+      and (path.compare("nfType") != 0) and (path.compare("nfStatus") != 0)
+      and (path.compare("heartBeatTimer") != 0)
+      and (path.compare("sNssais") != 0)
+      and (path.compare("ipv4Addresses") != 0)
+      and (path.compare("priority") != 0) and (path.compare("capacity") != 0)
+      and (path.compare("priority") != 0) and (path.compare("amfInfo") != 0)) {
+    Logger::nrf_app().debug("Member (%s) not found!", path.c_str());
+    return false;
+  }
+
+  return false;
 
 }
 
 //------------------------------------------------------------------------------
-bool amf_profile::remove_profile_info(const std::string &path) {
-  nrf_profile::remove_profile_info(path);
-  //TODO with AMF part
+void amf_profile::to_json(nlohmann::json &data) const {
+  nrf_profile::to_json(data);
+  Logger::nrf_app().debug("[AMF] To Json");
+  //AMF Info
+  data["amfInfo"]["amfSetId"] = amf_info.amf_set_id;
+  data["amfInfo"]["amfRegionId"] = amf_info.amf_region_id;
+  //guamiList
+  data["amfInfo"]["guamiList"] = nlohmann::json::array();
+  for (auto guami : amf_info.guami_list) {
+    nlohmann::json tmp = { };
+    tmp["amfId"] = guami.amf_id;
+    tmp["plmnId"]["mnc"] = guami.plmn.mnc;
+    tmp["plmnId"]["mcc"] = guami.plmn.mcc;
+    data["amfInfo"]["guamiList"].push_back(tmp);
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -429,34 +595,121 @@ void smf_profile::get_smf_info(smf_info_t &infos) const {
 void smf_profile::display() {
 
   nrf_profile::display();
-  /*
-   for (auto g : amf_info.guami_list) {
-   Logger::nrf_app().debug("............AMF GUAMI, AMF_ID:  %s",
-   g.amf_id.c_str());
-   Logger::nrf_app().debug("....................., PLMN (MCC: %s, MNC: %s)",
-   g.plmn.mcc.c_str(), g.plmn.mnc.c_str());
-   }
-   */
+
+  Logger::nrf_app().debug("............SMF Info");
+
+  for (auto s : smf_info.snssai_smf_info_list) {
+    Logger::nrf_app().debug(
+        "....................SNSSAI SMF Info List, SNSSAI (SD: %s, SST: %d)",
+        s.snssai.sD.c_str(), s.snssai.sST);
+    for (auto d : s.dnn_smf_info_list) {
+      Logger::nrf_app().debug(
+          "....................SNSSAI SMF Info List, DNN List: %s",
+          d.dnn.c_str());
+    }
+  }
 }
 
 //------------------------------------------------------------------------------
-bool smf_profile::add_profile_info(const std::string &path,
-                                   const std::string &value) {
-  nrf_profile::add_profile_info(path, value);
-  //TODO with SMF part
+bool smf_profile::add_profile_info(
+    const std::string &path, const std::string &value) {
+  bool result = nrf_profile::add_profile_info(path, value);
+  if (result)
+    return true;
 
+  //add an element to a list of json object
+  if (path.compare("smfInfo") == 0) {
+    Logger::nrf_app().info("Does not support this operation for smfInfo");
+    return false;
+  }
+
+  if ((path.compare("nfInstanceId") != 0)
+      and (path.compare("nfInstanceName") != 0)
+      and (path.compare("nfType") != 0) and (path.compare("nfStatus") != 0)
+      and (path.compare("heartBeatTimer") != 0)
+      and (path.compare("sNssais") != 0)
+      and (path.compare("ipv4Addresses") != 0)
+      and (path.compare("priority") != 0) and (path.compare("capacity") != 0)
+      and (path.compare("priority") != 0) and (path.compare("smfInfo") != 0)) {
+    Logger::nrf_app().debug("Add new member: %s", path.c_str());
+    //add new member
+    json_data[path] = value;
+    return true;
+  }
+
+  return false;
 }
 
+//------------------------------------------------------------------------------
 bool smf_profile::replace_profile_info(const std::string &path,
                                        const std::string &value) {
-  nrf_profile::replace_profile_info(path, value);
-  //TODO with SMF part
 
+  bool result = nrf_profile::replace_profile_info(path, value);
+  if (result)
+    return true;
+  //for SMF info
+  if (path.compare("smfInfo") == 0) {
+    Logger::nrf_app().debug("Does not support this operation for amfInfo");
+    return false;
+  }
+
+  if ((path.compare("nfInstanceId") != 0)
+      and (path.compare("nfInstanceName") != 0)
+      and (path.compare("nfType") != 0) and (path.compare("nfStatus") != 0)
+      and (path.compare("heartBeatTimer") != 0)
+      and (path.compare("sNssais") != 0)
+      and (path.compare("ipv4Addresses") != 0)
+      and (path.compare("priority") != 0) and (path.compare("capacity") != 0)
+      and (path.compare("priority") != 0) and (path.compare("amfInfo") != 0)) {
+    Logger::nrf_app().debug("Member (%s) not found!", path.c_str());
+    return false;
+  }
+
+  return false;
 }
 
 //------------------------------------------------------------------------------
-bool smf_profile::remove_profile_info(const std::string &path) {
-  nrf_profile::remove_profile_info(path);
-  //TODO with SMF part
+bool smf_profile::remove_profile_info(
+    const std::string &path) {
+  bool result = nrf_profile::remove_profile_info(path);
+  if (result)
+    return true;
+  //for SMF info
+  if (path.compare("smfInfo") == 0) {
+    Logger::nrf_app().debug("Does not support this operation for smfInfo");
+    return false;
+  }
+
+  if ((path.compare("nfInstanceId") != 0)
+      and (path.compare("nfInstanceName") != 0)
+      and (path.compare("nfType") != 0) and (path.compare("nfStatus") != 0)
+      and (path.compare("heartBeatTimer") != 0)
+      and (path.compare("sNssais") != 0)
+      and (path.compare("ipv4Addresses") != 0)
+      and (path.compare("priority") != 0) and (path.compare("capacity") != 0)
+      and (path.compare("priority") != 0) and (path.compare("smfInfo") != 0)) {
+    Logger::nrf_app().debug("Member (%s) not found!", path.c_str());
+    return false;
+  }
+
+  return false;
 }
 
+//------------------------------------------------------------------------------
+void smf_profile::to_json(nlohmann::json &data) const {
+  nrf_profile::to_json(data);
+  //SMF Info
+  data["smfInfo"]["sNssaiSmfInfoList"] = nlohmann::json::array();
+  for (auto snssai : smf_info.snssai_smf_info_list) {
+    nlohmann::json tmp = { };
+    tmp["sNssai"]["sst"] = snssai.snssai.sST;
+    tmp["sNssai"]["sd"] = snssai.snssai.sD;
+    tmp["dnnSmfInfoList"] = nlohmann::json::array();
+    for (auto d : snssai.dnn_smf_info_list) {
+      nlohmann::json tmp_dnn = { };
+      tmp_dnn["dnn"] = d.dnn;
+      tmp["dnnSmfInfoList"].push_back(tmp_dnn);
+    }
+    data["smfInfo"]["sNssaiSmfInfoList"].push_back(tmp);
+  }
+}

@@ -83,15 +83,39 @@ void NFInstanceIDDocumentApiImpl::update_nf_instance(
     const std::string &nfInstanceID, const std::vector<PatchItem> &patchItem,
     Pistache::Http::ResponseWriter &response) {
   Logger::nrf_sbi().info(
-      "Got a request to register an NF instance, Instance ID: %s",
+      "Got a request to update an NF instance, Instance ID: %s",
       nfInstanceID.c_str());
 
   int http_code = 0;
-  m_nrf_app->handle_update_nf_instance(nfInstanceID, patchItem, http_code, 1);
+  ProblemDetails problem_details = { };
+  m_nrf_app->handle_update_nf_instance(nfInstanceID, patchItem, http_code, 1,
+                                       problem_details);
 
   nlohmann::json json_data = { };
-  //to_json(json_data, nf_profile);
-  response.send(Pistache::Http::Code::Ok, json_data.dump().c_str());
+  std::string content_type = "application/json";
+
+  std::shared_ptr<nrf_profile> profile = m_nrf_app->find_nf_profile(
+      nfInstanceID);
+
+  if (http_code != HTTP_STATUS_CODE_200_OK) {
+    to_json(json_data, problem_details);
+    content_type = "application/problem+json";
+  } else {
+    //convert the profile to Json
+    profile.get()->to_json(json_data);
+  }
+
+  Logger::nrf_sbi().debug("Json data: %s", json_data.dump().c_str());
+
+  //content type
+  response.headers().add < Pistache::Http::Header::ContentType
+      > (Pistache::Http::Mime::MediaType(content_type));
+  //Location header
+  response.headers().add < Pistache::Http::Header::Location
+      > (m_address + base + nrf_cfg.sbi_api_version + "/nf-instances/"
+          + nfInstanceID);
+  response.send(Pistache::Http::Code(http_code), json_data.dump().c_str());
+
 }
 
 }

@@ -131,6 +131,29 @@ bool api_conv::profile_api_to_amf_profile(
     }
       break;
     case NF_TYPE_SMF: {
+      Logger::nrf_app().debug("............SMF profile, SMF Info");
+      profile.get()->set_nf_type(NF_TYPE_SMF);
+      smf_info_t info = { };
+      SmfInfo smf_info_api = api_profile.getSmfInfo();
+
+      for (auto s : smf_info_api.getSNssaiSmfInfoList()) {
+        snssai_smf_info_item_t snssai = { };
+        snssai.snssai.sD = s.getSNssai().getSd();
+        snssai.snssai.sST = s.getSNssai().getSst();
+        Logger::nrf_app().debug(".......................NSSAI SD: %s, SST: %d",
+                                snssai.snssai.sD.c_str(), snssai.snssai.sST);
+        for (auto d : s.getDnnSmfInfoList()) {
+          dnn_smf_info_item_t dnn = {};
+          dnn.dnn = d.getDnn();
+          snssai.dnn_smf_info_list.push_back(dnn);
+          Logger::nrf_app().debug("......................DNN: %s",
+                                  dnn.dnn.c_str());
+        }
+        info.snssai_smf_info_list.push_back(snssai);
+      }
+
+      (std::static_pointer_cast < smf_profile > (profile)).get()->add_smf_info(
+          info);
 
     }
       break;
@@ -207,9 +230,9 @@ patch_op_type_t api_conv::string_to_patch_operation(const std::string &str) {
   return PATCH_OP_UNKNOWN;
 }
 
-
 bool api_conv::validate_uuid(const std::string &str) {
   //should be verified with Capital letter
-  static const std::regex e("[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}");
-    return regex_match(str, e);
+  static const std::regex e(
+      "[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}");
+  return regex_match(str, e);
 }

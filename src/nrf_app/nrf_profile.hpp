@@ -91,6 +91,9 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
   }
 
   nrf_profile(nrf_profile &b) = delete;
+  virtual ~nrf_profile() {
+
+  }
 
   /*
    * Set NF instance ID
@@ -285,7 +288,7 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
    * @param void
    * @return void:
    */
-  void display();
+  virtual void display();
 
   /*
    * Update a new value for a member of NF profile
@@ -293,7 +296,7 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
    * @param [const std::string &] value: new value
    * @return true if success, otherwise false
    */
-  bool replace_profile_info(const std::string &path, const std::string &value);
+  virtual bool replace_profile_info(const std::string &path, const std::string &value);
 
   /*
    * Add a new value for a member of NF profile
@@ -301,7 +304,7 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
    * @param [const std::string &] value: new value
    * @return true if success, otherwise false
    */
-  bool add_profile_info(const std::string &path, const std::string &value);
+  virtual bool add_profile_info(const std::string &path, const std::string &value);
 
   /*
    * Remove value of a member of NF profile
@@ -309,8 +312,8 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
    * @param [const std::string &] value: new value
    * @return true if success, otherwise false
    */
-  bool remove_profile_info(const std::string &path);
-
+  virtual bool remove_profile_info(const std::string &path);
+  virtual void to_json(nlohmann::json &data) const;
  protected:
   //From NFProfile (Section 6.1.6.2.2@3GPP TS 29.510 V16.0.0 (2019-06))
   std::string nf_instance_id;
@@ -408,6 +411,9 @@ class amf_profile : public nrf_profile {
 
   amf_profile(amf_profile &b) = delete;
 
+  ~amf_profile() {
+
+  }
   /*
    * Add an AMF info
    * @param [const amf_info_t &] info: AMF info
@@ -452,6 +458,8 @@ class amf_profile : public nrf_profile {
    * @return true if success, otherwise false
    */
   bool remove_profile_info(const std::string &path);
+  void to_json(nlohmann::json &data) const;
+
  private:
   amf_info_t amf_info;
 };
@@ -518,7 +526,7 @@ class smf_profile : public nrf_profile {
    * @return true if success, otherwise false
    */
   bool remove_profile_info(const std::string &path);
-
+  void to_json(nlohmann::json &data) const;
  private:
   smf_info_t smf_info;
 };

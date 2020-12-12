@@ -52,16 +52,17 @@ class nrf_app {
   /*
    * Handle a Register NF Instance request
    * @param [const std::string &] nf_instance_id: Instance ID
-   * @param [const oai::nrf::model::NFProfile &] nf_profile: NF profile
+   * @param [NFProfile &] nf_profile: NF profile
    * @param [int &] http_code: HTTP code used to return to the consumer
    * @param [const uint8_t] http_version: HTTP version
+   * @param [ProblemDetails &] problem_details: Store details of the error
    * @return void
    */
   void handle_register_nf_instance(
       const std::string &nf_instance_id,
-      const oai::nrf::model::NFProfile &nf_profile, int &http_code,
+      const NFProfile &nf_profile, int &http_code,
       const uint8_t http_version,
-      oai::nrf::model::ProblemDetails &problem_details);
+      ProblemDetails &problem_details);
 
   /*
    * Handle a Get NF Instance Information
@@ -81,11 +82,14 @@ class nrf_app {
    * @param [const std::vector<PatchItem> &] patchItem: List of modifications need to be applied
    * @param [int &] http_code: HTTP code used to return to the consumer
    * @param [const uint8_t] http_version: HTTP version
+   * @param [ProblemDetails &] problem_details: Store details of the error
    * @return void
    */
-  void handle_update_nf_instance(const std::string &nf_instance_id,
-                                 const std::vector<PatchItem> &patchItem,
-                                 int &http_code, const uint8_t http_version);
+  void handle_update_nf_instance(
+      const std::string &nf_instance_id,
+      const std::vector<PatchItem> &patchItem, int &http_code,
+      const uint8_t http_version,
+      ProblemDetails &problem_details);
   /*
    * Insert a nrf profile
    * @param [const std::string &] profile_id: Profile ID

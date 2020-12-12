@@ -82,7 +82,7 @@ void nrf_app::handle_register_nf_instance(
       break;
 
     case NF_TYPE_SMF: {
-      //TODO:
+      sn = std::make_shared<smf_profile>();
     }
       break;
 
@@ -102,23 +102,8 @@ void nrf_app::handle_register_nf_instance(
     //add to the DB
     add_nf_profile(nf_instance_id, sn);
     Logger::nrf_app().debug("Added/Updated NF Profile to the DB");
-
-    switch (type) {
-      case NF_TYPE_AMF: {
-        std::static_pointer_cast < amf_profile > (sn).get()->display();
-      }
-        break;
-
-      case NF_TYPE_SMF: {
-        std::static_pointer_cast < smf_profile > (sn).get()->display();
-      }
-        break;
-
-      default: {
-        sn.get()->display();
-      }
-    }
-
+    //display the info
+    sn.get()->display();
   } else {
     //error
     Logger::nrf_app().warn(
@@ -131,10 +116,10 @@ void nrf_app::handle_register_nf_instance(
 }
 
 //------------------------------------------------------------------------------
-void nrf_app::handle_update_nf_instance(const std::string &nf_instance_id,
-                                        const std::vector<PatchItem> &patchItem,
-                                        int &http_code,
-                                        const uint8_t http_version) {
+void nrf_app::handle_update_nf_instance(
+    const std::string &nf_instance_id, const std::vector<PatchItem> &patchItem,
+    int &http_code, const uint8_t http_version,
+    oai::nrf::model::ProblemDetails &problem_details) {
 
   Logger::nrf_app().info("Handle Update NF Instance request (HTTP version %d)",
                          http_version);
@@ -142,81 +127,73 @@ void nrf_app::handle_update_nf_instance(const std::string &nf_instance_id,
   //Find the profile corresponding to the instance ID
   std::shared_ptr<nrf_profile> sn = { };
   sn = find_nf_profile(nf_instance_id);
+  bool op_success = true;
 
   if (sn.get() != nullptr) {
     for (auto p : patchItem) {
       patch_op_type_t op = api_conv::string_to_patch_operation(p.getOp());
+      //Verify Path
+      if ((p.getPath().substr(0, 1).compare("/") != 0)
+          or (p.getPath().length() < 2)) {
+        Logger::nrf_app().warn("Bad value for operation path: %s ",
+                               p.getPath().c_str());
+        http_code = HTTP_STATUS_CODE_400_BAD_REQUEST;
+        problem_details.setCause(
+            protocol_application_error_e2str[MANDATORY_IE_INCORRECT]);
+        return;
+      }
+
       std::string path = p.getPath().substr(1);
 
       switch (op) {
         case PATCH_OP_REPLACE: {
-          switch (sn.get()->get_nf_type()) {
-            case NF_TYPE_AMF: {
-              Logger::nrf_app().debug("Update a AMF profile");
-              if (std::static_pointer_cast < amf_profile
-                  > (sn)->replace_profile_info(path, p.getValue()))
-                update_nf_profile(nf_instance_id, sn);
-            }
-              break;
-            case NF_TYPE_SMF: {
-
-            }
-              break;
-            default: {
-              Logger::nrf_app().warn("Unknown NF type!");
-            }
-
-          }
-        }
-        case PATCH_OP_ADD: {
-          switch (sn.get()->get_nf_type()) {
-            case NF_TYPE_AMF: {
-              Logger::nrf_app().debug("Update a AMF profile");
-              if (std::static_pointer_cast < amf_profile
-                  > (sn)->add_profile_info(path, p.getValue()))
-                update_nf_profile(nf_instance_id, sn);
-            }
-              break;
-            case NF_TYPE_SMF: {
-
-            }
-              break;
-            default: {
-              Logger::nrf_app().warn("Unknown NF type!");
-            }
-
-          }
-        }
-        case PATCH_OP_REMOVE: {
-          switch (sn.get()->get_nf_type()) {
-            case NF_TYPE_AMF: {
-              Logger::nrf_app().debug("Update a AMF profile");
-              if (std::static_pointer_cast < amf_profile
-                  > (sn)->remove_profile_info(path))
-                update_nf_profile(nf_instance_id, sn);
-            }
-              break;
-            case NF_TYPE_SMF: {
-
-            }
-              break;
-            default: {
-              Logger::nrf_app().warn("Unknown NF type!");
-            }
-
+          if (sn.get()->replace_profile_info(path, p.getValue())) {
+            update_nf_profile(nf_instance_id, sn);
+            http_code = HTTP_STATUS_CODE_200_OK;
+          } else {
+            op_success = false;
           }
         }
           break;
+
+        case PATCH_OP_ADD: {
+          if (sn.get()->add_profile_info(path, p.getValue())) {
+            update_nf_profile(nf_instance_id, sn);
+            http_code = HTTP_STATUS_CODE_200_OK;
+          } else {
+            op_success = false;
+          }
+        }
+          break;
+
+        case PATCH_OP_REMOVE: {
+          if (sn.get()->remove_profile_info(path)) {
+            update_nf_profile(nf_instance_id, sn);
+            http_code = HTTP_STATUS_CODE_200_OK;
+          } else {
+            op_success = false;
+          }
+        }
+          break;
+
         default: {
           Logger::nrf_app().warn("Requested operation is not valid!");
         }
+      }
 
+      if (!op_success) {
+        http_code = HTTP_STATUS_CODE_400_BAD_REQUEST;
+        problem_details.setCause(
+            protocol_application_error_e2str[MANDATORY_IE_INCORRECT]);
       }
     }
 
   } else {
     Logger::nrf_app().debug("NF Profile with ID %s does not exit",
                             nf_instance_id.c_str());
+    http_code = HTTP_STATUS_CODE_404_NOT_FOUND;
+    problem_details.setCause(
+        protocol_application_error_e2str[RESOURCE_URI_STRUCTURE_NOT_FOUND]);
   }
 }
 
@@ -238,7 +215,7 @@ void nrf_app::handle_get_nf_instances(const std::string &nf_type,
   }
 
   for (auto profile : profiles) {
-    (std::static_pointer_cast < amf_profile > (profile)).get()->display();
+    profile.get()->display();
   }
 }
 
