@@ -316,18 +316,35 @@ bool nrf_app::is_profile_exist(const std::string &profile_id) const {
     Logger::nrf_app().info("NF profile (ID %d) not found", profile_id.c_str());
     return false;
   }
-
 }
 
 //------------------------------------------------------------------------------
 bool nrf_app::remove_nf_profile(std::shared_ptr<nrf_profile> &snp) {
-//TODO
-  return true;
+  std::string key;
+  snp.get()->get_nf_instance_id(key);
+  std::unique_lock lock(m_instance_id2nrf_profile);
+  if (instance_id2nrf_profile.erase(key)) {
+    Logger::nrf_app().info("Removed NF profile (ID %d) from the list",
+                           key.c_str());
+    return true;
+  } else {
+    Logger::nrf_app().info("Remove_NF_profile, profile not found (ID %d)",
+                           key.c_str());
+    return false;
+  }
 }
 
 //------------------------------------------------------------------------------
 bool nrf_app::remove_nf_profile(std::string &profile_id) {
-//TODO
-  return true;
+  std::unique_lock lock(m_instance_id2nrf_profile);
+  if (instance_id2nrf_profile.erase(profile_id)) {
+    Logger::nrf_app().info("Removed NF profile (ID %d) from the list",
+                           profile_id.c_str());
+    return true;
+  } else {
+    Logger::nrf_app().info("Remove_NF_profile, profile not found (ID %d)",
+                           profile_id.c_str());
+    return false;
+  }
 }
 
