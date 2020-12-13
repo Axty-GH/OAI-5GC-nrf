@@ -110,10 +110,6 @@ void NFInstanceIDDocumentApiImpl::update_nf_instance(
   //content type
   response.headers().add < Pistache::Http::Header::ContentType
       > (Pistache::Http::Mime::MediaType(content_type));
-  //Location header
-  response.headers().add < Pistache::Http::Header::Location
-      > (m_address + base + nrf_cfg.sbi_api_version + "/nf-instances/"
-          + nfInstanceID);
   response.send(Pistache::Http::Code(http_code), json_data.dump().c_str());
 
 }
