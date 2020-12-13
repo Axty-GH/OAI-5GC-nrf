@@ -18,6 +18,7 @@
 #include "nrf-api-server.h"
 #include "options.hpp"
 #include "pid_file.hpp"
+#include "logger.hpp"
 
 #include "pistache/endpoint.h"
 #include "pistache/http.h"
@@ -29,8 +30,6 @@
 #include <stdint.h>
 #include <stdlib.h> // srand
 #include <unistd.h> // get_pid(), pause()
-
-#include "logger.hpp"
 
 using namespace oai::nrf::app;
 using namespace util;
@@ -87,8 +86,15 @@ if  ( !Options::parse( argc, argv ) )
   nrf_cfg.load(Options::getlibconfigConfig());
   nrf_cfg.display();
 
+  //Event subsystem
+  nrf_event ev;
+
   // NRF application layer
-  nrf_app_inst = new nrf_app(Options::getlibconfigConfig());
+  nrf_app_inst = new nrf_app(Options::getlibconfigConfig(), ev);
+
+  //Task Manager
+  task_manager tm(ev);
+  std::thread task_manager_thread(&task_manager::run, &tm);
 
   // PID file
   // Currently hard-coded value. TODO: add as config option.

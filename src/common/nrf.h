@@ -126,5 +126,4 @@ typedef struct smf_info_s {
   std::vector<snssai_smf_info_item_t> snssai_smf_info_list;
 } smf_info_t;
 
-
 #endif

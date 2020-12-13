@@ -40,8 +40,6 @@
 #include <nlohmann/json.hpp>
 #include "nrf.h"
 
-#include "nrf.h"
-
 namespace oai {
 namespace nrf {
 namespace app {

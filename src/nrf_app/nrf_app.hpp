@@ -33,8 +33,10 @@
 #include <string>
 #include "NFProfile.h"
 #include "nrf_profile.hpp"
+#include "nrf_event.hpp"
 #include "PatchItem.h"
 #include "ProblemDetails.h"
+
 
 namespace oai {
 namespace nrf {
@@ -45,7 +47,7 @@ class nrf_config;
 class nrf_app {
 
  public:
-  explicit nrf_app(const std::string &config_file);
+  explicit nrf_app(const std::string &config_file, nrf_event& ev);
   nrf_app(nrf_app const&) = delete;
   void operator=(nrf_app const&) = delete;
 
@@ -155,9 +157,14 @@ class nrf_app {
    */
   bool remove_nf_profile(std::string &profile_id);
 
+  void subscribe_task_tick (uint64_t ms);
+  void handle_heartbeart_timeout(uint64_t ms);
+  void subscribe_task_tick2 (uint64_t ms);
+  void handle_heartbeart_timeout2(uint64_t ms);
  private:
   std::map<std::string, std::shared_ptr<nrf_profile>> instance_id2nrf_profile;
   mutable std::shared_mutex m_instance_id2nrf_profile;
+  nrf_event& m_event_sub;
 };
 }
 }

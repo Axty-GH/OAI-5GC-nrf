@@ -33,15 +33,19 @@
 #include "logger.hpp"
 #include "api_conversions.hpp"
 #include "3gpp_29.500.h"
+#include <chrono>
 
 using namespace oai::nrf::app;
 using namespace oai::nrf::model;
+using namespace std::chrono;
 
 extern nrf_app *nrf_app_inst;
 extern nrf_config nrf_cfg;
 
 //------------------------------------------------------------------------------
-nrf_app::nrf_app(const std::string &config_file) {
+nrf_app::nrf_app(const std::string &config_file, nrf_event &ev)
+    :
+    m_event_sub(ev) {
   Logger::nrf_app().startup("Starting...");
   Logger::nrf_app().startup("Started");
 }
@@ -101,6 +105,13 @@ void nrf_app::handle_register_nf_instance(
       http_code = HTTP_STATUS_CODE_201_CREATED;
     //add to the DB
     add_nf_profile(nf_instance_id, sn);
+
+    //get current time
+    uint64_t ms = std::chrono::duration_cast < std::chrono::milliseconds
+        > (std::chrono::system_clock::now().time_since_epoch()).count();
+
+    subscribe_task_tick(ms);
+
     Logger::nrf_app().debug("Added/Updated NF Profile to the DB");
     //display the info
     sn.get()->display();
@@ -128,6 +139,11 @@ void nrf_app::handle_update_nf_instance(
   std::shared_ptr<nrf_profile> sn = { };
   sn = find_nf_profile(nf_instance_id);
   bool op_success = true;
+
+//get current time
+  uint64_t ms = std::chrono::duration_cast < std::chrono::milliseconds
+      > (std::chrono::system_clock::now().time_since_epoch()).count();
+  subscribe_task_tick2(ms);
 
   if (sn.get() != nullptr) {
     for (auto p : patchItem) {
@@ -346,5 +362,57 @@ bool nrf_app::remove_nf_profile(std::string &profile_id) {
                            profile_id.c_str());
     return false;
   }
+}
+
+//------------------------------------------------------------------------------
+void nrf_app::subscribe_task_tick(uint64_t ms) {
+
+  struct itimerspec its;
+  its.it_value.tv_sec = 20;  //seconds
+  its.it_value.tv_nsec = 0;  //100 * 1000 * 1000; //100ms
+
+  const uint64_t interval = its.it_value.tv_sec * 1000
+      + its.it_value.tv_nsec / 1000000;  // convert sec, nsec to msec
+
+      //uint64_t interval =10;
+      // m_event_sub.subscribe_task_tick(
+      //     boost::bind<void>(&nrf_app::handle_heartbeart_timeout, _1), interval, 0 /* start at time 0 */);
+
+  Logger::nrf_app().debug("subscribe_task_tick1: %d", ms);
+  m_event_sub.subscribe_task_tick(
+      boost::bind(&nrf_app::handle_heartbeart_timeout, this, _1), interval,
+      ms % 20000/* start at time 0 */);
+
+}
+
+//------------------------------------------------------------------------------
+void nrf_app::subscribe_task_tick2(uint64_t ms) {
+
+  struct itimerspec its;
+  its.it_value.tv_sec = 20;  //seconds
+  its.it_value.tv_nsec = 0;  //100 * 1000 * 1000; //100ms
+
+  const uint64_t interval = its.it_value.tv_sec * 1000
+      + its.it_value.tv_nsec / 1000000;  // convert sec, nsec to msec
+
+      //uint64_t interval =10;
+      // m_event_sub.subscribe_task_tick(
+      //     boost::bind<void>(&nrf_app::handle_heartbeart_timeout, _1), interval, 0 /* start at time 0 */);
+
+  Logger::nrf_app().debug("subscribe_task_tick2 %d", ms);
+  m_event_sub.subscribe_task_tick(
+      boost::bind(&nrf_app::handle_heartbeart_timeout2, this, _1), interval,
+      ms % 20000 /* start at time 0 */);
+
+}
+
+//------------------------------------------------------------------------------
+void nrf_app::handle_heartbeart_timeout(uint64_t ms) {
+  Logger::nrf_app().info("handle_heartbeart_timeout1 %d", ms);
+}
+
+//------------------------------------------------------------------------------
+void nrf_app::handle_heartbeart_timeout2(uint64_t ms) {
+  Logger::nrf_app().info("handle_heartbeart_timeout2 %d", ms);
 }
 
