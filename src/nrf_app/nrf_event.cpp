@@ -49,4 +49,20 @@ bs2::connection nrf_event::subscribe_task_tick(
   return task_tick.connect(f);
 }
 
+//------------------------------------------------------------------------------
+bs2::connection nrf_event::subscribe_task_tick_extended(
+    const task_sig_t::extended_slot_type& sig, uint64_t period, uint64_t start) {
+  /* Wrap the actual callback in a lambda. The latter checks whether the
+   * current time is after start time, and ensures that the callback is only
+   * called every X ms with X being the period time. This way, it is possible
+   * to register to be notified every X ms instead of every ms, which provides
+   * greater freedom to implementations. */
+  auto f = [period,start,sig] (const bs2::connection& c, uint64_t t)
+           {
+             if (t >= start && (t - start) % period == 0) sig(c, t);
+           };
+  return task_tick.connect_extended(f);
+}
+
+
 

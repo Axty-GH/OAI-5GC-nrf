@@ -66,6 +66,10 @@ class nrf_event {
   bs2::connection subscribe_task_tick(const task_sig_t::slot_type &sig,
                                       uint64_t period, uint64_t start = 0);
 
+  bs2::connection subscribe_task_tick_extended(const task_sig_t::extended_slot_type &sig,
+                                      uint64_t period, uint64_t start = 0);
+
+
  private:
   task_sig_t task_tick;
 

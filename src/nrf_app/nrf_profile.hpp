@@ -94,7 +94,7 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
 
   nrf_profile(nrf_profile &b) = delete;
   virtual ~nrf_profile() {
-
+    task_connection.disconnect();
   }
 
   /*
@@ -321,8 +321,10 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
 
   virtual void subscribe_task_tick (uint64_t ms);
   virtual void handle_heartbeart_timeout(uint64_t ms);
+  virtual void unsubscribe_task_tick();
  protected:
   nrf_event &m_event_sub;
+  bs2::connection task_connection;
   //From NFProfile (Section 6.1.6.2.2@3GPP TS 29.510 V16.0.0 (2019-06))
   std::string nf_instance_id;
   std::string nf_instance_name;

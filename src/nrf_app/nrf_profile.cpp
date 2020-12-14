@@ -453,26 +453,27 @@ void nrf_profile::to_json(nlohmann::json &data) const {
 void nrf_profile::subscribe_task_tick(uint64_t ms) {
 
   struct itimerspec its;
-  its.it_value.tv_sec = 10;  //seconds
+  its.it_value.tv_sec = HEART_BEAT_TIMER;  //seconds
   its.it_value.tv_nsec = 0;  //100 * 1000 * 1000; //100ms
-
   const uint64_t interval = its.it_value.tv_sec * 1000
       + its.it_value.tv_nsec / 1000000;  // convert sec, nsec to msec
 
-      //uint64_t interval =10;
-      // m_event_sub.subscribe_task_tick(
-      //     boost::bind<void>(&nrf_app::handle_heartbeart_timeout, _1), interval, 0 /* start at time 0 */);
-
   Logger::nrf_app().debug("subscribe_task_tick2 %d", ms);
-  m_event_sub.subscribe_task_tick(
+  task_connection = m_event_sub.subscribe_task_tick(
       boost::bind(&nrf_profile::handle_heartbeart_timeout, this, _1), interval,
-      ms % 10000 /* start at time 0 */);
+      ms % (HEART_BEAT_TIMER*1000) /* start at time 0 */);
+}
 
+//------------------------------------------------------------------------------
+void nrf_profile::unsubscribe_task_tick() {
+  task_connection.disconnect();
+  Logger::nrf_app().debug("Un subscribe_task_tick" );
 }
 
 //------------------------------------------------------------------------------
 void nrf_profile::handle_heartbeart_timeout(uint64_t ms) {
-  Logger::nrf_app().info("NRF PROFILE handle_heartbeart_timeout1 %d, PROFILE ID %s", ms, nf_instance_id.c_str());
+  Logger::nrf_app().info("Handle heartbeart timeout profile %s, time %d", nf_instance_id.c_str(), ms);
+  set_nf_status("SUSPENDED");
 }
 
 

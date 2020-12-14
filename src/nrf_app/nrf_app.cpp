@@ -81,17 +81,17 @@ void nrf_app::handle_register_nf_instance(
   std::shared_ptr<nrf_profile> sn = { };
   switch (type) {
     case NF_TYPE_AMF: {
-      sn = std::make_shared<amf_profile>(m_event_sub);
+      sn = std::make_shared < amf_profile > (m_event_sub);
     }
       break;
 
     case NF_TYPE_SMF: {
-      sn = std::make_shared<smf_profile>(m_event_sub);
+      sn = std::make_shared < smf_profile > (m_event_sub);
     }
       break;
 
     default: {
-      sn = std::make_shared<nrf_profile>(m_event_sub);
+      sn = std::make_shared < nrf_profile > (m_event_sub);
     }
   }
 
@@ -107,10 +107,10 @@ void nrf_app::handle_register_nf_instance(
     add_nf_profile(nf_instance_id, sn);
 
     //get current time
-    uint64_t ms = std::chrono::duration_cast < std::chrono::milliseconds
-        > (std::chrono::system_clock::now().time_since_epoch()).count();
+   // uint64_t ms = std::chrono::duration_cast < std::chrono::milliseconds
+   //     > (std::chrono::system_clock::now().time_since_epoch()).count();
 
-    subscribe_task_tick(ms);
+   // subscribe_task_tick(ms);
 
     Logger::nrf_app().debug("Added/Updated NF Profile to the DB");
     //display the info
@@ -141,9 +141,9 @@ void nrf_app::handle_update_nf_instance(
   bool op_success = true;
 
 //get current time
-  uint64_t ms = std::chrono::duration_cast < std::chrono::milliseconds
-      > (std::chrono::system_clock::now().time_since_epoch()).count();
-  subscribe_task_tick2(ms);
+  //uint64_t ms = std::chrono::duration_cast < std::chrono::milliseconds
+  //    > (std::chrono::system_clock::now().time_since_epoch()).count();
+  //subscribe_task_tick2(ms);
 
   if (sn.get() != nullptr) {
     for (auto p : patchItem) {
@@ -275,6 +275,7 @@ bool nrf_app::update_nf_profile(const std::string &profile_id,
     Logger::nrf_app().info("Update a NF profile to the list (profile ID %s)",
                            profile_id.c_str());
     instance_id2nrf_profile.at(profile_id) = p;
+    p.get()->unsubscribe_task_tick();
     return true;
   } else {
     Logger::nrf_app().info("NF profile (ID %d) not found", profile_id.c_str());
@@ -381,14 +382,10 @@ void nrf_app::subscribe_task_tick(uint64_t ms) {
   const uint64_t interval = its.it_value.tv_sec * 1000
       + its.it_value.tv_nsec / 1000000;  // convert sec, nsec to msec
 
-      //uint64_t interval =10;
-      // m_event_sub.subscribe_task_tick(
-      //     boost::bind<void>(&nrf_app::handle_heartbeart_timeout, _1), interval, 0 /* start at time 0 */);
-
   Logger::nrf_app().debug("subscribe_task_tick1: %d", ms);
   m_event_sub.subscribe_task_tick(
       boost::bind(&nrf_app::handle_heartbeart_timeout, this, _1), interval,
-      ms%20000/* start at time 0 */);
+      ms % 20000);
 
 }
 
@@ -401,10 +398,6 @@ void nrf_app::subscribe_task_tick2(uint64_t ms) {
 
   const uint64_t interval = its.it_value.tv_sec * 1000
       + its.it_value.tv_nsec / 1000000;  // convert sec, nsec to msec
-
-      //uint64_t interval =10;
-      // m_event_sub.subscribe_task_tick(
-      //     boost::bind<void>(&nrf_app::handle_heartbeart_timeout, _1), interval, 0 /* start at time 0 */);
 
   Logger::nrf_app().debug("subscribe_task_tick2 %d", ms);
   m_event_sub.subscribe_task_tick(
