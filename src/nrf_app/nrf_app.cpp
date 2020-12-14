@@ -81,17 +81,17 @@ void nrf_app::handle_register_nf_instance(
   std::shared_ptr<nrf_profile> sn = { };
   switch (type) {
     case NF_TYPE_AMF: {
-      sn = std::make_shared<amf_profile>();
+      sn = std::make_shared<amf_profile>(m_event_sub);
     }
       break;
 
     case NF_TYPE_SMF: {
-      sn = std::make_shared<smf_profile>();
+      sn = std::make_shared<smf_profile>(m_event_sub);
     }
       break;
 
     default: {
-      sn = std::make_shared<nrf_profile>();
+      sn = std::make_shared<nrf_profile>(m_event_sub);
     }
   }
 
@@ -255,6 +255,13 @@ bool nrf_app::add_nf_profile(const std::string &profile_id,
    }*/
 //Create or update if profile exist
   instance_id2nrf_profile[profile_id] = p;
+
+  //get current time
+  uint64_t ms = std::chrono::duration_cast < std::chrono::milliseconds
+      > (std::chrono::system_clock::now().time_since_epoch()).count();
+
+  p.get()->subscribe_task_tick(ms);
+
   return true;
 }
 
@@ -381,7 +388,7 @@ void nrf_app::subscribe_task_tick(uint64_t ms) {
   Logger::nrf_app().debug("subscribe_task_tick1: %d", ms);
   m_event_sub.subscribe_task_tick(
       boost::bind(&nrf_app::handle_heartbeart_timeout, this, _1), interval,
-      ms % 20000/* start at time 0 */);
+      ms%20000/* start at time 0 */);
 
 }
 

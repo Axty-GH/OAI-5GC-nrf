@@ -42,6 +42,7 @@ namespace nrf {
 namespace app {
 
 class task_manager;
+//class nrf_profile;
 
 class nrf_event {
 
@@ -60,6 +61,7 @@ class nrf_event {
   // class register/handle event
   friend class nrf_app;
   friend class task_manager;
+  friend class nrf_profile;
 
   bs2::connection subscribe_task_tick(const task_sig_t::slot_type &sig,
                                       uint64_t period, uint64_t start = 0);

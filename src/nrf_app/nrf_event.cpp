@@ -30,6 +30,7 @@
 #include "nrf_event.hpp"
 #include "nrf_app.hpp"
 #include "nrf_event_sig.hpp"
+#include <iostream>
 
 using namespace oai::nrf::app;
 

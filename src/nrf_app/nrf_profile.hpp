@@ -39,6 +39,7 @@
 #include <vector>
 #include <nlohmann/json.hpp>
 #include "nrf.h"
+#include "nrf_event.hpp"
 
 namespace oai {
 namespace nrf {
@@ -49,8 +50,9 @@ using namespace std;
 class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
 
  public:
-  nrf_profile()
+  nrf_profile(nrf_event &ev)
       :
+      m_event_sub(ev),
       nf_type(NF_TYPE_UNKNOWN),
       heartBeat_timer(0),
       snssais(),
@@ -61,8 +63,9 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
     nf_status = "";
     json_data = { };
   }
-  nrf_profile(const nf_type_t type)
+  nrf_profile(nrf_event &ev, const nf_type_t type)
       :
+      m_event_sub(ev),
       nf_type(type),
       heartBeat_timer(0),
       snssais(),
@@ -74,8 +77,9 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
     json_data = { };
   }
 
-  nrf_profile(const std::string &id)
+  nrf_profile(nrf_event &ev, const std::string &id)
       :
+      m_event_sub(ev),
       nf_instance_id(id),
       heartBeat_timer(0),
       snssais(),
@@ -294,7 +298,8 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
    * @param [const std::string &] value: new value
    * @return true if success, otherwise false
    */
-  virtual bool replace_profile_info(const std::string &path, const std::string &value);
+  virtual bool replace_profile_info(const std::string &path,
+                                    const std::string &value);
 
   /*
    * Add a new value for a member of NF profile
@@ -302,7 +307,8 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
    * @param [const std::string &] value: new value
    * @return true if success, otherwise false
    */
-  virtual bool add_profile_info(const std::string &path, const std::string &value);
+  virtual bool add_profile_info(const std::string &path,
+                                const std::string &value);
 
   /*
    * Remove value of a member of NF profile
@@ -312,7 +318,11 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
    */
   virtual bool remove_profile_info(const std::string &path);
   virtual void to_json(nlohmann::json &data) const;
+
+  virtual void subscribe_task_tick (uint64_t ms);
+  virtual void handle_heartbeart_timeout(uint64_t ms);
  protected:
+  nrf_event &m_event_sub;
   //From NFProfile (Section 6.1.6.2.2@3GPP TS 29.510 V16.0.0 (2019-06))
   std::string nf_instance_id;
   std::string nf_instance_name;
@@ -394,15 +404,15 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
 class amf_profile : public nrf_profile {
 
  public:
-  amf_profile()
+  amf_profile(nrf_event &ev)
       :
-      nrf_profile(NF_TYPE_AMF) {
+      nrf_profile(ev, NF_TYPE_AMF) {
     amf_info = { };
   }
 
-  amf_profile(const std::string &id)
+  amf_profile(nrf_event &ev, const std::string &id)
       :
-      nrf_profile(id) {
+      nrf_profile(ev, id) {
     nf_type = NF_TYPE_AMF;
     amf_info = { };
   }
@@ -465,15 +475,15 @@ class amf_profile : public nrf_profile {
 class smf_profile : public nrf_profile {
 
  public:
-  smf_profile()
+  smf_profile(nrf_event &ev)
       :
-      nrf_profile(NF_TYPE_SMF) {
+      nrf_profile(ev, NF_TYPE_SMF) {
     smf_info = { };
   }
 
-  smf_profile(const std::string &id)
+  smf_profile(nrf_event &ev, const std::string &id)
       :
-      nrf_profile(id) {
+      nrf_profile(ev, id) {
     nf_type = NF_TYPE_SMF;
     smf_info = { };
   }

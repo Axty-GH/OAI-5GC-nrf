@@ -66,6 +66,7 @@ void task_manager::manage_tasks() {
 
   while (1) {
     event_sub_.task_tick(t);
+    t++;
     wait_for_cycle();
   }
 }
