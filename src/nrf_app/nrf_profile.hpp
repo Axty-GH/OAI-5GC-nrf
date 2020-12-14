@@ -41,6 +41,7 @@
 
 #include "nrf.h"
 #include "nrf_event.hpp"
+#include "logger.hpp"
 
 namespace oai {
 namespace nrf {
@@ -94,7 +95,9 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
   }
 
   nrf_profile(nrf_profile &b) = delete;
+
   virtual ~nrf_profile() {
+    Logger::nrf_app().debug("Delete instance...");
     task_connection.disconnect();
   }
 

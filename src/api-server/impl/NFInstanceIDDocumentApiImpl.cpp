@@ -14,6 +14,7 @@
 #include "logger.hpp"
 #include "nrf_app.hpp"
 #include "nrf_config.hpp"
+#include "nrf_profile.hpp"
 #include "ProblemDetails.h"
 #include "3gpp_29.500.h"
 
@@ -36,14 +37,68 @@ NFInstanceIDDocumentApiImpl::NFInstanceIDDocumentApiImpl(
     m_address(address) {
 }
 
+//------------------------------------------------------------------------------
 void NFInstanceIDDocumentApiImpl::deregister_nf_instance(
     const std::string &nfInstanceID, Pistache::Http::ResponseWriter &response) {
-  response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+  Logger::nrf_sbi().info(
+      "Got a request to de-register a given NF Instance, Instance ID: %s",
+      nfInstanceID.c_str());
+
+  int http_code = 0;
+  ProblemDetails problem_details = { };
+  m_nrf_app->handle_deregister_nf_instance(nfInstanceID, http_code, 1,
+                                           problem_details);
+
+  nlohmann::json json_data = { };
+  std::string content_type = "application/json";
+
+  if (http_code != HTTP_STATUS_CODE_204_NO_CONTENT) {
+    to_json(json_data, problem_details);
+    content_type = "application/problem+json";
+    //content type
+    response.headers().add < Pistache::Http::Header::ContentType
+        > (Pistache::Http::Mime::MediaType(content_type));
+    response.send(Pistache::Http::Code(http_code), json_data.dump().c_str());
+    return;
+  } else {
+    response.headers().add < Pistache::Http::Header::ContentType
+        > (Pistache::Http::Mime::MediaType(content_type));
+    response.send(Pistache::Http::Code(http_code));
+  }
+
 }
+
+//------------------------------------------------------------------------------
 void NFInstanceIDDocumentApiImpl::get_nf_instance(
     const std::string &nfInstanceID, Pistache::Http::ResponseWriter &response) {
-  response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+  Logger::nrf_sbi().info(
+      "Got a request to retrieve the profile of a given NF Instance, Instance ID: %s",
+      nfInstanceID.c_str());
+
+  int http_code = 0;
+  std::shared_ptr<nrf_profile> profile = { };
+  ProblemDetails problem_details = { };
+  m_nrf_app->handle_get_nf_instance(nfInstanceID, profile, http_code, 1,
+                                    problem_details);
+
+  nlohmann::json json_data = { };
+  std::string content_type = "application/json";
+
+  if (http_code != HTTP_STATUS_CODE_200_OK) {
+    to_json(json_data, problem_details);
+    content_type = "application/problem+json";
+  } else {
+    profile.get()->to_json(json_data);
+  }
+
+  //content type
+  response.headers().add < Pistache::Http::Header::ContentType
+      > (Pistache::Http::Mime::MediaType(content_type));
+  response.send(Pistache::Http::Code(http_code), json_data.dump().c_str());
+
 }
+
+//------------------------------------------------------------------------------
 void NFInstanceIDDocumentApiImpl::register_nf_instance(
     const std::string &nfInstanceID, const NFProfile &nFProfile,
     const Pistache::Optional<Pistache::Http::Header::Raw> &contentEncoding,
@@ -79,6 +134,8 @@ void NFInstanceIDDocumentApiImpl::register_nf_instance(
           + nfInstanceID);
   response.send(Pistache::Http::Code(http_code), json_data.dump().c_str());
 }
+
+//------------------------------------------------------------------------------
 void NFInstanceIDDocumentApiImpl::update_nf_instance(
     const std::string &nfInstanceID, const std::vector<PatchItem> &patchItem,
     Pistache::Http::ResponseWriter &response) {

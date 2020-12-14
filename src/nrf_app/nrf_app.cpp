@@ -230,6 +230,64 @@ void nrf_app::handle_get_nf_instances(const std::string &nf_type,
   }
 }
 
+void nrf_app::handle_get_nf_instance(const std::string &nf_instance_id,
+                                     std::shared_ptr<nrf_profile> &profile,
+                                     int &http_code, const uint8_t http_version,
+                                     ProblemDetails &problem_details) {
+
+  Logger::nrf_app().info("Handle Retrieve an NF Instance (HTTP version %d)",
+                         http_version);
+
+  //TODO:  If the NF Service Consumer is not allowed to retrieve the NF profile of this specific registered NF instance, the
+  //NRF shall return "403 Forbidden" status code.
+
+  profile = find_nf_profile(nf_instance_id);
+  if (profile.get() == nullptr) {
+    Logger::nrf_app().debug("Profile with profile ID %s not found",
+                            nf_instance_id.c_str());
+    http_code = HTTP_STATUS_CODE_404_NOT_FOUND;
+    problem_details.setCause(
+        protocol_application_error_e2str[RESOURCE_URI_STRUCTURE_NOT_FOUND]);
+    return;
+  } else {
+    Logger::nrf_app().debug("Profile with profile ID %s",
+                            nf_instance_id.c_str());
+    profile.get()->display();
+    http_code = HTTP_STATUS_CODE_200_OK;
+    return;
+  }
+}
+
+//------------------------------------------------------------------------------
+void nrf_app::handle_deregister_nf_instance(const std::string &nf_instance_id,
+                                            int &http_code,
+                                            const uint8_t http_version,
+                                            ProblemDetails &problem_details) {
+  Logger::nrf_app().info("Handle Deregister an NF Instance (HTTP version %d)",
+                         http_version);
+
+  if (is_profile_exist(nf_instance_id)) {
+    if (remove_nf_profile(nf_instance_id)) {
+      Logger::nrf_app().debug("Removed NF profile with profile ID %s",
+                              nf_instance_id.c_str());
+      http_code = HTTP_STATUS_CODE_204_NO_CONTENT;
+      return;
+    } else {
+      http_code = HTTP_STATUS_CODE_500_INTERNAL_SERVER_ERROR;
+      problem_details.setCause(
+          protocol_application_error_e2str[SYSTEM_FAILURE]);
+      return;
+    }
+  } else {
+    Logger::nrf_app().debug("Profile with profile ID %s not found",
+                            nf_instance_id.c_str());
+    http_code = HTTP_STATUS_CODE_404_NOT_FOUND;
+    problem_details.setCause(
+        protocol_application_error_e2str[RESOURCE_URI_STRUCTURE_NOT_FOUND]);
+    return;
+  }
+}
+
 //------------------------------------------------------------------------------
 bool nrf_app::add_nf_profile(const std::string &profile_id,
                              const std::shared_ptr<nrf_profile> &p) {
@@ -335,7 +393,7 @@ bool nrf_app::is_profile_exist(const std::string &profile_id) const {
 }
 
 //------------------------------------------------------------------------------
-bool nrf_app::remove_nf_profile(std::shared_ptr<nrf_profile> &snp) {
+bool nrf_app::remove_nf_profile(const std::shared_ptr<nrf_profile> &snp) {
   std::string key;
   snp.get()->get_nf_instance_id(key);
   std::unique_lock lock(m_instance_id2nrf_profile);
@@ -351,7 +409,7 @@ bool nrf_app::remove_nf_profile(std::shared_ptr<nrf_profile> &snp) {
 }
 
 //------------------------------------------------------------------------------
-bool nrf_app::remove_nf_profile(std::string &profile_id) {
+bool nrf_app::remove_nf_profile(const std::string &profile_id) {
   std::unique_lock lock(m_instance_id2nrf_profile);
   if (instance_id2nrf_profile.erase(profile_id)) {
     Logger::nrf_app().info("Removed NF profile (ID %d) from the list",

@@ -92,6 +92,36 @@ class nrf_app {
       const std::vector<PatchItem> &patchItem, int &http_code,
       const uint8_t http_version,
       ProblemDetails &problem_details);
+
+  /*
+   * Handle a Get NF Instance request
+   * @param [const std::string &] nf_instance_id: Instance ID
+   * @param [nrf_profile &] profile: NF profile
+   * @param [int &] http_code: HTTP code used to return to the consumer
+   * @param [const uint8_t] http_version: HTTP version
+   * @param [ProblemDetails &] problem_details: Store details of the error
+   * @return void
+   */
+  void handle_get_nf_instance(
+      const std::string &nf_instance_id,
+      std::shared_ptr < nrf_profile > &profile, int &http_code,
+      const uint8_t http_version,
+      ProblemDetails &problem_details);
+
+  /*
+   * Handle De-register a given NF Instance
+   * @param [const std::string &] nf_instance_id: Instance ID
+   * @param [int &] http_code: HTTP code used to return to the consumer
+   * @param [const uint8_t] http_version: HTTP version
+   * @param [ProblemDetails &] problem_details: Store details of the error
+   * @return void
+   */
+  void handle_deregister_nf_instance(
+      const std::string &nf_instance_id,
+      int &http_code,
+      const uint8_t http_version,
+      ProblemDetails &problem_details);
+
   /*
    * Insert a nrf profile
    * @param [const std::string &] profile_id: Profile ID
@@ -148,14 +178,14 @@ class nrf_app {
    * @param [std::shared_ptr<nrf_profile> &] snp: profile to be removed
    * @return true if successful, otherwise, return false
    */
-  bool remove_nf_profile(std::shared_ptr<nrf_profile> &snp);
+  bool remove_nf_profile(const std::shared_ptr<nrf_profile> &snp);
 
   /*
    * Remove a nf profile from the list
    * @param [std::string &] profile_id: ID of the profile to be removed
    * @return true if successful, otherwise, return false
    */
-  bool remove_nf_profile(std::string &profile_id);
+  bool remove_nf_profile(const std::string &profile_id);
 
   void subscribe_task_tick (uint64_t ms);
   void handle_heartbeart_timeout(uint64_t ms);
