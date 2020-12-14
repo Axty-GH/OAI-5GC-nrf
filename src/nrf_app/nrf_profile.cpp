@@ -458,16 +458,16 @@ void nrf_profile::subscribe_task_tick(uint64_t ms) {
   const uint64_t interval = its.it_value.tv_sec * 1000
       + its.it_value.tv_nsec / 1000000;  // convert sec, nsec to msec
 
-  Logger::nrf_app().debug("subscribe_task_tick2 %d", ms);
+  Logger::nrf_app().debug("Subscribe to task tick (to be noticed when the Heartbearttimer expires) %d, %d", ms, ms % (HEART_BEAT_TIMER*1000));
   task_connection = m_event_sub.subscribe_task_tick(
       boost::bind(&nrf_profile::handle_heartbeart_timeout, this, _1), interval,
-      ms % (HEART_BEAT_TIMER*1000) /* start at time 0 */);
+      (HEART_BEAT_TIMER*1000 + ms % (HEART_BEAT_TIMER*1000)) /* start at time 0 */);
 }
 
 //------------------------------------------------------------------------------
 void nrf_profile::unsubscribe_task_tick() {
   task_connection.disconnect();
-  Logger::nrf_app().debug("Un subscribe_task_tick" );
+  Logger::nrf_app().debug("Unsubscribe to task tick" );
 }
 
 //------------------------------------------------------------------------------

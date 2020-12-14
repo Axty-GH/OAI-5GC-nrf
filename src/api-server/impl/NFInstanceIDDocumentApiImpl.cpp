@@ -97,10 +97,11 @@ void NFInstanceIDDocumentApiImpl::update_nf_instance(
   std::shared_ptr<nrf_profile> profile = m_nrf_app->find_nf_profile(
       nfInstanceID);
 
-  if (http_code != HTTP_STATUS_CODE_200_OK) {
+  if ((http_code != HTTP_STATUS_CODE_200_OK)
+      and (http_code != HTTP_STATUS_CODE_204_NO_CONTENT)) {
     to_json(json_data, problem_details);
     content_type = "application/problem+json";
-  } else {
+  } else if (http_code == HTTP_STATUS_CODE_200_OK) {
     //convert the profile to Json
     profile.get()->to_json(json_data);
   }
@@ -110,8 +111,10 @@ void NFInstanceIDDocumentApiImpl::update_nf_instance(
   //content type
   response.headers().add < Pistache::Http::Header::ContentType
       > (Pistache::Http::Mime::MediaType(content_type));
-  response.send(Pistache::Http::Code(http_code), json_data.dump().c_str());
-
+  if (http_code != HTTP_STATUS_CODE_204_NO_CONTENT)
+    response.send(Pistache::Http::Code(http_code), json_data.dump().c_str());
+  else
+    response.send(Pistache::Http::Code(http_code));
 }
 
 }

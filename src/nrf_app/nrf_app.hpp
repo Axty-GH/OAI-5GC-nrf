@@ -159,8 +159,7 @@ class nrf_app {
 
   void subscribe_task_tick (uint64_t ms);
   void handle_heartbeart_timeout(uint64_t ms);
-  void subscribe_task_tick2 (uint64_t ms);
-  void handle_heartbeart_timeout2(uint64_t ms);
+
  private:
   std::map<std::string, std::shared_ptr<nrf_profile>> instance_id2nrf_profile;
   mutable std::shared_mutex m_instance_id2nrf_profile;

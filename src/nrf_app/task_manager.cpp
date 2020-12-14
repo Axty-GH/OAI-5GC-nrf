@@ -32,6 +32,7 @@
 #include <thread>
 #include <unistd.h>
 #include <iostream>
+
 #include "logger.hpp"
 
 using namespace oai::nrf::app;

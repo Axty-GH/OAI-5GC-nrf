@@ -38,6 +38,7 @@
 #include <utility>
 #include <vector>
 #include <nlohmann/json.hpp>
+
 #include "nrf.h"
 #include "nrf_event.hpp"
 
@@ -317,11 +318,35 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
    * @return true if success, otherwise false
    */
   virtual bool remove_profile_info(const std::string &path);
+
+  /*
+   * Represent NF profile as json object
+   * @param [nlohmann::json &] data: Json data
+   * @return void
+   */
   virtual void to_json(nlohmann::json &data) const;
 
-  virtual void subscribe_task_tick (uint64_t ms);
-  virtual void handle_heartbeart_timeout(uint64_t ms);
-  virtual void unsubscribe_task_tick();
+  /*
+   * Subscribe to task tick to be notified (every Interval period)
+   * @param [uint64_t] ms: current time
+   * @return void
+   */
+  void subscribe_task_tick (uint64_t ms);
+
+  /*
+   * Handle heartbeart timeout event
+   * @param [uint64_t] ms: current time
+   * @return void
+   */
+  void handle_heartbeart_timeout(uint64_t ms);
+
+  /*
+   * Unubscribe to task tick event
+   * @param void
+   * @return void
+   */
+  void unsubscribe_task_tick();
+
  protected:
   nrf_event &m_event_sub;
   bs2::connection task_connection;
@@ -468,6 +493,12 @@ class amf_profile : public nrf_profile {
    * @return true if success, otherwise false
    */
   bool remove_profile_info(const std::string &path);
+
+  /*
+   * Represent NF profile as json object
+   * @param [nlohmann::json &] data: Json data
+   * @return void
+   */
   void to_json(nlohmann::json &data) const;
 
  private:
@@ -536,7 +567,14 @@ class smf_profile : public nrf_profile {
    * @return true if success, otherwise false
    */
   bool remove_profile_info(const std::string &path);
+
+  /*
+   * Represent NF profile as json object
+   * @param [nlohmann::json &] data: Json data
+   * @return void
+   */
   void to_json(nlohmann::json &data) const;
+
  private:
   smf_info_t smf_info;
 };

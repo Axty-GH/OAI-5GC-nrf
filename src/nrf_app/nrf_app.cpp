@@ -61,6 +61,7 @@ void nrf_app::handle_register_nf_instance(
       "Handle Register NF Instance/Update NF Instance (HTTP version %d)",
       http_version);
 
+  //Check if nfInstanceID is a valid UUID (version 4)
   if (!api_conv::validate_uuid(nf_instance_id)) {
     http_code = HTTP_STATUS_CODE_400_BAD_REQUEST;
     Logger::nrf_app().debug("Bad UUID format for NF Instance ID (%s)",
@@ -69,8 +70,6 @@ void nrf_app::handle_register_nf_instance(
         protocol_application_error_e2str[MANDATORY_QUERY_PARAM_INCORRECT]);
     return;
   }
-  //Check if nfInstanceID is a valid UUID (version 4)
-  //TODO
 
   nf_type_t type = api_conv::string_to_nf_type(nf_profile.getNfType());
   //Create a new NF profile or Update an existing NF profile
@@ -105,13 +104,6 @@ void nrf_app::handle_register_nf_instance(
       http_code = HTTP_STATUS_CODE_201_CREATED;
     //add to the DB
     add_nf_profile(nf_instance_id, sn);
-
-    //get current time
-   // uint64_t ms = std::chrono::duration_cast < std::chrono::milliseconds
-   //     > (std::chrono::system_clock::now().time_since_epoch()).count();
-
-   // subscribe_task_tick(ms);
-
     Logger::nrf_app().debug("Added/Updated NF Profile to the DB");
     //display the info
     sn.get()->display();
@@ -139,11 +131,7 @@ void nrf_app::handle_update_nf_instance(
   std::shared_ptr<nrf_profile> sn = { };
   sn = find_nf_profile(nf_instance_id);
   bool op_success = true;
-
-//get current time
-  //uint64_t ms = std::chrono::duration_cast < std::chrono::milliseconds
-  //    > (std::chrono::system_clock::now().time_since_epoch()).count();
-  //subscribe_task_tick2(ms);
+  bool is_heartbeart_procedure = false;
 
   if (sn.get() != nullptr) {
     for (auto p : patchItem) {
@@ -163,6 +151,8 @@ void nrf_app::handle_update_nf_instance(
 
       switch (op) {
         case PATCH_OP_REPLACE: {
+          if (path.compare("nfStatus") == 0)
+            is_heartbeart_procedure = true;
           if (sn.get()->replace_profile_info(path, p.getValue())) {
             update_nf_profile(nf_instance_id, sn);
             http_code = HTTP_STATUS_CODE_200_OK;
@@ -202,6 +192,11 @@ void nrf_app::handle_update_nf_instance(
         problem_details.setCause(
             protocol_application_error_e2str[MANDATORY_IE_INCORRECT]);
       }
+    }
+
+    //for NF Heartbeat procedure
+    if (is_heartbeart_procedure && (http_code = HTTP_STATUS_CODE_200_OK)) {
+      http_code = HTTP_STATUS_CODE_204_NO_CONTENT;
     }
 
   } else {
@@ -256,10 +251,10 @@ bool nrf_app::add_nf_profile(const std::string &profile_id,
 //Create or update if profile exist
   instance_id2nrf_profile[profile_id] = p;
 
+  //heartbeart management for this NF profile
   //get current time
   uint64_t ms = std::chrono::duration_cast < std::chrono::milliseconds
       > (std::chrono::system_clock::now().time_since_epoch()).count();
-
   p.get()->subscribe_task_tick(ms);
 
   return true;
@@ -275,7 +270,6 @@ bool nrf_app::update_nf_profile(const std::string &profile_id,
     Logger::nrf_app().info("Update a NF profile to the list (profile ID %s)",
                            profile_id.c_str());
     instance_id2nrf_profile.at(profile_id) = p;
-    p.get()->unsubscribe_task_tick();
     return true;
   } else {
     Logger::nrf_app().info("NF profile (ID %d) not found", profile_id.c_str());
@@ -297,7 +291,6 @@ std::shared_ptr<nrf_profile> nrf_app::find_nf_profile(
     Logger::nrf_app().info("NF profile (ID %s) not found", profile_id.c_str());
     return nullptr;
   }
-
 }
 
 //------------------------------------------------------------------------------
@@ -313,7 +306,6 @@ bool nrf_app::find_nf_profile(const std::string &profile_id,
     Logger::nrf_app().info("NF profile (ID %d) not found", profile_id.c_str());
     return false;
   }
-
 }
 
 //------------------------------------------------------------------------------
@@ -382,7 +374,7 @@ void nrf_app::subscribe_task_tick(uint64_t ms) {
   const uint64_t interval = its.it_value.tv_sec * 1000
       + its.it_value.tv_nsec / 1000000;  // convert sec, nsec to msec
 
-  Logger::nrf_app().debug("subscribe_task_tick1: %d", ms);
+  Logger::nrf_app().debug("subscribe task_tick: %d", ms);
   m_event_sub.subscribe_task_tick(
       boost::bind(&nrf_app::handle_heartbeart_timeout, this, _1), interval,
       ms % 20000);
@@ -390,29 +382,7 @@ void nrf_app::subscribe_task_tick(uint64_t ms) {
 }
 
 //------------------------------------------------------------------------------
-void nrf_app::subscribe_task_tick2(uint64_t ms) {
-
-  struct itimerspec its;
-  its.it_value.tv_sec = 20;  //seconds
-  its.it_value.tv_nsec = 0;  //100 * 1000 * 1000; //100ms
-
-  const uint64_t interval = its.it_value.tv_sec * 1000
-      + its.it_value.tv_nsec / 1000000;  // convert sec, nsec to msec
-
-  Logger::nrf_app().debug("subscribe_task_tick2 %d", ms);
-  m_event_sub.subscribe_task_tick(
-      boost::bind(&nrf_app::handle_heartbeart_timeout2, this, _1), interval,
-      ms % 20000 /* start at time 0 */);
-
-}
-
-//------------------------------------------------------------------------------
 void nrf_app::handle_heartbeart_timeout(uint64_t ms) {
-  Logger::nrf_app().info("handle_heartbeart_timeout1 %d", ms);
-}
-
-//------------------------------------------------------------------------------
-void nrf_app::handle_heartbeart_timeout2(uint64_t ms) {
-  Logger::nrf_app().info("handle_heartbeart_timeout2 %d", ms);
+  Logger::nrf_app().info("handle_heartbeart_timeout %d", ms);
 }
 
