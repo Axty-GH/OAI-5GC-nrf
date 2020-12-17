@@ -24,7 +24,7 @@
  \author
  \company Eurecom
  \date 2020
- \email:
+ \email: Tien-Thinh.Nguyen@eurecom.fr
  */
 
 #ifndef FILE_NRF_EVENT_HPP_SEEN

@@ -24,7 +24,7 @@
  \author
  \company Eurecom
  \date 2020
- \email:
+ \email: Tien-Thinh.Nguyen@eurecom.fr
  */
 
 #include "nrf_event.hpp"

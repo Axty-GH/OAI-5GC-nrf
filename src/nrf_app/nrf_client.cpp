@@ -21,10 +21,10 @@
 
 /*! \file nrf_client.cpp
  \brief
- \author  Lionel GAUTHIER, Tien-Thinh NGUYEN
+ \author  Tien-Thinh NGUYEN
  \company Eurecom
- \date 2019
- \email: lionel.gauthier@eurecom.fr, tien-thinh.nguyen@eurecom.fr
+ \date 2020
+ \email: Tien-Thinh.Nguyen@eurecom.fr
  */
 
 #include <stdexcept>

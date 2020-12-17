@@ -24,7 +24,7 @@
  \author
  \company Eurecom
  \date 2020
- \email: tien-thinh.nguyen@eurecom.fr
+ \email: Tien-Thinh.Nguyen@eurecom.fr
  */
 
 #include "task_manager.hpp"

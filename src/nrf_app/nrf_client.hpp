@@ -20,10 +20,10 @@
  */
 
 /*! \file nrf_client.hpp
- \author  Lionel GAUTHIER, Tien-Thinh NGUYEN
+ \author  Tien-Thinh NGUYEN
  \company Eurecom
- \date 2019
- \email: lionel.gauthier@eurecom.fr, tien-thinh.nguyen@eurecom.fr
+ \date 2020
+ \email: Tien-Thinh.Nguyen@eurecom.fr
  */
 
 #ifndef FILE_NRF_CLIENT_HPP_SEEN
