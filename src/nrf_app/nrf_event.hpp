@@ -70,8 +70,11 @@ class nrf_event {
                                       uint64_t period, uint64_t start = 0);
 
 
+  bs2::connection subscribe_nf_status_change(const nf_status_sig_t::slot_type &sig);
+
  private:
   task_sig_t task_tick;
+  nf_status_sig_t nf_status_change;
 
 };
 }

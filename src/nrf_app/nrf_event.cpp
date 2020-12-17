@@ -65,4 +65,11 @@ bs2::connection nrf_event::subscribe_task_tick_extended(
 }
 
 
+//------------------------------------------------------------------------------
+bs2::connection nrf_event::subscribe_nf_status_change(
+    const nf_status_sig_t::slot_type &sig) {
+  return nf_status_change.connect(sig);
+}
+
+
 

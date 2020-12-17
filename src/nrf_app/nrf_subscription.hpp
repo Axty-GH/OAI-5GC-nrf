@@ -4,8 +4,8 @@
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
  * the OAI Public License, Version 1.1  (the "License"); you may not use this
- *file except in compliance with the License. You may obtain a copy of the
- *License at
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -19,7 +19,7 @@
  *      contact@openairinterface.org
  */
 
-/*! \file nrf_event_sig.hpp
+/*! \file nrf_subscription.hpp
  \brief
  \author  Tien-Thinh NGUYEN
  \company Eurecom
@@ -27,28 +27,45 @@
  \email: tien-thinh.nguyen@eurecom.fr
  */
 
-#ifndef FILE_NRF_EVENT_SIG_HPP_SEEN
-#define FILE_NRF_EVENT_SIG_HPP_SEEN
+#ifndef FILE_NRF_SUBSCRIPTION_HPP_SEEN
+#define FILE_NRF_SUBSCRIPTION_HPP_SEEN
 
-#include <boost/signals2.hpp>
-namespace bs2 = boost::signals2;
+#include <string>
+#include "nrf_event.hpp"
+#include "logger.hpp"
 
 namespace oai {
 namespace nrf {
 namespace app {
+using namespace std;
 
-typedef bs2::signal_type<void(uint64_t),
-                         bs2::keywords::mutex_type<bs2::dummy_mutex>>::type
-    task_sig_t;
+class nrf_subscription {
+ public:
+  nrf_subscription(nrf_event &ev):m_event_sub(ev){};
+  nrf_subscription(nrf_subscription const &) = delete;
+  virtual ~nrf_subscription() {
+    Logger::nrf_app().debug("Delete instance...");
+    ev_connection.disconnect();
+  }
+  void operator=(nrf_subscription const &) = delete;
 
-// Signal for NF Status
-// Subscription ID, NF Status
-typedef bs2::signal_type<void(std::string sub_id, uint8_t),
-                         bs2::keywords::mutex_type<bs2::dummy_mutex>>::type
-    nf_status_sig_t;
+  void set_subscription_id(const std::string &sub_id);
+  void get_subscription_id(std::string &sub_id) const;
+  std::string get_subscription_id() const;
+  void set_notification_uri(const std::string &notification_uri);
+  void get_notification_uri(std::string &notification_uri) const;
+  void display();
 
+  void subscribe_nf_status_change();
+  void handle_nf_status_change();
+ private:
+  std::string nf_status_notification_uri;
+  std::string subscription_id;
+  nrf_event &m_event_sub;
+  bs2::connection ev_connection;
+};
 }  // namespace app
 }  // namespace nrf
 }  // namespace oai
 
-#endif /* FILE_NRF_EVENT_SIG_HPP_SEEN */
+#endif /* FILE_NRF_SUBSCRIPTION_HPP_SEEN */

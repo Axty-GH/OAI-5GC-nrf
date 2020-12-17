@@ -32,10 +32,10 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <regex>
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
+#include <regex>
 
 #include "AmfInfo.h"
 #include "api_conversions.hpp"
@@ -48,9 +48,8 @@ using namespace oai::nrf::app;
 using namespace oai::nrf;
 
 //------------------------------------------------------------------------------
-bool api_conv::profile_api_to_amf_profile(
+bool api_conv::profile_api_to_nrf_profile(
     const NFProfile &api_profile, std::shared_ptr<nrf_profile> &profile) {
-
   Logger::nrf_app().debug(
       "Convert a json-type profile a NF profile (profile ID: %s)",
       api_profile.getNfInstanceId().c_str());
@@ -72,10 +71,10 @@ bool api_conv::profile_api_to_amf_profile(
   profile.get()->set_nf_capacity(api_profile.getCapacity());
   Logger::nrf_app().debug("............Capacity: %d",
                           profile.get()->get_nf_capacity());
-  //SNSSAIs
+  // SNSSAIs
   std::vector<Snssai> snssai = api_profile.getSNssais();
   for (auto s : snssai) {
-    snssai_t sn = { };
+    snssai_t sn = {};
     sn.sD = s.getSd();
     sn.sST = s.getSst();
     profile.get()->add_snssai(sn);
@@ -83,9 +82,9 @@ bool api_conv::profile_api_to_amf_profile(
                             sn.sD.c_str());
   }
 
-  std::vector < std::string > ipv4_addr_str = api_profile.getIpv4Addresses();
+  std::vector<std::string> ipv4_addr_str = api_profile.getIpv4Addresses();
   for (auto address : ipv4_addr_str) {
-    struct in_addr addr4 = { };
+    struct in_addr addr4 = {};
     unsigned char buf_in_addr[sizeof(struct in_addr)];
     if (inet_pton(AF_INET, util::trim(address).c_str(), buf_in_addr) == 1) {
       memcpy(&addr4, buf_in_addr, sizeof(struct in_addr));
@@ -104,7 +103,7 @@ bool api_conv::profile_api_to_amf_profile(
     case NF_TYPE_AMF: {
       Logger::nrf_app().debug("............AMF profile, AMF Info");
       profile.get()->set_nf_type(NF_TYPE_AMF);
-      amf_info_t info = { };
+      amf_info_t info = {};
       AmfInfo amf_info_api = api_profile.getAmfInfo();
       info.amf_region_id = amf_info_api.getAmfRegionId();
       info.amf_set_id = amf_info_api.getAmfSetId();
@@ -114,7 +113,7 @@ bool api_conv::profile_api_to_amf_profile(
                               info.amf_region_id.c_str());
 
       for (auto g : amf_info_api.getGuamiList()) {
-        guami_t guami = { };
+        guami_t guami = {};
         guami.amf_id = g.getAmfId();
         guami.plmn.mcc = g.getPlmnId().getMcc();
         guami.plmn.mnc = g.getPlmnId().getMnc();
@@ -124,20 +123,19 @@ bool api_conv::profile_api_to_amf_profile(
         Logger::nrf_app().debug(
             "....................., PLMN (MCC: %s, MNC: %s)",
             guami.plmn.mcc.c_str(), guami.plmn.mnc.c_str());
-
       }
-      (std::static_pointer_cast < amf_profile > (profile)).get()->add_amf_info(
-          info);
-    }
-      break;
+      (std::static_pointer_cast<amf_profile>(profile))
+          .get()
+          ->add_amf_info(info);
+    } break;
     case NF_TYPE_SMF: {
       Logger::nrf_app().debug("............SMF profile, SMF Info");
       profile.get()->set_nf_type(NF_TYPE_SMF);
-      smf_info_t info = { };
+      smf_info_t info = {};
       SmfInfo smf_info_api = api_profile.getSmfInfo();
 
       for (auto s : smf_info_api.getSNssaiSmfInfoList()) {
-        snssai_smf_info_item_t snssai = { };
+        snssai_smf_info_item_t snssai = {};
         snssai.snssai.sD = s.getSNssai().getSd();
         snssai.snssai.sST = s.getSNssai().getSst();
         Logger::nrf_app().debug(".......................NSSAI SD: %s, SST: %d",
@@ -152,86 +150,66 @@ bool api_conv::profile_api_to_amf_profile(
         info.snssai_smf_info_list.push_back(snssai);
       }
 
-      (std::static_pointer_cast < smf_profile > (profile)).get()->add_smf_info(
-          info);
+      (std::static_pointer_cast<smf_profile>(profile))
+          .get()
+          ->add_smf_info(info);
 
-    }
-      break;
-    default: {
-
-    }
-
+    } break;
+    default: {}
   }
 
   return true;
 }
 
 //------------------------------------------------------------------------------
+bool api_conv::subscription_api_to_nrf_subscription(
+    const SubscriptionData &api_sub, std::shared_ptr<nrf_subscription> &sub) {
+  Logger::nrf_app().debug(
+      "Convert a json-type Subscription data a NRF subscription data");
+  sub.get()->set_notification_uri(api_sub.getNfStatusNotificationUri());
+  //TODO:
+}
+
+//------------------------------------------------------------------------------
 nf_type_t api_conv::string_to_nf_type(const std::string &str) {
-  if (str.compare("NRF") == 0)
-    return NF_TYPE_NRF;
-  if (str.compare("AMF") == 0)
-    return NF_TYPE_AMF;
-  if (str.compare("SMF") == 0)
-    return NF_TYPE_SMF;
-  if (str.compare("AUSF") == 0)
-    return NF_TYPE_AUSF;
-  if (str.compare("NEF") == 0)
-    return NF_TYPE_NEF;
-  if (str.compare("PCP") == 0)
-    return NF_TYPE_PCF;
-  if (str.compare("SMSF") == 0)
-    return NF_TYPE_SMSF;
-  if (str.compare("NSSF") == 0)
-    return NF_TYPE_NSSF;
-  if (str.compare("UDR") == 0)
-    return NF_TYPE_UDR;
-  if (str.compare("LMF") == 0)
-    return NF_TYPE_LMF;
-  if (str.compare("GMLC") == 0)
-    return NF_TYPE_GMLC;
-  if (str.compare("5G_EIR") == 0)
-    return NF_TYPE_5G_EIR;
-  if (str.compare("SEPP") == 0)
-    return NF_TYPE_SEPP;
-  if (str.compare("UPF") == 0)
-    return NF_TYPE_UPF;
-  if (str.compare("N3IWF") == 0)
-    return NF_TYPE_N3IWF;
-  if (str.compare("AF") == 0)
-    return NF_TYPE_AF;
-  if (str.compare("UDSF") == 0)
-    return NF_TYPE_UDSF;
-  if (str.compare("BSF") == 0)
-    return NF_TYPE_BSF;
-  if (str.compare("CHF") == 0)
-    return NF_TYPE_CHF;
-  if (str.compare("NWDAF") == 0)
-    return NF_TYPE_NWDAF;
-  //default
+  if (str.compare("NRF") == 0) return NF_TYPE_NRF;
+  if (str.compare("AMF") == 0) return NF_TYPE_AMF;
+  if (str.compare("SMF") == 0) return NF_TYPE_SMF;
+  if (str.compare("AUSF") == 0) return NF_TYPE_AUSF;
+  if (str.compare("NEF") == 0) return NF_TYPE_NEF;
+  if (str.compare("PCP") == 0) return NF_TYPE_PCF;
+  if (str.compare("SMSF") == 0) return NF_TYPE_SMSF;
+  if (str.compare("NSSF") == 0) return NF_TYPE_NSSF;
+  if (str.compare("UDR") == 0) return NF_TYPE_UDR;
+  if (str.compare("LMF") == 0) return NF_TYPE_LMF;
+  if (str.compare("GMLC") == 0) return NF_TYPE_GMLC;
+  if (str.compare("5G_EIR") == 0) return NF_TYPE_5G_EIR;
+  if (str.compare("SEPP") == 0) return NF_TYPE_SEPP;
+  if (str.compare("UPF") == 0) return NF_TYPE_UPF;
+  if (str.compare("N3IWF") == 0) return NF_TYPE_N3IWF;
+  if (str.compare("AF") == 0) return NF_TYPE_AF;
+  if (str.compare("UDSF") == 0) return NF_TYPE_UDSF;
+  if (str.compare("BSF") == 0) return NF_TYPE_BSF;
+  if (str.compare("CHF") == 0) return NF_TYPE_CHF;
+  if (str.compare("NWDAF") == 0) return NF_TYPE_NWDAF;
+  // default
   return NF_TYPE_UNKNOWN;
 }
 
 //------------------------------------------------------------------------------
 patch_op_type_t api_conv::string_to_patch_operation(const std::string &str) {
-  if (str.compare("add") == 0)
-    return PATCH_OP_ADD;
-  if (str.compare("copy") == 0)
-    return PATCH_OP_COPY;
-  if (str.compare("move") == 0)
-    return PATCH_OP_MOVE;
-  if (str.compare("remove") == 0)
-    return PATCH_OP_REMOVE;
-  if (str.compare("replace") == 0)
-    return PATCH_OP_REPLACE;
-  if (str.compare("test") == 0)
-    return PATCH_OP_TEST;
-  //default
+  if (str.compare("add") == 0) return PATCH_OP_ADD;
+  if (str.compare("copy") == 0) return PATCH_OP_COPY;
+  if (str.compare("move") == 0) return PATCH_OP_MOVE;
+  if (str.compare("remove") == 0) return PATCH_OP_REMOVE;
+  if (str.compare("replace") == 0) return PATCH_OP_REPLACE;
+  if (str.compare("test") == 0) return PATCH_OP_TEST;
+  // default
   return PATCH_OP_UNKNOWN;
 }
 
 bool api_conv::validate_uuid(const std::string &str) {
-  //should be verified with Capital letter
+  // should be verified with Capital letter
   static const std::regex e(
       "[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}");
   return regex_match(str, e);

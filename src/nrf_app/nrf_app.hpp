@@ -33,10 +33,12 @@
 #include <string>
 #include "NFProfile.h"
 #include "nrf_profile.hpp"
+#include "nrf_subscription.hpp"
 #include "nrf_event.hpp"
 #include "PatchItem.h"
 #include "ProblemDetails.h"
-
+#include "SubscriptionData.h"
+#include "uint_generator.hpp"
 
 namespace oai {
 namespace nrf {
@@ -123,6 +125,19 @@ class nrf_app {
       ProblemDetails &problem_details);
 
   /*
+   * Handle a Register NF Instance request
+   * @param [SubscriptionData &] subscription_data: Subscription data
+   * @param [int &] http_code: HTTP code used to return to the consumer
+   * @param [const uint8_t] http_version: HTTP version
+   * @param [ProblemDetails &] problem_details: Store details of the error
+   * @return void
+   */
+  void handle_create_subscription(
+      const SubscriptionData &subscription_data, std::string &sub_id, int &http_code,
+      const uint8_t http_version,
+      ProblemDetails &problem_details);
+
+  /*
    * Insert a nrf profile
    * @param [const std::string &] profile_id: Profile ID
    * @param [std::shared_ptr<nrf_profile> &] p: profile to be added
@@ -187,13 +202,25 @@ class nrf_app {
    */
   bool remove_nf_profile(const std::string &profile_id);
 
+  bool add_subscription(const std::string &sub_id,
+                               const std::shared_ptr<nrf_subscription> &s);
+
   void subscribe_task_tick (uint64_t ms);
   void handle_heartbeart_timeout(uint64_t ms);
+
+  bool authorize_subscription(const std::shared_ptr<nrf_subscription> &s) const;
+  void generate_ev_subscription_id(std::string &sub_id);
+  evsub_id_t generate_ev_subscription_id();
 
  private:
   std::map<std::string, std::shared_ptr<nrf_profile>> instance_id2nrf_profile;
   mutable std::shared_mutex m_instance_id2nrf_profile;
+
+  std::map<std::string, std::shared_ptr<nrf_subscription>> instance_id2nrf_subscription;
+  mutable std::shared_mutex m_instance_id2nrf_subscription;
+
   nrf_event& m_event_sub;
+  util::uint_generator<uint32_t> evsub_id_generator;
 };
 }
 }

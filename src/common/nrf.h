@@ -126,4 +126,12 @@ typedef struct smf_info_s {
   std::vector<snssai_smf_info_item_t> snssai_smf_info_list;
 } smf_info_t;
 
+
+// Event Subscription IDs)
+typedef uint32_t evsub_id_t;
+#define EVSUB_ID_FMT             "0x%" PRIx32
+#define EVSUB_ID_SCAN_FMT         SCNx32
+#define INVALID_EVSUB_ID          ((evsub_id_t)0x00000000)
+#define UNASSIGNED_EVSUB_ID       ((evsub_id_t)0x00000000)
+
 #endif

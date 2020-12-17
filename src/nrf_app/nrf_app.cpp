@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -28,12 +28,12 @@
  */
 
 #include "nrf_app.hpp"
-#include "common_defs.h"
-#include "nrf_config.hpp"
-#include "logger.hpp"
-#include "api_conversions.hpp"
-#include "3gpp_29.500.h"
 #include <chrono>
+#include "3gpp_29.500.h"
+#include "api_conversions.hpp"
+#include "common_defs.h"
+#include "logger.hpp"
+#include "nrf_config.hpp"
 
 using namespace oai::nrf::app;
 using namespace oai::nrf::model;
@@ -44,8 +44,7 @@ extern nrf_config nrf_cfg;
 
 //------------------------------------------------------------------------------
 nrf_app::nrf_app(const std::string &config_file, nrf_event &ev)
-    :
-    m_event_sub(ev) {
+    : m_event_sub(ev) {
   Logger::nrf_app().startup("Starting...");
   Logger::nrf_app().startup("Started");
 }
@@ -56,12 +55,11 @@ void nrf_app::handle_register_nf_instance(
     const oai::nrf::model::NFProfile &nf_profile, int &http_code,
     const uint8_t http_version,
     oai::nrf::model::ProblemDetails &problem_details) {
-
   Logger::nrf_app().info(
       "Handle Register NF Instance/Update NF Instance (HTTP version %d)",
       http_version);
 
-  //Check if nfInstanceID is a valid UUID (version 4)
+  // Check if nfInstanceID is a valid UUID (version 4)
   if (!api_conv::validate_uuid(nf_instance_id)) {
     http_code = HTTP_STATUS_CODE_400_BAD_REQUEST;
     Logger::nrf_app().debug("Bad UUID format for NF Instance ID (%s)",
@@ -72,45 +70,42 @@ void nrf_app::handle_register_nf_instance(
   }
 
   nf_type_t type = api_conv::string_to_nf_type(nf_profile.getNfType());
-  //Create a new NF profile or Update an existing NF profile
+  // Create a new NF profile or Update an existing NF profile
   Logger::nrf_app().debug("NF Profile with (ID %s, NF type %s)",
                           nf_instance_id.c_str(),
                           nf_profile.getNfType().c_str());
 
-  std::shared_ptr<nrf_profile> sn = { };
+  std::shared_ptr<nrf_profile> sn = {};
   switch (type) {
     case NF_TYPE_AMF: {
-      sn = std::make_shared < amf_profile > (m_event_sub);
-    }
-      break;
+      sn = std::make_shared<amf_profile>(m_event_sub);
+    } break;
 
     case NF_TYPE_SMF: {
-      sn = std::make_shared < smf_profile > (m_event_sub);
-    }
-      break;
+      sn = std::make_shared<smf_profile>(m_event_sub);
+    } break;
 
-    default: {
-      sn = std::make_shared < nrf_profile > (m_event_sub);
-    }
+    default: { sn = std::make_shared<nrf_profile>(m_event_sub); }
   }
 
-  //convert to nrf_profile
-  if (api_conv::profile_api_to_amf_profile(nf_profile, sn)) {
-    //set default value for hearbeattimer
+  // convert to nrf_profile
+  if (api_conv::profile_api_to_nrf_profile(nf_profile, sn)) {
+    // set default value for hearbeattimer
     sn.get()->set_nf_heartBeat_timer(HEART_BEAT_TIMER);
     if (is_profile_exist(nf_instance_id))
       http_code = HTTP_STATUS_CODE_200_OK;
     else
       http_code = HTTP_STATUS_CODE_201_CREATED;
-    //add to the DB
+    // add to the DB
     add_nf_profile(nf_instance_id, sn);
     Logger::nrf_app().debug("Added/Updated NF Profile to the DB");
-    //display the info
+    // display the info
     sn.get()->display();
   } else {
-    //error
+    // error
     Logger::nrf_app().warn(
-        "Cannot convert a NF profile generated from OpenAPI to an AMF profile (profile ID %s)",
+        "Cannot convert a NF profile generated from OpenAPI to an AMF profile "
+        "(profile ID %s)",
         nf_instance_id.c_str());
     http_code = HTTP_STATUS_CODE_400_BAD_REQUEST;
     problem_details.setCause(
@@ -123,12 +118,11 @@ void nrf_app::handle_update_nf_instance(
     const std::string &nf_instance_id, const std::vector<PatchItem> &patchItem,
     int &http_code, const uint8_t http_version,
     oai::nrf::model::ProblemDetails &problem_details) {
-
   Logger::nrf_app().info("Handle Update NF Instance request (HTTP version %d)",
                          http_version);
 
-  //Find the profile corresponding to the instance ID
-  std::shared_ptr<nrf_profile> sn = { };
+  // Find the profile corresponding to the instance ID
+  std::shared_ptr<nrf_profile> sn = {};
   sn = find_nf_profile(nf_instance_id);
   bool op_success = true;
   bool is_heartbeart_procedure = false;
@@ -136,9 +130,9 @@ void nrf_app::handle_update_nf_instance(
   if (sn.get() != nullptr) {
     for (auto p : patchItem) {
       patch_op_type_t op = api_conv::string_to_patch_operation(p.getOp());
-      //Verify Path
-      if ((p.getPath().substr(0, 1).compare("/") != 0)
-          or (p.getPath().length() < 2)) {
+      // Verify Path
+      if ((p.getPath().substr(0, 1).compare("/") != 0) or
+          (p.getPath().length() < 2)) {
         Logger::nrf_app().warn("Bad value for operation path: %s ",
                                p.getPath().c_str());
         http_code = HTTP_STATUS_CODE_400_BAD_REQUEST;
@@ -151,16 +145,14 @@ void nrf_app::handle_update_nf_instance(
 
       switch (op) {
         case PATCH_OP_REPLACE: {
-          if (path.compare("nfStatus") == 0)
-            is_heartbeart_procedure = true;
+          if (path.compare("nfStatus") == 0) is_heartbeart_procedure = true;
           if (sn.get()->replace_profile_info(path, p.getValue())) {
             update_nf_profile(nf_instance_id, sn);
             http_code = HTTP_STATUS_CODE_200_OK;
           } else {
             op_success = false;
           }
-        }
-          break;
+        } break;
 
         case PATCH_OP_ADD: {
           if (sn.get()->add_profile_info(path, p.getValue())) {
@@ -169,8 +161,7 @@ void nrf_app::handle_update_nf_instance(
           } else {
             op_success = false;
           }
-        }
-          break;
+        } break;
 
         case PATCH_OP_REMOVE: {
           if (sn.get()->remove_profile_info(path)) {
@@ -179,8 +170,7 @@ void nrf_app::handle_update_nf_instance(
           } else {
             op_success = false;
           }
-        }
-          break;
+        } break;
 
         default: {
           Logger::nrf_app().warn("Requested operation is not valid!");
@@ -194,7 +184,7 @@ void nrf_app::handle_update_nf_instance(
       }
     }
 
-    //for NF Heartbeat procedure
+    // for NF Heartbeat procedure
     if (is_heartbeart_procedure && (http_code = HTTP_STATUS_CODE_200_OK)) {
       http_code = HTTP_STATUS_CODE_204_NO_CONTENT;
     }
@@ -217,7 +207,7 @@ void nrf_app::handle_get_nf_instances(const std::string &nf_type,
       "Handle Retrieve a collection of NF Instances (HTTP version %d)",
       http_version);
 
-  std::vector < std::shared_ptr < nrf_profile >> profiles = { };
+  std::vector<std::shared_ptr<nrf_profile>> profiles = {};
   nf_type_t type = api_conv::string_to_nf_type(nf_type);
   find_nf_profiles(type, profiles);
 
@@ -234,12 +224,12 @@ void nrf_app::handle_get_nf_instance(const std::string &nf_instance_id,
                                      std::shared_ptr<nrf_profile> &profile,
                                      int &http_code, const uint8_t http_version,
                                      ProblemDetails &problem_details) {
-
   Logger::nrf_app().info("Handle Retrieve an NF Instance (HTTP version %d)",
                          http_version);
 
-  //TODO:  If the NF Service Consumer is not allowed to retrieve the NF profile of this specific registered NF instance, the
-  //NRF shall return "403 Forbidden" status code.
+  // TODO:  If the NF Service Consumer is not allowed to retrieve the NF profile
+  // of this specific registered NF instance, the  NRF shall return "403
+  // Forbidden" status code.
 
   profile = find_nf_profile(nf_instance_id);
   if (profile.get() == nullptr) {
@@ -289,6 +279,49 @@ void nrf_app::handle_deregister_nf_instance(const std::string &nf_instance_id,
 }
 
 //------------------------------------------------------------------------------
+void nrf_app::handle_create_subscription(
+    const SubscriptionData &subscription_data, std::string &sub_id, int &http_code,
+    const uint8_t http_version, ProblemDetails &problem_details) {
+  std::string evsub_id;
+
+  Logger::nrf_app().info("Handle Create a new subscription (HTTP version %d)",
+                         http_version);
+  std::shared_ptr<nrf_subscription> ss = std::make_shared<nrf_subscription>(m_event_sub);
+
+  // convert to nrf_subscription
+  if (api_conv::subscription_api_to_nrf_subscription(subscription_data, ss)) {
+    if (authorize_subscription(ss)) {
+        // generate a subscription ID
+        generate_ev_subscription_id(evsub_id);
+        //subscribe to NF status change
+        ss.get()->subscribe_nf_status_change();
+        // add to the DB
+        add_subscription(evsub_id, ss);
+        Logger::nrf_app().debug("Added a subscription to the DB");
+        // display the info
+        ss.get()->display();
+        //assign info for API server
+        http_code = HTTP_STATUS_CODE_201_CREATED;
+        sub_id = evsub_id;
+        return;
+    } else {
+    	Logger::nrf_app().debug("Subscription is not authorized!");
+    	http_code = HTTP_STATUS_CODE_401_UNAUTHORIZED;
+    	return;
+    }
+
+  } else {
+    // error
+    Logger::nrf_app().warn(
+        "Cannot convert the subscription data (from OpenAPI) to an NRF "
+        "subscription data");
+    http_code = HTTP_STATUS_CODE_400_BAD_REQUEST;
+    problem_details.setCause(
+        protocol_application_error_e2str[MANDATORY_IE_INCORRECT]);
+  }
+}
+
+//------------------------------------------------------------------------------
 bool nrf_app::add_nf_profile(const std::string &profile_id,
                              const std::shared_ptr<nrf_profile> &p) {
   std::unique_lock lock(m_instance_id2nrf_profile);
@@ -306,13 +339,14 @@ bool nrf_app::add_nf_profile(const std::string &profile_id,
    profile_id.c_str());
    instance_id2nrf_profile.emplace(profile_id, p);
    }*/
-//Create or update if profile exist
+  // Create or update if profile exist
   instance_id2nrf_profile[profile_id] = p;
 
-  //heartbeart management for this NF profile
-  //get current time
-  uint64_t ms = std::chrono::duration_cast < std::chrono::milliseconds
-      > (std::chrono::system_clock::now().time_since_epoch()).count();
+  // heartbeart management for this NF profile
+  // get current time
+  uint64_t ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+                    std::chrono::system_clock::now().time_since_epoch())
+                    .count();
   p.get()->subscribe_task_tick(ms);
 
   return true;
@@ -322,9 +356,9 @@ bool nrf_app::add_nf_profile(const std::string &profile_id,
 bool nrf_app::update_nf_profile(const std::string &profile_id,
                                 const std::shared_ptr<nrf_profile> &p) {
   std::unique_lock lock(m_instance_id2nrf_profile);
-//if profile with this id exist, return false
+  // if profile with this id exist, return false
   if (instance_id2nrf_profile.count(profile_id) > 0) {
-    //if not, update to the list
+    // if not, update to the list
     Logger::nrf_app().info("Update a NF profile to the list (profile ID %s)",
                            profile_id.c_str());
     instance_id2nrf_profile.at(profile_id) = p;
@@ -333,13 +367,11 @@ bool nrf_app::update_nf_profile(const std::string &profile_id,
     Logger::nrf_app().info("NF profile (ID %d) not found", profile_id.c_str());
     return false;
   }
-
 }
 
 //------------------------------------------------------------------------------
 std::shared_ptr<nrf_profile> nrf_app::find_nf_profile(
     const std::string &profile_id) const {
-
   Logger::nrf_app().info("Find a NF profile with ID %s", profile_id.c_str());
 
   std::shared_lock lock(m_instance_id2nrf_profile);
@@ -423,20 +455,42 @@ bool nrf_app::remove_nf_profile(const std::string &profile_id) {
 }
 
 //------------------------------------------------------------------------------
+bool nrf_app::add_subscription(const std::string &sub_id,
+                               const std::shared_ptr<nrf_subscription> &s) {
+  std::unique_lock lock(m_instance_id2nrf_subscription);
+  /*
+   //if profile with this id exist, update
+   if (instance_id2nrf_subscription.count(sub_id) > 0) {
+   Logger::nrf_app().info(
+   "Update a subscription to the list (Subscription ID %s)",
+   sub_id.c_str());
+   instance_id2nrf_subscription.at(sub_id) = s;
+   } else {
+   //if not, add to the list
+   Logger::nrf_app().info(
+   "Insert a subscription to the list (Subscription ID %s)",
+   sub_id.c_str());
+   instance_id2nrf_subscription.emplace(sub_id, s);
+   }*/
+  // Create or update if subscription exist
+  instance_id2nrf_subscription[sub_id] = s;
+  return true;
+}
+
+//------------------------------------------------------------------------------
 void nrf_app::subscribe_task_tick(uint64_t ms) {
-
   struct itimerspec its;
-  its.it_value.tv_sec = 20;  //seconds
-  its.it_value.tv_nsec = 0;  //100 * 1000 * 1000; //100ms
+  its.it_value.tv_sec = 20;  // seconds
+  its.it_value.tv_nsec = 0;  // 100 * 1000 * 1000; //100ms
 
-  const uint64_t interval = its.it_value.tv_sec * 1000
-      + its.it_value.tv_nsec / 1000000;  // convert sec, nsec to msec
+  const uint64_t interval =
+      its.it_value.tv_sec * 1000 +
+      its.it_value.tv_nsec / 1000000;  // convert sec, nsec to msec
 
   Logger::nrf_app().debug("subscribe task_tick: %d", ms);
   m_event_sub.subscribe_task_tick(
       boost::bind(&nrf_app::handle_heartbeart_timeout, this, _1), interval,
       ms % 20000);
-
 }
 
 //------------------------------------------------------------------------------
@@ -444,3 +498,16 @@ void nrf_app::handle_heartbeart_timeout(uint64_t ms) {
   Logger::nrf_app().info("handle_heartbeart_timeout %d", ms);
 }
 
+bool nrf_app::authorize_subscription(const std::shared_ptr<nrf_subscription> &s) const {
+	//TODO:
+	return true;
+}
+//------------------------------------------------------------------------------
+void nrf_app::generate_ev_subscription_id(std::string &sub_id) {
+  sub_id = std::to_string(evsub_id_generator.get_uid());
+}
+
+//------------------------------------------------------------------------------
+evsub_id_t nrf_app::generate_ev_subscription_id() {
+  return evsub_id_generator.get_uid();
+}
