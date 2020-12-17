@@ -50,6 +50,11 @@ void nrf_profile::get_nf_instance_id(std::string &instance_id) const {
 }
 
 //------------------------------------------------------------------------------
+std::string nrf_profile::get_nf_instance_id() const {
+	return nf_instance_id;
+}
+
+//------------------------------------------------------------------------------
 void nrf_profile::set_nf_instance_name(const std::string &instance_name) {
   nf_instance_name = instance_name;
 }

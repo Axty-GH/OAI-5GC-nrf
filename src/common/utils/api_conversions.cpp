@@ -168,6 +168,7 @@ bool api_conv::subscription_api_to_nrf_subscription(
       "Convert a json-type Subscription data a NRF subscription data");
   sub.get()->set_notification_uri(api_sub.getNfStatusNotificationUri());
   //TODO:
+  return true;
 }
 
 //------------------------------------------------------------------------------

@@ -29,6 +29,7 @@
 
 #include "nrf_subscription.hpp"
 #include "logger.hpp"
+#include <nlohmann/json.hpp>
 
 using namespace oai::nrf::app;
 
@@ -71,12 +72,21 @@ void nrf_subscription::subscribe_nf_status_change() {
 
   Logger::nrf_app().debug("Subscribe to NF status change event");
   ev_connection = m_event_sub.subscribe_nf_status_change(
-      boost::bind(&nrf_subscription::handle_nf_status_change, this));
+      boost::bind(&nrf_subscription::handle_nf_status_change, this, _1));
 }
 
 //------------------------------------------------------------------------------
-void nrf_subscription::handle_nf_status_change() {
-  Logger::nrf_app().info("Handle NF status change (subscription ID %s)", subscription_id.c_str());
+void nrf_subscription::handle_nf_status_change(const std::shared_ptr<nrf_profile> &profile) {
+	std::string nf_instance_id;
+	profile.get()->get_nf_instance_id(nf_instance_id);
+  Logger::nrf_app().info("Handle NF status change (subscription ID %s), profile ID %s", subscription_id.c_str(), nf_instance_id.c_str());
+  //TODO:
+  nlohmann::json notification_data = {};
+  notification_data["event"] = "NF_REGISTERED";
+  notification_data["nfInstanceUri"] = "";
+  //get NF profile based on profile_id
+  //NFStatusNotify
+  //curl...
 }
 
 

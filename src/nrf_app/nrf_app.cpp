@@ -293,6 +293,7 @@ void nrf_app::handle_create_subscription(
     if (authorize_subscription(ss)) {
         // generate a subscription ID
         generate_ev_subscription_id(evsub_id);
+        ss.get()->set_subscription_id(evsub_id);
         //subscribe to NF status change
         ss.get()->subscribe_nf_status_change();
         // add to the DB
@@ -348,6 +349,9 @@ bool nrf_app::add_nf_profile(const std::string &profile_id,
                     std::chrono::system_clock::now().time_since_epoch())
                     .count();
   p.get()->subscribe_task_tick(ms);
+
+  //Notify NF status change event
+  m_event_sub.nf_status_change(p);
 
   return true;
 }

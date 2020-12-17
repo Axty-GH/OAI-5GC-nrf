@@ -32,6 +32,7 @@
 
 #include <string>
 #include "nrf_event.hpp"
+#include "nrf_profile.hpp"
 #include "logger.hpp"
 
 namespace oai {
@@ -57,7 +58,7 @@ class nrf_subscription {
   void display();
 
   void subscribe_nf_status_change();
-  void handle_nf_status_change();
+  void handle_nf_status_change(const std::shared_ptr<nrf_profile> &profile);
  private:
   std::string nf_status_notification_uri;
   std::string subscription_id;

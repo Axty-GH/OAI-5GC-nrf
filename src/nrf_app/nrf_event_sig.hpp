@@ -31,11 +31,15 @@
 #define FILE_NRF_EVENT_SIG_HPP_SEEN
 
 #include <boost/signals2.hpp>
+
 namespace bs2 = boost::signals2;
+
 
 namespace oai {
 namespace nrf {
 namespace app {
+
+class nrf_profile;
 
 typedef bs2::signal_type<void(uint64_t),
                          bs2::keywords::mutex_type<bs2::dummy_mutex>>::type
@@ -43,7 +47,11 @@ typedef bs2::signal_type<void(uint64_t),
 
 // Signal for NF Status
 // Subscription ID, NF Status
-typedef bs2::signal_type<void(std::string sub_id, uint8_t),
+//typedef bs2::signal_type<void(std::string),
+//                         bs2::keywords::mutex_type<bs2::dummy_mutex>>::type
+//    nf_status_sig_t;
+
+typedef bs2::signal_type<void(const std::shared_ptr<nrf_profile> &p),
                          bs2::keywords::mutex_type<bs2::dummy_mutex>>::type
     nf_status_sig_t;
 

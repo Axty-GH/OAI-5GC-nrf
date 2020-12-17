@@ -80,7 +80,12 @@ void from_json(const nlohmann::json &j, SubscriptionData &o) {
    o.m_SubscrCondIsSet = true;
    } 
    */
-  j.at("subscriptionId").get_to(o.m_SubscriptionId);
+//  j.at("subscriptionId").get_to(o.m_SubscriptionId);
+
+  if (j.find("subscriptionId") != j.end()) {
+    j.at("subscriptionId").get_to(o.m_SubscriptionId);
+  }
+
   if (j.find("validityTime") != j.end()) {
     j.at("validityTime").get_to(o.m_ValidityTime);
     o.m_ValidityTimeIsSet = true;

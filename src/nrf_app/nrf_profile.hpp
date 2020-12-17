@@ -115,6 +115,13 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
   void get_nf_instance_id(std::string &instance_id) const;
 
   /*
+   * Get NF instance ID
+   * @param [std::string &] instance_id: store instance id
+   * @return void:
+   */
+  std::string get_nf_instance_id() const;
+
+  /*
    * Set NF instance name
    * @param [const std::string &] instance_name: instance name
    * @return void
