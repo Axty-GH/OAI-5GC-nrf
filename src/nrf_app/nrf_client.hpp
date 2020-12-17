@@ -42,7 +42,7 @@ namespace app {
 class nrf_client {
  private:
  public:
-  nrf_client();
+  nrf_client(){};
   nrf_client(nrf_client const &) = delete;
   void operator=(nrf_client const &) = delete;
 
@@ -74,6 +74,5 @@ class nrf_client {
 };
 }  // namespace app
 }  // namespace nrf
-
 }  // namespace oai
 #endif /* FILE_NRF_CLIENT_HPP_SEEN */
