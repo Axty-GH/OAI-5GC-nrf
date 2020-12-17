@@ -27,7 +27,6 @@ include_directories(${SRC_TOP_DIR}/nrf_app)
 
 
 set(CN_UTILS_SRC STATIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/async_shell_cmd.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/conversions.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/api_conversions.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/get_gateway_netlink.cpp
