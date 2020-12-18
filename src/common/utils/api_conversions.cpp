@@ -282,6 +282,8 @@ bool api_conv::subscription_api_to_nrf_subscription(
     Logger::nrf_app().debug(
         "Subscription condition type: %s",
         subscription_condition_type_e2str[sub_condition.type].c_str());
+
+    sub.get()->set_sub_condition(sub_condition);
   }
   // TODO:
   return true;

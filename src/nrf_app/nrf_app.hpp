@@ -213,7 +213,6 @@ class nrf_app {
   evsub_id_t generate_ev_subscription_id();
 
   void subscribe_nf_status(const std::string &sub_id);
-//  void handle_nf_status(const std::string &profile_id);
   void subscribe_nf_status_registered();
   void handle_nf_status_registered(const std::string &profile_id);
   void subscribe_nf_status_deregistered();

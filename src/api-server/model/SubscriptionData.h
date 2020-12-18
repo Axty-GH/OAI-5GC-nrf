@@ -84,7 +84,7 @@ typedef struct subscription_condition_api_s {
 
   bool operator==(const uint8_t &t) const { return (t == type); }
 
-  subscription_condition_api_s &operator=(subscription_condition_api_s s) {
+  subscription_condition_api_s &operator=(subscription_condition_api_s &s) {
     // TODO:
   }
 

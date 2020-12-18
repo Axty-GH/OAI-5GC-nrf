@@ -535,16 +535,6 @@ void nrf_app::subscribe_nf_status(const std::string &sub_id) {
   subscribe_nf_status_profile_changed();
 }
 
-/*
-//------------------------------------------------------------------------------
-void nrf_app::handle_nf_status(const std::string &profile_id) {
-        Logger::nrf_app().info("Handle NF status, profile id %s",
-profile_id.c_str()); std::vector<std::string> notification_uris = {};
-        get_subscription_list(profile_id, notification_uris);
-
-}
-*/
-
 //------------------------------------------------------------------------------
 void nrf_app::subscribe_nf_status_registered() {
   Logger::nrf_app().debug("Subscribe to NF status registered");
@@ -599,5 +589,6 @@ void nrf_app::handle_nf_status_profile_changed(const std::string &profile_id) {
 void nrf_app::get_subscription_list(const std::string &profile_id,
                                     uint8_t notification_type,
                                     std::vector<std::string> &uris) {
+
   // TODO:
 }

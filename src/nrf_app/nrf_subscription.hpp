@@ -34,6 +34,7 @@
 #include "nrf_event.hpp"
 #include "nrf_profile.hpp"
 #include "logger.hpp"
+#include "3gpp_29.510.h"
 
 namespace oai {
 namespace nrf {
@@ -56,12 +57,16 @@ class nrf_subscription {
   void set_notification_uri(const std::string &notification_uri);
   void get_notification_uri(std::string &notification_uri) const;
   void display();
+  void set_sub_condition(const subscription_condition_t &c);
+  void get_sub_condition(subscription_condition_t &c) const;
+ // subscription_condition_t get_sub_condition() const;
 
   void subscribe_nf_status_change();
   void handle_nf_status_change(const std::shared_ptr<nrf_profile> &profile);
  private:
   std::string nf_status_notification_uri;
   std::string subscription_id;
+  subscription_condition_t sub_condition;
   nrf_event &m_event_sub;
   bs2::connection ev_connection;
 };

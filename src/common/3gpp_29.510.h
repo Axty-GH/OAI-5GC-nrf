@@ -78,11 +78,84 @@ typedef struct subscription_condition_s {
 
   subscription_condition_s(uint8_t t) : type(t) {}
 
+  subscription_condition_s(const subscription_condition_s &s) {
+    type = s.type;
+    switch (s.type) {
+      case NF_INSTANCE_ID_COND: {
+        nf_instance_id = s.nf_instance_id;
+      } break;
+      case NF_TYPE_COND: {
+        nf_type = s.nf_type;
+      } break;
+
+      case SERVICE_NAME_COND: {
+        service_name = s.service_name;
+      } break;
+      case AMF_COND: {
+        amf_info.amf_set_id = s.amf_info.amf_set_id;
+        amf_info.amf_region_id = s.amf_info.amf_region_id;
+      } break;
+
+      case GUAMI_LIST_COND: {
+        // TODO:
+      } break;
+
+      case NETWOTK_SLICE_COND: {
+        // TODO:
+      } break;
+
+      case NF_GROUP_COND: {
+        // TODO:
+      } break;
+
+      default: {
+        // TODO:
+      }
+    }
+    // TODO:
+  }
   bool operator==(const struct subscription_condition_s &s) const {
     return (s.type == type);
   }
 
   bool operator==(const uint8_t &t) const { return (t == type); }
+
+  subscription_condition_s &operator=(const subscription_condition_s &s) {
+    type = s.type;
+    switch (s.type) {
+      case NF_INSTANCE_ID_COND: {
+        nf_instance_id = s.nf_instance_id;
+      } break;
+      case NF_TYPE_COND: {
+        nf_type = s.nf_type;
+      } break;
+
+      case SERVICE_NAME_COND: {
+        service_name = s.service_name;
+      } break;
+      case AMF_COND: {
+        amf_info.amf_set_id = s.amf_info.amf_set_id;
+        amf_info.amf_region_id = s.amf_info.amf_region_id;
+      } break;
+
+      case GUAMI_LIST_COND: {
+        // TODO:
+      } break;
+
+      case NETWOTK_SLICE_COND: {
+        // TODO:
+      } break;
+
+      case NF_GROUP_COND: {
+        // TODO:
+      } break;
+
+      default: {
+        // TODO:
+      }
+    }
+    // TODO:
+  }
 
   virtual ~subscription_condition_s(){};
 

@@ -48,16 +48,32 @@ std::string nrf_subscription::get_subscription_id() const {
   return subscription_id;
 }
 
+//------------------------------------------------------------------------------
 void nrf_subscription::set_notification_uri(
     const std::string &notification_uri) {
   nf_status_notification_uri = notification_uri;
 }
 
+//------------------------------------------------------------------------------
 void nrf_subscription::get_notification_uri(
     std::string &notification_uri) const {
   notification_uri = nf_status_notification_uri;
 }
 
+//------------------------------------------------------------------------------
+void nrf_subscription::set_sub_condition(const subscription_condition_t &c) {
+   sub_condition = c;
+}
+
+void nrf_subscription::get_sub_condition(subscription_condition_t &c) const {
+    c = sub_condition;
+}
+/*
+//------------------------------------------------------------------------------
+subscription_condition_t nrf_subscription::get_sub_condition() const {
+  return sub_condition;
+}
+*/
 //------------------------------------------------------------------------------
 void nrf_subscription::display() {
   Logger::nrf_app().debug("Subscription ID: %s", subscription_id.c_str());
@@ -88,5 +104,8 @@ void nrf_subscription::handle_nf_status_change(const std::shared_ptr<nrf_profile
   //NFStatusNotify
   //curl...
 }
+
+
+
 
 
