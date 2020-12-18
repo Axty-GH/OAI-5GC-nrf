@@ -70,42 +70,6 @@ typedef enum patch_op_type_s {
 static const std::vector<std::string> patch_op_type_e2str = { "ADD", "REMOVE",
     "REPLACE", "MOVE", "COPY", "TEST", "UNKNOWN" };
 
-typedef struct s_nssai  // section 28.4, TS23.003
-{
-  uint8_t sST;
-  //uint32_t sD:24;
-  std::string sD;
-  //s_nssai(const uint8_t& sst,  const uint32_t sd) : sST(sst), sD(sd) {}
-  s_nssai(const uint8_t &sst, const std::string sd)
-      :
-      sST(sst),
-      sD(sd) {
-  }
-  s_nssai()
-      :
-      sST(),
-      sD() {
-  }
-  s_nssai(const s_nssai &p)
-      :
-      sST(p.sST),
-      sD(p.sD) {
-  }
-  bool operator==(const struct s_nssai &s) const {
-    if ((s.sST == this->sST) && (s.sD.compare(this->sD) == 0)) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-} snssai_t;
-
-typedef struct guami_s {
-  plmn_t plmn;
-  std::string amf_id;
-} guami_t;
-
 typedef struct amf_info_s {
   std::string amf_set_id;
   std::string amf_region_id;
@@ -125,7 +89,6 @@ typedef struct snssai_smf_info_item_s {
 typedef struct smf_info_s {
   std::vector<snssai_smf_info_item_t> snssai_smf_info_list;
 } smf_info_t;
-
 
 // Event Subscription IDs)
 typedef uint32_t evsub_id_t;

@@ -39,6 +39,36 @@ typedef struct plmn_s {
   uint8_t mnc_digit1 :4;
 } plmn_t;
 */
+typedef struct s_nssai  // section 28.4, TS23.003
+{
+  uint8_t sST;
+  //uint32_t sD:24;
+  std::string sD;
+  //s_nssai(const uint8_t& sst,  const uint32_t sd) : sST(sst), sD(sd) {}
+  s_nssai(const uint8_t &sst, const std::string sd)
+      :
+      sST(sst),
+      sD(sd) {
+  }
+  s_nssai()
+      :
+      sST(),
+      sD() {
+  }
+  s_nssai(const s_nssai &p)
+      :
+      sST(p.sST),
+      sD(p.sD) {
+  }
+  bool operator==(const struct s_nssai &s) const {
+    if ((s.sST == this->sST) && (s.sD.compare(this->sD) == 0)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+} snssai_t;
 
 typedef struct plmn_s {
 std::string mcc;
@@ -120,5 +150,11 @@ typedef struct allowed_nssai_s /*5G ADD it*/
   allowed_nssai *s_nssai;
   uint32_t count;
 } allowed_nssai_t;
+
+typedef struct guami_s {
+  plmn_t plmn;
+  std::string amf_id;
+} guami_t;
+
 
 #endif

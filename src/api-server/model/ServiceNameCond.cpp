@@ -36,10 +36,10 @@ void from_json(const nlohmann::json &j, ServiceNameCond &o) {
   j.at("serviceName").get_to(o.m_ServiceName);
 }
 
-ServiceName ServiceNameCond::getServiceName() const {
+std::string ServiceNameCond::getServiceName() const {
   return m_ServiceName;
 }
-void ServiceNameCond::setServiceName(ServiceName const &value) {
+void ServiceNameCond::setServiceName(std::string const &value) {
   m_ServiceName = value;
 }
 

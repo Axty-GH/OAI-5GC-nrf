@@ -41,13 +41,13 @@ class ServiceNameCond {
   /// <summary>
   /// 
   /// </summary>
-  ServiceName getServiceName() const;
-  void setServiceName(ServiceName const &value);
+  std::string getServiceName() const;
+  void setServiceName(std::string const &value);
 
   friend void to_json(nlohmann::json &j, const ServiceNameCond &o);
   friend void from_json(const nlohmann::json &j, ServiceNameCond &o);
  protected:
-  ServiceName m_ServiceName;
+  std::string m_ServiceName;
 
 };
 

@@ -47,9 +47,8 @@ void to_json(nlohmann::json &j, const SubscriptionData &o) {
   j["nfStatusNotificationUri"] = o.m_NfStatusNotificationUri;
   if (o.reqNfInstanceIdIsSet())
     j["reqNfInstanceId"] = o.m_ReqNfInstanceId;
-  /*    if(o.subscrCondIsSet())
+  if(o.subscrCondIsSet())
    j["subscrCond"] = o.m_SubscrCond;
-   */
   j["subscriptionId"] = o.m_SubscriptionId;
   if (o.validityTimeIsSet())
     j["validityTime"] = o.m_ValidityTime;
@@ -73,14 +72,13 @@ void from_json(const nlohmann::json &j, SubscriptionData &o) {
     j.at("reqNfInstanceId").get_to(o.m_ReqNfInstanceId);
     o.m_ReqNfInstanceIdIsSet = true;
   }
-  /*
    if(j.find("subscrCond") != j.end())
    {
    j.at("subscrCond").get_to(o.m_SubscrCond);
    o.m_SubscrCondIsSet = true;
    } 
-   */
-//  j.at("subscriptionId").get_to(o.m_SubscriptionId);
+
+   //  j.at("subscriptionId").get_to(o.m_SubscriptionId);
 
   if (j.find("subscriptionId") != j.end()) {
     j.at("subscriptionId").get_to(o.m_SubscriptionId);
@@ -135,19 +133,19 @@ bool SubscriptionData::reqNfInstanceIdIsSet() const {
 void SubscriptionData::unsetReqNfInstanceId() {
   m_ReqNfInstanceIdIsSet = false;
 }
-/*
- m_SubscrCond SubscriptionData::getSubscrCond() const
+
+subscription_condition_api_t SubscriptionData::getSubscrCond() const
  {
- return m_SubscrCond;
+   return m_SubscrCond;
  }
- */
-/*
- void SubscriptionData::setSubscrCond(m_SubscrCond const& value)
+
+
+ void SubscriptionData::setSubscrCond(subscription_condition_api_t const& value)
  {
- m_SubscrCond = value;
- m_SubscrCondIsSet = true;
+    m_SubscrCond = value;
+    m_SubscrCondIsSet = true;
  }
- */
+
 
 bool SubscriptionData::subscrCondIsSet() const {
   return m_SubscrCondIsSet;
