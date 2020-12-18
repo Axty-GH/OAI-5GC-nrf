@@ -233,10 +233,8 @@ bool api_conv::subscription_api_to_nrf_subscription(
 
     if (sub_condition_api.find("NfInstanceIdCond") != sub_condition_api.end()) {
       sub_condition.type = NF_INSTANCE_ID_COND;
-      sub_condition.nf_instance_id = sub_condition_api.at("NfInstanceIdCond")
-                                         .at("nfInstanceId")
-                                         .dump()
-                                         .c_str();
+      sub_condition.nf_instance_id = sub_condition_api["NfInstanceIdCond"]["nfInstanceId"]
+                                         .get<std::string>();
       Logger::nrf_app().debug(
           "Subscription condition type: NfInstanceIdCond, nfInstanceId: %s",
           sub_condition.nf_instance_id.c_str());
@@ -245,7 +243,7 @@ bool api_conv::subscription_api_to_nrf_subscription(
     if (sub_condition_api.find("NfTypeCond") != sub_condition_api.end()) {
       sub_condition.type = NF_TYPE_COND;
       sub_condition.nf_type =
-          sub_condition_api.at("NfTypeCond").at("nfType").dump().c_str();
+          sub_condition_api["NfTypeCond"]["nfType"].get<std::string>();
       Logger::nrf_app().debug(
           "Subscription condition type: NfTypeCond, nf_type: %s",
           sub_condition.nf_type.c_str());
@@ -253,10 +251,7 @@ bool api_conv::subscription_api_to_nrf_subscription(
 
     if (sub_condition_api.find("ServiceNameCond") != sub_condition_api.end()) {
       sub_condition.type = SERVICE_NAME_COND;
-      sub_condition.service_name = sub_condition_api.at("ServiceNameCond")
-                                       .at("serviceName")
-                                       .dump()
-                                       .c_str();
+      sub_condition.service_name = sub_condition_api["ServiceNameCond"]["serviceName"].get<std::string>();
       Logger::nrf_app().debug(
           "Subscription condition type: ServiceNameCond, serviceName: %s",
           sub_condition.service_name.c_str());
@@ -264,9 +259,9 @@ bool api_conv::subscription_api_to_nrf_subscription(
     if (sub_condition_api.find("AmfCond") != sub_condition_api.end()) {
       sub_condition.type = AMF_COND;
       sub_condition.amf_info.amf_set_id =
-          sub_condition_api.at("AmfCond").at("amfSetId").dump().c_str();
+          sub_condition_api["AmfCond"]["amfSetId"].get<std::string>();
       sub_condition.amf_info.amf_region_id =
-          sub_condition_api.at("AmfCond").at("amfRegionId").dump().c_str();
+          sub_condition_api["AmfCond"]["amfRegionId"].get<std::string>();
       Logger::nrf_app().debug(
           "Subscription condition type: AmfCond, amfSetId: %s, amfRegionId: "
           "%s ",

@@ -22,6 +22,7 @@
 #ifndef FILE_3GPP_29_510_NRF_SEEN
 #define FILE_3GPP_29_510_NRF_SEEN
 
+#include <string>
 #include "3gpp_23.003.h"
 
 enum class nf_status_e { REGISTERED = 0, SUSPENDED = 1, UNDISCOVERABLE = 2 };
@@ -74,11 +75,12 @@ typedef struct subscription_condition_s {
     nf_group_cond_t nf_group;
   };
 
-  subscription_condition_s() : type(0) {}
+  subscription_condition_s() : type(0), nf_instance_id() {}
 
   subscription_condition_s(uint8_t t) : type(t) {}
 
-  subscription_condition_s(const subscription_condition_s &s) {
+  subscription_condition_s(const subscription_condition_s &s)
+      : subscription_condition_s() {
     type = s.type;
     switch (s.type) {
       case NF_INSTANCE_ID_COND: {

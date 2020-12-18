@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -49,12 +49,10 @@ typedef enum nf_type_s {
   NF_TYPE_UNKNOWN = 20
 } nf_type_t;
 
-static const std::vector<std::string> nf_type_e2str = { "NF_TYPE_NRF",
-    "NF_TYPE_AMF", "NF_TYPE_SMF", "NF_TYPE_AUSF", "NF_TYPE_NEF", "NF_TYPE_PCF",
-    "NF_TYPE_SMSF", "NF_TYPE_NSSF", "NF_TYPE_UDR", "NF_TYPE_LMF",
-    "NF_TYPE_GMLC", "NF_TYPE_5G_EIR", "NF_TYPE_SEPP", "NF_TYPE_UPF",
-    "NF_TYPE_N3IWF", "NF_TYPE_AF", "NF_TYPE_UDSF", "NF_TYPE_BSF", "NF_TYPE_CHF",
-    "NF_TYPE_NWDAF", "NF_TYPE_UNKNOWN" };
+static const std::vector<std::string> nf_type_e2str = {
+    "NRF",   "AMF", "SMF",  "AUSF", "NEF",    "PCF",   "SMSF",
+    "NSSF",  "UDR", "LMF",  "GMLC", "5G_EIR", "SEPP",  "UPF",
+    "N3IWF", "AF",  "UDSF", "BSF",  "CHF",    "NWDAF", "UNKNOWN"};
 
 typedef enum patch_op_type_s {
   PATCH_OP_ADD = 0,
@@ -67,8 +65,8 @@ typedef enum patch_op_type_s {
 
 } patch_op_type_t;
 
-static const std::vector<std::string> patch_op_type_e2str = { "ADD", "REMOVE",
-    "REPLACE", "MOVE", "COPY", "TEST", "UNKNOWN" };
+static const std::vector<std::string> patch_op_type_e2str = {
+    "ADD", "REMOVE", "REPLACE", "MOVE", "COPY", "TEST", "UNKNOWN"};
 
 typedef struct amf_info_s {
   std::string amf_set_id;
@@ -92,9 +90,9 @@ typedef struct smf_info_s {
 
 // Event Subscription IDs)
 typedef uint32_t evsub_id_t;
-#define EVSUB_ID_FMT             "0x%" PRIx32
-#define EVSUB_ID_SCAN_FMT         SCNx32
-#define INVALID_EVSUB_ID          ((evsub_id_t)0x00000000)
-#define UNASSIGNED_EVSUB_ID       ((evsub_id_t)0x00000000)
+#define EVSUB_ID_FMT "0x%" PRIx32
+#define EVSUB_ID_SCAN_FMT SCNx32
+#define INVALID_EVSUB_ID ((evsub_id_t)0x00000000)
+#define UNASSIGNED_EVSUB_ID ((evsub_id_t)0x00000000)
 
 #endif

@@ -471,7 +471,7 @@ class amf_profile : public nrf_profile {
    * @param [const amf_info_t &] info: AMF info
    * @return void
    */
-  void get_amf_info(amf_info_t &infos) const;
+  void get_amf_info(amf_info_t &info) const;
 
   /*
    * Print related-information for an AMF profile

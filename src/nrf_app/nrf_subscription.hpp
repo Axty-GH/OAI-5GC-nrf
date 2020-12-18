@@ -43,7 +43,9 @@ using namespace std;
 
 class nrf_subscription {
  public:
-  nrf_subscription(nrf_event &ev):m_event_sub(ev){};
+  nrf_subscription(nrf_event &ev):m_event_sub(ev){
+
+  };
   nrf_subscription(nrf_subscription const &) = delete;
   virtual ~nrf_subscription() {
     Logger::nrf_app().debug("Delete instance...");

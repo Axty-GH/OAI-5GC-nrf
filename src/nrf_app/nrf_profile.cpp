@@ -488,8 +488,8 @@ void amf_profile::add_amf_info(const amf_info_t &info) {
 }
 
 //------------------------------------------------------------------------------
-void amf_profile::get_amf_info(amf_info_t &infos) const {
-  infos = amf_info;
+void amf_profile::get_amf_info(amf_info_t &info) const {
+  info = amf_info;
 }
 
 //------------------------------------------------------------------------------

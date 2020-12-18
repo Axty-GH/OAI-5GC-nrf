@@ -48,6 +48,8 @@ nrf_app::nrf_app(const std::string &config_file, nrf_event &ev)
     : m_event_sub(ev) {
   Logger::nrf_app().startup("Starting...");
   Logger::nrf_app().startup("Started");
+  //subscribe to NF status
+  subscribe_nf_status();
 }
 
 //------------------------------------------------------------------------------
@@ -100,6 +102,18 @@ void nrf_app::handle_register_nf_instance(
     // add to the DB
     add_nf_profile(nf_instance_id, sn);
     Logger::nrf_app().debug("Added/Updated NF Profile to the DB");
+
+    // heartbeart management for this NF profile
+    // get current time
+    uint64_t ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+                      std::chrono::system_clock::now().time_since_epoch())
+                      .count();
+    sn.get()->subscribe_task_tick(ms);
+
+    // Notify NF status change event
+    // m_event_sub.nf_status_change(p); //from subscription
+    m_event_sub.nf_status_registered(nf_instance_id);  // from nrf_app
+
     // display the info
     sn.get()->display();
   } else {
@@ -299,7 +313,7 @@ void nrf_app::handle_create_subscription(
       ss.get()->set_subscription_id(evsub_id);
 
       // subscribe to NF status registered
-      subscribe_nf_status(evsub_id);  // from nrf_app
+     // subscribe_nf_status(evsub_id);  // from nrf_app
       // subscribe to NF status change
       // ss.get()->subscribe_nf_status_change(); //from subscription
       // add to the DB
@@ -331,7 +345,6 @@ void nrf_app::handle_create_subscription(
 //------------------------------------------------------------------------------
 bool nrf_app::add_nf_profile(const std::string &profile_id,
                              const std::shared_ptr<nrf_profile> &p) {
-  std::unique_lock lock(m_instance_id2nrf_profile);
   /*
    //if profile with this id exist, update
    if (instance_id2nrf_profile.count(profile_id) > 0) {
@@ -346,19 +359,10 @@ bool nrf_app::add_nf_profile(const std::string &profile_id,
    profile_id.c_str());
    instance_id2nrf_profile.emplace(profile_id, p);
    }*/
+
   // Create or update if profile exist
+  std::unique_lock lock(m_instance_id2nrf_profile);
   instance_id2nrf_profile[profile_id] = p;
-
-  // heartbeart management for this NF profile
-  // get current time
-  uint64_t ms = std::chrono::duration_cast<std::chrono::milliseconds>(
-                    std::chrono::system_clock::now().time_since_epoch())
-                    .count();
-  p.get()->subscribe_task_tick(ms);
-
-  // Notify NF status change event
-  // m_event_sub.nf_status_change(p); //from subscription
-  m_event_sub.nf_status_registered(profile_id);  // from nrf_app
 
   return true;
 }
@@ -404,7 +408,7 @@ bool nrf_app::find_nf_profile(const std::string &profile_id,
     p = instance_id2nrf_profile.at(profile_id);
     return true;
   } else {
-    Logger::nrf_app().info("NF profile (ID %d) not found", profile_id.c_str());
+    Logger::nrf_app().info("NF profile (ID %s) not found", profile_id.c_str());
     return false;
   }
 }
@@ -527,7 +531,7 @@ evsub_id_t nrf_app::generate_ev_subscription_id() {
 }
 
 //------------------------------------------------------------------------------
-void nrf_app::subscribe_nf_status(const std::string &sub_id) {
+void nrf_app::subscribe_nf_status() {
   // depending on the type of subscription, subscribe to the corresponding event
   // for now subscribe to all events
   subscribe_nf_status_registered();
@@ -589,6 +593,86 @@ void nrf_app::handle_nf_status_profile_changed(const std::string &profile_id) {
 void nrf_app::get_subscription_list(const std::string &profile_id,
                                     uint8_t notification_type,
                                     std::vector<std::string> &uris) {
+  Logger::nrf_app().debug(
+      "Get the list of subscriptions related to this profile, profile id %s",
+      profile_id.c_str());
+  std::shared_ptr<nrf_profile> profile = {};
+  find_nf_profile(profile_id, profile);
+  if (profile.get() == nullptr) {
+    // error
+    return;
+  }
 
+  for (auto s : instance_id2nrf_subscription) {
+    // Logger::nrf_app().debug("Subscription id %s", s.first.c_str());
+    std::string uri;
+    s.second.get()->get_notification_uri(uri);
+
+    // Logger::nrf_app().debug("Uri %s", uri.c_str());
+    subscription_condition_t condition = {};
+    s.second.get()->get_sub_condition(condition);
+
+    switch (condition.type) {
+      case NF_INSTANCE_ID_COND: {
+        if (profile_id.compare(condition.nf_instance_id) == 0) {
+          uris.push_back(uri);
+          Logger::nrf_app().debug("Subscription id %s, uri %s", s.first.c_str(),
+                                  uri.c_str());
+        }
+
+      } break;
+      case NF_TYPE_COND: {
+        std::string nf_type = nf_type_e2str[profile.get()->get_nf_type()];
+        if (nf_type.compare(condition.nf_type) == 0) {
+          uris.push_back(uri);
+          Logger::nrf_app().debug("Subscription id %s, uri %s", s.first.c_str(),
+                                  uri.c_str());
+        }
+      } break;
+
+      case SERVICE_NAME_COND: {
+        std::string service_name;
+        profile.get()->get_nf_instance_name(service_name);
+        if (service_name.compare(condition.service_name) == 0) {
+          uris.push_back(uri);
+          Logger::nrf_app().debug("Subscription id %s, uri %s", s.first.c_str(),
+                                  uri.c_str());
+        }
+
+      } break;
+      case AMF_COND: {
+        std::string nf_type = nf_type_e2str[profile.get()->get_nf_type()];
+        if (nf_type.compare("AMF") == 0) {
+          amf_info_t info = {};
+          std::static_pointer_cast<amf_profile>(profile).get()->get_amf_info(
+              info);
+          if ((info.amf_region_id.compare(condition.amf_info.amf_region_id) ==
+               0) and
+              (info.amf_set_id.compare(condition.amf_info.amf_set_id) == 0)) {
+            uris.push_back(uri);
+            Logger::nrf_app().debug("Subscription id %s, uri %s",
+                                    s.first.c_str(), uri.c_str());
+          }
+        }
+      } break;
+
+      case GUAMI_LIST_COND: {
+        // TODO:
+      } break;
+
+      case NETWOTK_SLICE_COND: {
+        // TODO:
+      } break;
+
+      case NF_GROUP_COND: {
+        // TODO:
+      } break;
+
+      default: {
+        // TODO:
+      }
+    }
+
+  }
   // TODO:
 }
