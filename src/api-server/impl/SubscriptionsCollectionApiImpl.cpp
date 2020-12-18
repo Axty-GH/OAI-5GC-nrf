@@ -42,6 +42,10 @@ void SubscriptionsCollectionApiImpl::create_subscription(
   int http_code = 0;
   ProblemDetails problem_details = {};
   std::string sub_id;
+  nlohmann::json json_sub = {};
+  to_json(json_sub,subscriptionData);
+  Logger::nrf_sbi().debug("Subscription data %s", json_sub.dump().c_str());
+
   m_nrf_app->handle_create_subscription(subscriptionData, sub_id, http_code, 1,
                                         problem_details);
 

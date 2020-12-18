@@ -35,6 +35,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
+#include <nlohmann/json.hpp>
 #include <regex>
 
 #include "3gpp_29.510.h"
@@ -170,24 +171,32 @@ bool api_conv::subscription_api_to_nrf_subscription(
   sub.get()->set_notification_uri(api_sub.getNfStatusNotificationUri());
   subscription_condition_t sub_condition = {};
 
+  /*
   if (api_sub.subscrCondIsSet()) {
-    subscription_condition_api_t sub_condition_api = api_sub.getSubscrCond();
+    subscription_condition_api_t sub_condition_api = {};
+    api_sub.getSubscrCond(sub_condition_api);
     switch (sub_condition_api.type) {
       case NF_INSTANCE_ID_COND: {
+        Logger::nrf_app().debug(
+            "Subscription condition type: NF_INSTANCE_ID_COND");
         sub_condition.type = NF_INSTANCE_ID_COND;
         sub_condition.nf_instance_id =
             sub_condition_api.nfInstanceIdCond.getNfInstanceId();
       } break;
       case NF_TYPE_COND: {
+        Logger::nrf_app().debug("Subscription condition type: NF_TYPE_COND");
         sub_condition.type = NF_TYPE_COND;
         sub_condition.nf_type = sub_condition_api.nfTypeCond.getNfType();
       } break;
       case SERVICE_NAME_COND: {
+        Logger::nrf_app().debug(
+            "Subscription condition type: SERVICE_NAME_COND");
         sub_condition.type = SERVICE_NAME_COND;
         sub_condition.service_name =
             sub_condition_api.serviceNameCond.getServiceName();
       } break;
       case AMF_COND: {
+        Logger::nrf_app().debug("Subscription condition type: AMF_COND");
         sub_condition.type = AMF_COND;
         sub_condition.amf_info.amf_set_id =
             sub_condition_api.amfCond.getAmfSetId();
@@ -195,23 +204,85 @@ bool api_conv::subscription_api_to_nrf_subscription(
             sub_condition_api.amfCond.getAmfRegionId();
       } break;
       case GUAMI_LIST_COND: {
+        Logger::nrf_app().debug("Subscription condition type: GUAMI_LIST_COND");
         sub_condition.type = GUAMI_LIST_COND;
         // TODO:
       } break;
       case NETWOTK_SLICE_COND: {
+        Logger::nrf_app().debug(
+            "Subscription condition type: NETWOTK_SLICE_COND");
         sub_condition.type = NETWOTK_SLICE_COND;
         // TODO:
       } break;
       case NF_GROUP_COND: {
+        Logger::nrf_app().debug("Subscription condition type: NF_GROUP_COND");
         sub_condition.type = NF_GROUP_COND;
         // TODO:
       } break;
       default: {
-    	  return false;
+        Logger::nrf_app().debug("Subscription condition type: Unknown");
+        return false;
       }
     }
   }
+  */
 
+  if (api_sub.subscrCondIsSet()) {
+    nlohmann::json sub_condition_api = {};
+    api_sub.getSubscrCond(sub_condition_api);
+
+    if (sub_condition_api.find("NfInstanceIdCond") != sub_condition_api.end()) {
+      sub_condition.type = NF_INSTANCE_ID_COND;
+      sub_condition.nf_instance_id = sub_condition_api.at("NfInstanceIdCond")
+                                         .at("nfInstanceId")
+                                         .dump()
+                                         .c_str();
+      Logger::nrf_app().debug(
+          "Subscription condition type: NfInstanceIdCond, nfInstanceId: %s",
+          sub_condition.nf_instance_id.c_str());
+    }
+
+    if (sub_condition_api.find("NfTypeCond") != sub_condition_api.end()) {
+      sub_condition.type = NF_TYPE_COND;
+      sub_condition.nf_type =
+          sub_condition_api.at("NfTypeCond").at("nfType").dump().c_str();
+      Logger::nrf_app().debug(
+          "Subscription condition type: NfTypeCond, nf_type: %s",
+          sub_condition.nf_type.c_str());
+    }
+
+    if (sub_condition_api.find("ServiceNameCond") != sub_condition_api.end()) {
+      sub_condition.type = SERVICE_NAME_COND;
+      sub_condition.service_name = sub_condition_api.at("ServiceNameCond")
+                                       .at("serviceName")
+                                       .dump()
+                                       .c_str();
+      Logger::nrf_app().debug(
+          "Subscription condition type: ServiceNameCond, serviceName: %s",
+          sub_condition.service_name.c_str());
+    }
+    if (sub_condition_api.find("AmfCond") != sub_condition_api.end()) {
+      sub_condition.type = AMF_COND;
+      sub_condition.amf_info.amf_set_id =
+          sub_condition_api.at("AmfCond").at("amfSetId").dump().c_str();
+      sub_condition.amf_info.amf_region_id =
+          sub_condition_api.at("AmfCond").at("amfRegionId").dump().c_str();
+      Logger::nrf_app().debug(
+          "Subscription condition type: AmfCond, amfSetId: %s, amfRegionId: "
+          "%s ",
+          sub_condition.amf_info.amf_set_id.c_str(),
+          sub_condition.amf_info.amf_region_id.c_str());
+    }
+
+    if (sub_condition_api.find("GuamiListCond") != sub_condition_api.end()) {
+      sub_condition.type = GUAMI_LIST_COND;
+      // TODO
+    }
+
+    Logger::nrf_app().debug(
+        "Subscription condition type: %s",
+        subscription_condition_type_e2str[sub_condition.type].c_str());
+  }
   // TODO:
   return true;
 }

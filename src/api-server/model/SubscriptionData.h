@@ -21,6 +21,7 @@
 
 //#include
 //"OneOfNfInstanceIdCondNfTypeCondServiceNameCondAmfCondGuamiListCondNetworkSliceCondNfGroupCond.h"
+#include <iostream>
 #include <nlohmann/json.hpp>
 #include <string>
 #include <vector>
@@ -54,18 +55,11 @@ typedef struct subscription_condition_api_s {
   };
 
   subscription_condition_api_s() : type(0) {
-    nfInstanceIdCond = {};
-    nfTypeCond = {};
-    serviceNameCond = {};
-    amfCond = {};
-    guamiListCond = {};
-    networkSliceCond = {};
-    nfGroupCond = {};
+    // TODO
   }
 
   subscription_condition_api_s(subscription_condition_api_s const &s) {
     nfInstanceIdCond = s.nfInstanceIdCond;
-    // nfInstanceIdCond.setNfInstanceId(s.nfInstanceIdCond.getNfInstanceId());
     nfTypeCond = s.nfTypeCond;
     serviceNameCond = s.serviceNameCond;
     amfCond = s.amfCond;
@@ -91,15 +85,7 @@ typedef struct subscription_condition_api_s {
   bool operator==(const uint8_t &t) const { return (t == type); }
 
   subscription_condition_api_s &operator=(subscription_condition_api_s s) {
-    nfInstanceIdCond = s.nfInstanceIdCond;
-    // nfInstanceIdCond.setNfInstanceId(s.nfInstanceIdCond.getNfInstanceId());
-    nfTypeCond = s.nfTypeCond;
-    serviceNameCond = s.serviceNameCond;
-    amfCond = s.amfCond;
-    guamiListCond = s.guamiListCond;
-    networkSliceCond = s.networkSliceCond;
-    nfGroupCond = s.nfGroupCond;
-    return *this;
+    // TODO:
   }
 
   friend void to_json(nlohmann::json &j,
@@ -140,6 +126,8 @@ typedef struct subscription_condition_api_s {
       o.type = 1;
     }
     if (j.find("NfTypeCond") != j.end()) {
+      o.nfTypeCond = {};
+
       j.at("NfTypeCond").get_to(o.nfTypeCond);
       o.type = 2;
     }
@@ -202,9 +190,9 @@ class SubscriptionData {
 
   // OneOfNfInstanceIdCondNfTypeCondServiceNameCondAmfCondGuamiListCondNetworkSliceCondNfGroupCond
   // getSubscrCond() const;
-  subscription_condition_api_t getSubscrCond() const;
+  void getSubscrCond(nlohmann::json &s) const;
 
-  void setSubscrCond(subscription_condition_api_t const &value);
+  void setSubscrCond(nlohmann::json const &value);
   bool subscrCondIsSet() const;
   void unsetSubscrCond();
   /// <summary>
@@ -272,7 +260,7 @@ class SubscriptionData {
   bool m_ReqNfInstanceIdIsSet;
   // OneOfNfInstanceIdCondNfTypeCondServiceNameCondAmfCondGuamiListCondNetworkSliceCondNfGroupCond
   // m_SubscrCond;
-  subscription_condition_api_t m_SubscrCond;
+  nlohmann::json m_SubscrCond;
   bool m_SubscrCondIsSet;
   std::string m_SubscriptionId;
 

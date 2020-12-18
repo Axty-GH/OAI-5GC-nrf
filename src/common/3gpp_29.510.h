@@ -29,7 +29,7 @@ enum class nf_status_e { REGISTERED = 0, SUSPENDED = 1, UNDISCOVERABLE = 2 };
 static const std::vector<std::string> nf_status_e2str = {
     "REGISTERED", "SUSPENDED", "UNDISCOVERABLE"};
 
-enum subscription_condition_type {
+enum subscription_condition_type_e {
   UNKNOWN_CONDITION = 0,
   NF_INSTANCE_ID_COND = 1,
   NF_TYPE_COND = 2,
@@ -39,6 +39,12 @@ enum subscription_condition_type {
   NETWOTK_SLICE_COND = 6,
   NF_GROUP_COND = 7
 };
+
+static const std::vector<std::string> subscription_condition_type_e2str = {
+    "UNKNOWN_CONDITION",  "NF_INSTANCE_ID_COND",
+    "NF_TYPE_COND",       "SERVICE_NAME_COND",
+    "AMF_COND",           "GUAMI_LIST_COND",
+    "NETWOTK_SLICE_COND", "NF_GROUP_COND"};
 
 typedef struct amf_cond_s {
   std::string amf_set_id;
@@ -81,5 +87,11 @@ typedef struct subscription_condition_s {
   virtual ~subscription_condition_s(){};
 
 } subscription_condition_t;
+
+enum notification_event_type_t {
+  NOTIFICATION_TYPE_NF_REGISTERED = 0,
+  NOTIFICATION_TYPE_NF_DEREGISTERED = 1,
+  NOTIFICATION_TYPE_NF_PROFILE_CHANGED = 2
+};
 
 #endif

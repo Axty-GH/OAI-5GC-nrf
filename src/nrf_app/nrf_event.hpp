@@ -70,11 +70,16 @@ class nrf_event {
                                       uint64_t period, uint64_t start = 0);
 
 
-  bs2::connection subscribe_nf_status_change(const nf_status_sig_t::slot_type &sig);
-
+  bs2::connection subscribe_nf_status_change(const nf_status_change_sig_t::slot_type &sig);
+  bs2::connection subscribe_nf_status_registered(const nf_status_sig_t::slot_type &sig);
+  bs2::connection subscribe_nf_status_deregistered(const nf_status_sig_t::slot_type &sig);
+  bs2::connection subscribe_nf_status_profile_changed(const nf_status_sig_t::slot_type &sig);
  private:
   task_sig_t task_tick;
-  nf_status_sig_t nf_status_change;
+  nf_status_change_sig_t nf_status_change;
+  nf_status_sig_t nf_status_registered;
+  nf_status_sig_t nf_status_deregistered;
+  nf_status_sig_t nf_status_profile_changed;
 
 };
 }

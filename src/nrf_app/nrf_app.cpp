@@ -30,6 +30,7 @@
 #include "nrf_app.hpp"
 #include <chrono>
 #include "3gpp_29.500.h"
+#include "3gpp_29.510.h"
 #include "api_conversions.hpp"
 #include "common_defs.h"
 #include "logger.hpp"
@@ -280,35 +281,40 @@ void nrf_app::handle_deregister_nf_instance(const std::string &nf_instance_id,
 
 //------------------------------------------------------------------------------
 void nrf_app::handle_create_subscription(
-    const SubscriptionData &subscription_data, std::string &sub_id, int &http_code,
-    const uint8_t http_version, ProblemDetails &problem_details) {
+    const SubscriptionData &subscription_data, std::string &sub_id,
+    int &http_code, const uint8_t http_version,
+    ProblemDetails &problem_details) {
   std::string evsub_id;
 
   Logger::nrf_app().info("Handle Create a new subscription (HTTP version %d)",
                          http_version);
-  std::shared_ptr<nrf_subscription> ss = std::make_shared<nrf_subscription>(m_event_sub);
+  std::shared_ptr<nrf_subscription> ss =
+      std::make_shared<nrf_subscription>(m_event_sub);
 
   // convert to nrf_subscription
   if (api_conv::subscription_api_to_nrf_subscription(subscription_data, ss)) {
     if (authorize_subscription(ss)) {
-        // generate a subscription ID
-        generate_ev_subscription_id(evsub_id);
-        ss.get()->set_subscription_id(evsub_id);
-        //subscribe to NF status change
-        ss.get()->subscribe_nf_status_change();
-        // add to the DB
-        add_subscription(evsub_id, ss);
-        Logger::nrf_app().debug("Added a subscription to the DB");
-        // display the info
-        ss.get()->display();
-        //assign info for API server
-        http_code = HTTP_STATUS_CODE_201_CREATED;
-        sub_id = evsub_id;
-        return;
+      // generate a subscription ID
+      generate_ev_subscription_id(evsub_id);
+      ss.get()->set_subscription_id(evsub_id);
+
+      // subscribe to NF status registered
+      subscribe_nf_status(evsub_id);  // from nrf_app
+      // subscribe to NF status change
+      // ss.get()->subscribe_nf_status_change(); //from subscription
+      // add to the DB
+      add_subscription(evsub_id, ss);
+      Logger::nrf_app().debug("Added a subscription to the DB");
+      // display the info
+      ss.get()->display();
+      // assign info for API server
+      http_code = HTTP_STATUS_CODE_201_CREATED;
+      sub_id = evsub_id;
+      return;
     } else {
-    	Logger::nrf_app().debug("Subscription is not authorized!");
-    	http_code = HTTP_STATUS_CODE_401_UNAUTHORIZED;
-    	return;
+      Logger::nrf_app().debug("Subscription is not authorized!");
+      http_code = HTTP_STATUS_CODE_401_UNAUTHORIZED;
+      return;
     }
 
   } else {
@@ -350,8 +356,9 @@ bool nrf_app::add_nf_profile(const std::string &profile_id,
                     .count();
   p.get()->subscribe_task_tick(ms);
 
-  //Notify NF status change event
-  m_event_sub.nf_status_change(p);
+  // Notify NF status change event
+  // m_event_sub.nf_status_change(p); //from subscription
+  m_event_sub.nf_status_registered(profile_id);  // from nrf_app
 
   return true;
 }
@@ -502,10 +509,13 @@ void nrf_app::handle_heartbeart_timeout(uint64_t ms) {
   Logger::nrf_app().info("handle_heartbeart_timeout %d", ms);
 }
 
-bool nrf_app::authorize_subscription(const std::shared_ptr<nrf_subscription> &s) const {
-	//TODO:
-	return true;
+//------------------------------------------------------------------------------
+bool nrf_app::authorize_subscription(
+    const std::shared_ptr<nrf_subscription> &s) const {
+  // TODO:
+  return true;
 }
+
 //------------------------------------------------------------------------------
 void nrf_app::generate_ev_subscription_id(std::string &sub_id) {
   sub_id = std::to_string(evsub_id_generator.get_uid());
@@ -514,4 +524,80 @@ void nrf_app::generate_ev_subscription_id(std::string &sub_id) {
 //------------------------------------------------------------------------------
 evsub_id_t nrf_app::generate_ev_subscription_id() {
   return evsub_id_generator.get_uid();
+}
+
+//------------------------------------------------------------------------------
+void nrf_app::subscribe_nf_status(const std::string &sub_id) {
+  // depending on the type of subscription, subscribe to the corresponding event
+  // for now subscribe to all events
+  subscribe_nf_status_registered();
+  subscribe_nf_status_deregistered();
+  subscribe_nf_status_profile_changed();
+}
+
+/*
+//------------------------------------------------------------------------------
+void nrf_app::handle_nf_status(const std::string &profile_id) {
+        Logger::nrf_app().info("Handle NF status, profile id %s",
+profile_id.c_str()); std::vector<std::string> notification_uris = {};
+        get_subscription_list(profile_id, notification_uris);
+
+}
+*/
+
+//------------------------------------------------------------------------------
+void nrf_app::subscribe_nf_status_registered() {
+  Logger::nrf_app().debug("Subscribe to NF status registered");
+  m_event_sub.subscribe_nf_status_registered(
+      boost::bind(&nrf_app::handle_nf_status_registered, this, _1));
+}
+
+//------------------------------------------------------------------------------
+void nrf_app::handle_nf_status_registered(const std::string &profile_id) {
+  Logger::nrf_app().info("Handle NF status registered, profile id %s",
+                         profile_id.c_str());
+  std::vector<std::string> notification_uris = {};
+  get_subscription_list(profile_id, NOTIFICATION_TYPE_NF_REGISTERED,
+                        notification_uris);
+  // TODO:
+}
+
+//------------------------------------------------------------------------------
+void nrf_app::subscribe_nf_status_deregistered() {
+  Logger::nrf_app().debug("Subscribe to NF status deregistered");
+  m_event_sub.subscribe_nf_status_deregistered(
+      boost::bind(&nrf_app::handle_nf_status_deregistered, this, _1));
+}
+
+//------------------------------------------------------------------------------
+void nrf_app::handle_nf_status_deregistered(const std::string &profile_id) {
+  Logger::nrf_app().info("Handle NF status deregistered, profile id %s",
+                         profile_id.c_str());
+  std::vector<std::string> notification_uris = {};
+  get_subscription_list(profile_id, NOTIFICATION_TYPE_NF_DEREGISTERED,
+                        notification_uris);
+  // TODO:
+}
+
+//------------------------------------------------------------------------------
+void nrf_app::subscribe_nf_status_profile_changed() {
+  Logger::nrf_app().debug("Subscribe to NF status profile changed");
+  m_event_sub.subscribe_nf_status_profile_changed(
+      boost::bind(&nrf_app::handle_nf_status_profile_changed, this, _1));
+}
+
+//------------------------------------------------------------------------------
+void nrf_app::handle_nf_status_profile_changed(const std::string &profile_id) {
+  Logger::nrf_app().info("Handle NF status profile changed, profile id %s",
+                         profile_id.c_str());
+  std::vector<std::string> notification_uris = {};
+  get_subscription_list(profile_id, NOTIFICATION_TYPE_NF_PROFILE_CHANGED,
+                        notification_uris);
+  // TODO:
+}
+
+void nrf_app::get_subscription_list(const std::string &profile_id,
+                                    uint8_t notification_type,
+                                    std::vector<std::string> &uris) {
+  // TODO:
 }

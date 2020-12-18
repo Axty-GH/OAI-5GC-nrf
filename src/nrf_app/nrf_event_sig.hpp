@@ -47,13 +47,13 @@ typedef bs2::signal_type<void(uint64_t),
 
 // Signal for NF Status
 // Subscription ID, NF Status
-//typedef bs2::signal_type<void(std::string),
-//                         bs2::keywords::mutex_type<bs2::dummy_mutex>>::type
-//    nf_status_sig_t;
+typedef bs2::signal_type<void(const std::string &),
+                       bs2::keywords::mutex_type<bs2::dummy_mutex>>::type
+    nf_status_sig_t;
 
 typedef bs2::signal_type<void(const std::shared_ptr<nrf_profile> &p),
                          bs2::keywords::mutex_type<bs2::dummy_mutex>>::type
-    nf_status_sig_t;
+    nf_status_change_sig_t;
 
 }  // namespace app
 }  // namespace nrf

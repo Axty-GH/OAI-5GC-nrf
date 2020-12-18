@@ -212,6 +212,17 @@ class nrf_app {
   void generate_ev_subscription_id(std::string &sub_id);
   evsub_id_t generate_ev_subscription_id();
 
+  void subscribe_nf_status(const std::string &sub_id);
+//  void handle_nf_status(const std::string &profile_id);
+  void subscribe_nf_status_registered();
+  void handle_nf_status_registered(const std::string &profile_id);
+  void subscribe_nf_status_deregistered();
+  void handle_nf_status_deregistered(const std::string &profile_id);
+  void subscribe_nf_status_profile_changed();
+  void handle_nf_status_profile_changed(const std::string &profile_id);
+
+  void get_subscription_list(const std::string &profile_id, uint8_t notification_type, std::vector<std::string> &uris);
+
  private:
   std::map<std::string, std::shared_ptr<nrf_profile>> instance_id2nrf_profile;
   mutable std::shared_mutex m_instance_id2nrf_profile;

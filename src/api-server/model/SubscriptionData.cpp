@@ -31,7 +31,7 @@ SubscriptionData::SubscriptionData() {
   m_ReqNfFqdn = "";
   m_ReqNfFqdnIsSet = false;
   m_ReqSnssaisIsSet = false;
-  //m_SubscrCond;
+  m_SubscrCond = {};
 
 }
 
@@ -74,7 +74,8 @@ void from_json(const nlohmann::json &j, SubscriptionData &o) {
   }
    if(j.find("subscrCond") != j.end())
    {
-   j.at("subscrCond").get_to(o.m_SubscrCond);
+   //j.at("subscrCond").get_to(o.m_SubscrCond);
+   o.m_SubscrCond = j.at("subscrCond");
    o.m_SubscrCondIsSet = true;
    } 
 
@@ -134,13 +135,12 @@ void SubscriptionData::unsetReqNfInstanceId() {
   m_ReqNfInstanceIdIsSet = false;
 }
 
-subscription_condition_api_t SubscriptionData::getSubscrCond() const
+ void SubscriptionData::getSubscrCond(nlohmann::json &s) const
  {
-   return m_SubscrCond;
+	 s = m_SubscrCond;
  }
 
-
- void SubscriptionData::setSubscrCond(subscription_condition_api_t const& value)
+ void SubscriptionData::setSubscrCond(nlohmann::json const& value)
  {
     m_SubscrCond = value;
     m_SubscrCondIsSet = true;
