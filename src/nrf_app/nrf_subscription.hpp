@@ -48,8 +48,8 @@ class nrf_subscription {
   };
   nrf_subscription(nrf_subscription const &) = delete;
   virtual ~nrf_subscription() {
-    Logger::nrf_app().debug("Delete instance...");
-    ev_connection.disconnect();
+    Logger::nrf_app().debug("Delete NRF Subscription instance...");
+    if (ev_connection.connected()) ev_connection.disconnect();
   }
   void operator=(nrf_subscription const &) = delete;
 

@@ -28,9 +28,7 @@
 
 #ifndef FILE_DYNAMIC_MEMORY_CHECK_SEEN
 #define FILE_DYNAMIC_MEMORY_CHECK_SEEN
-# include "bstrlib.h"
 
 void free_wrapper(void **ptr) __attribute__ ((hot));
-void bdestroy_wrapper(bstring *b);
 
 #endif /* FILE_DYNAMIC_MEMORY_CHECK_SEEN */

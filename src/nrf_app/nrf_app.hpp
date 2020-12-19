@@ -53,6 +53,14 @@ class nrf_app {
   nrf_app(nrf_app const&) = delete;
   void operator=(nrf_app const&) = delete;
 
+  virtual ~nrf_app() {
+    Logger::nrf_app().debug("Delete NRF_APP instance...");
+    for (auto i: connections) {
+    	if (i.connected()) i.disconnect();
+    }
+  }
+
+
   /*
    * Handle a Register NF Instance request
    * @param [const std::string &] nf_instance_id: Instance ID
@@ -228,9 +236,9 @@ class nrf_app {
 
   std::map<std::string, std::shared_ptr<nrf_subscription>> instance_id2nrf_subscription;
   mutable std::shared_mutex m_instance_id2nrf_subscription;
-
   nrf_event& m_event_sub;
   util::uint_generator<uint32_t> evsub_id_generator;
+  std::vector<bs2::connection> connections;
 };
 }
 }

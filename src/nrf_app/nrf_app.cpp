@@ -47,7 +47,9 @@ nrf_client *nrf_client_inst = nullptr;
 
 //------------------------------------------------------------------------------
 nrf_app::nrf_app(const std::string &config_file, nrf_event &ev)
-    : m_event_sub(ev) {
+    : m_event_sub(ev),
+      m_instance_id2nrf_profile(),
+      m_instance_id2nrf_subscription() {
   Logger::nrf_app().startup("Starting...");
 
   try {
@@ -114,7 +116,7 @@ void nrf_app::handle_register_nf_instance(
     add_nf_profile(nf_instance_id, sn);
     Logger::nrf_app().debug("Added/Updated NF Profile to the DB");
 
-    // heartbeart management for this NF profile
+    // Heartbeart management for this NF profile
     // get current time
     uint64_t ms = std::chrono::duration_cast<std::chrono::milliseconds>(
                       std::chrono::system_clock::now().time_since_epoch())
@@ -122,7 +124,6 @@ void nrf_app::handle_register_nf_instance(
     sn.get()->subscribe_task_tick(ms);
 
     // Notify NF status change event
-    // m_event_sub.nf_status_change(p); //from subscription
     m_event_sub.nf_status_registered(nf_instance_id);  // from nrf_app
 
     // display the info
@@ -553,8 +554,9 @@ void nrf_app::subscribe_nf_status() {
 //------------------------------------------------------------------------------
 void nrf_app::subscribe_nf_status_registered() {
   Logger::nrf_app().debug("Subscribe to NF status registered");
-  m_event_sub.subscribe_nf_status_registered(
+  bs2::connection c = m_event_sub.subscribe_nf_status_registered(
       boost::bind(&nrf_app::handle_nf_status_registered, this, _1));
+  connections.push_back(c);
 }
 
 //------------------------------------------------------------------------------
@@ -582,8 +584,9 @@ void nrf_app::handle_nf_status_registered(const std::string &profile_id) {
 //------------------------------------------------------------------------------
 void nrf_app::subscribe_nf_status_deregistered() {
   Logger::nrf_app().debug("Subscribe to NF status deregistered");
-  m_event_sub.subscribe_nf_status_deregistered(
+  bs2::connection c = m_event_sub.subscribe_nf_status_deregistered(
       boost::bind(&nrf_app::handle_nf_status_deregistered, this, _1));
+  connections.push_back(c);
 }
 
 //------------------------------------------------------------------------------
@@ -599,8 +602,9 @@ void nrf_app::handle_nf_status_deregistered(const std::string &profile_id) {
 //------------------------------------------------------------------------------
 void nrf_app::subscribe_nf_status_profile_changed() {
   Logger::nrf_app().debug("Subscribe to NF status profile changed");
-  m_event_sub.subscribe_nf_status_profile_changed(
+  bs2::connection c = m_event_sub.subscribe_nf_status_profile_changed(
       boost::bind(&nrf_app::handle_nf_status_profile_changed, this, _1));
+  connections.push_back(c);
 }
 
 //------------------------------------------------------------------------------
