@@ -35,12 +35,10 @@
 #include <nlohmann/json.hpp>
 
 #include "logger.hpp"
-
 #include "nrf_client.hpp"
 
 using namespace Pistache::Http;
 using namespace Pistache::Http::Mime;
-
 using namespace oai::nrf::app;
 using json = nlohmann::json;
 

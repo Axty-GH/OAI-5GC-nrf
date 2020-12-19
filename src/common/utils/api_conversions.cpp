@@ -233,8 +233,9 @@ bool api_conv::subscription_api_to_nrf_subscription(
 
     if (sub_condition_api.find("NfInstanceIdCond") != sub_condition_api.end()) {
       sub_condition.type = NF_INSTANCE_ID_COND;
-      sub_condition.nf_instance_id = sub_condition_api["NfInstanceIdCond"]["nfInstanceId"]
-                                         .get<std::string>();
+      sub_condition.nf_instance_id =
+          sub_condition_api["NfInstanceIdCond"]["nfInstanceId"]
+              .get<std::string>();
       Logger::nrf_app().debug(
           "Subscription condition type: NfInstanceIdCond, nfInstanceId: %s",
           sub_condition.nf_instance_id.c_str());
@@ -251,7 +252,9 @@ bool api_conv::subscription_api_to_nrf_subscription(
 
     if (sub_condition_api.find("ServiceNameCond") != sub_condition_api.end()) {
       sub_condition.type = SERVICE_NAME_COND;
-      sub_condition.service_name = sub_condition_api["ServiceNameCond"]["serviceName"].get<std::string>();
+      sub_condition.service_name =
+          sub_condition_api["ServiceNameCond"]["serviceName"]
+              .get<std::string>();
       Logger::nrf_app().debug(
           "Subscription condition type: ServiceNameCond, serviceName: %s",
           sub_condition.service_name.c_str());
@@ -278,8 +281,15 @@ bool api_conv::subscription_api_to_nrf_subscription(
         "Subscription condition type: %s",
         subscription_condition_type_e2str[sub_condition.type].c_str());
 
-    sub.get()->set_sub_condition(sub_condition);
+    if (sub_condition.type != UNKNOWN_CONDITION) {
+    	sub.get()->set_sub_condition(sub_condition);
+    	return true;
+    } else {
+    	return false;
+    }
+
   }
+
   // TODO:
   return true;
 }

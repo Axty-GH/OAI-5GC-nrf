@@ -37,7 +37,6 @@ using namespace util;
 using namespace std;
 
 nrf_app *nrf_app_inst = nullptr;
-nrf_client *nrf_client_inst = nullptr;
 nrf_config nrf_cfg;
 NRFApiServer *api_server = nullptr;
 
@@ -93,9 +92,6 @@ if  ( !Options::parse( argc, argv ) )
 
   // NRF application layer
   nrf_app_inst = new nrf_app(Options::getlibconfigConfig(), ev);
-
-  // NRF client
-  nrf_client_inst = new nrf_client();
 
   //Task Manager
   task_manager tm(ev);

@@ -30,7 +30,7 @@ enum class nf_status_e { REGISTERED = 0, SUSPENDED = 1, UNDISCOVERABLE = 2 };
 static const std::vector<std::string> nf_status_e2str = {
     "REGISTERED", "SUSPENDED", "UNDISCOVERABLE"};
 
-enum subscription_condition_type_e {
+enum subscr_condition_type_e { //TODO: use enum class
   UNKNOWN_CONDITION = 0,
   NF_INSTANCE_ID_COND = 1,
   NF_TYPE_COND = 2,

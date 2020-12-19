@@ -34,6 +34,7 @@
 #include "api_conversions.hpp"
 #include "common_defs.h"
 #include "logger.hpp"
+#include "nrf_client.hpp"
 #include "nrf_config.hpp"
 
 using namespace oai::nrf::app;
@@ -42,14 +43,24 @@ using namespace std::chrono;
 
 extern nrf_app *nrf_app_inst;
 extern nrf_config nrf_cfg;
+nrf_client *nrf_client_inst = nullptr;
 
 //------------------------------------------------------------------------------
 nrf_app::nrf_app(const std::string &config_file, nrf_event &ev)
     : m_event_sub(ev) {
   Logger::nrf_app().startup("Starting...");
-  Logger::nrf_app().startup("Started");
-  //subscribe to NF status
+
+  try {
+    nrf_client_inst = new nrf_client();
+  } catch (std::exception &e) {
+    Logger::nrf_app().error("Cannot create NRF_APP: %s", e.what());
+    throw;
+  }
+
+  // subscribe to NF status
   subscribe_nf_status();
+
+  Logger::nrf_app().startup("Started");
 }
 
 //------------------------------------------------------------------------------
@@ -313,7 +324,7 @@ void nrf_app::handle_create_subscription(
       ss.get()->set_subscription_id(evsub_id);
 
       // subscribe to NF status registered
-     // subscribe_nf_status(evsub_id);  // from nrf_app
+      // subscribe_nf_status(evsub_id);  // from nrf_app
       // subscribe to NF status change
       // ss.get()->subscribe_nf_status_change(); //from subscription
       // add to the DB
@@ -550,9 +561,21 @@ void nrf_app::subscribe_nf_status_registered() {
 void nrf_app::handle_nf_status_registered(const std::string &profile_id) {
   Logger::nrf_app().info("Handle NF status registered, profile id %s",
                          profile_id.c_str());
-  std::vector<std::string> notification_uris = {};
-  get_subscription_list(profile_id, NOTIFICATION_TYPE_NF_REGISTERED,
-                        notification_uris);
+
+  std::shared_ptr<nrf_profile> profile = {};
+  find_nf_profile(profile_id, profile);
+  if (profile != nullptr) {
+    std::vector<std::string> notification_uris = {};
+    get_subscription_list(profile_id, NOTIFICATION_TYPE_NF_REGISTERED,
+                          notification_uris);
+    // send notifications
+    nrf_client_inst->notify_subscribed_event(profile, notification_uris);
+
+  } else {
+    Logger::nrf_app().error("NF profile not found, profile id %s",
+                            profile_id.c_str());
+  }
+
   // TODO:
 }
 
@@ -672,7 +695,6 @@ void nrf_app::get_subscription_list(const std::string &profile_id,
         // TODO:
       }
     }
-
   }
   // TODO:
 }
