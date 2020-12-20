@@ -84,19 +84,19 @@ void nrf_subscription::display() {
 }
 
 //------------------------------------------------------------------------------
-void nrf_subscription::subscribe_nf_status_change() {
+void nrf_subscription::subscribe_nf_status_registered() {
   Logger::nrf_app().debug("Subscribe to NF status change event");
-  ev_connection = m_event_sub.subscribe_nf_status_change(
-      boost::bind(&nrf_subscription::handle_nf_status_change, this, _1));
+  ev_connection = m_event_sub.subscribe_nf_status_change( //TODO: To be updated
+      boost::bind(&nrf_subscription::handle_nf_status_registered, this, _1));
 }
 
 //------------------------------------------------------------------------------
-void nrf_subscription::handle_nf_status_change(
+void nrf_subscription::handle_nf_status_registered(
     const std::shared_ptr<nrf_profile> &profile) {
   std::string nf_instance_id;
   profile.get()->get_nf_instance_id(nf_instance_id);
   Logger::nrf_app().info(
-      "Handle NF status change (subscription ID %s), profile ID %s",
+      "Handle NF status registered (subscription ID %s), profile ID %s",
       subscription_id.c_str(), nf_instance_id.c_str());
   // TODO:
   nlohmann::json notification_data = {};

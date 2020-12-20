@@ -63,8 +63,8 @@ class nrf_subscription {
   void get_sub_condition(subscription_condition_t &c) const;
  // subscription_condition_t get_sub_condition() const;
 
-  void subscribe_nf_status_change();
-  void handle_nf_status_change(const std::shared_ptr<nrf_profile> &profile);
+  void subscribe_nf_status_registered();
+  void handle_nf_status_registered(const std::shared_ptr<nrf_profile> &profile);
  private:
   std::string nf_status_notification_uri;
   std::string subscription_id;

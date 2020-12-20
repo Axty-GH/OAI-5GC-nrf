@@ -125,6 +125,7 @@ void nrf_app::handle_register_nf_instance(
 
     // Notify NF status change event
     m_event_sub.nf_status_registered(nf_instance_id);  // from nrf_app
+    //m_event_sub.nf_status_change(sn);  // from nrf_app
 
     // display the info
     sn.get()->display();
@@ -327,7 +328,7 @@ void nrf_app::handle_create_subscription(
       // subscribe to NF status registered
       // subscribe_nf_status(evsub_id);  // from nrf_app
       // subscribe to NF status change
-      // ss.get()->subscribe_nf_status_change(); //from subscription
+      ss.get()->subscribe_nf_status_registered(); //from subscription
       // add to the DB
       add_subscription(evsub_id, ss);
       Logger::nrf_app().debug("Added a subscription to the DB");
