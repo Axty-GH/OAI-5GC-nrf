@@ -29,6 +29,8 @@
 #define FILE_3GPP_23_003_SEEN
 
 #include <stdint.h>
+#include <string>
+
 /*
 typedef struct plmn_s {
   uint8_t mcc_digit2 :4;

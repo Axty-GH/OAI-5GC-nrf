@@ -22,15 +22,38 @@
 #ifndef FILE_3GPP_29_510_NRF_SEEN
 #define FILE_3GPP_29_510_NRF_SEEN
 
-#include <string>
 #include "3gpp_23.003.h"
+#include <vector>
 
 enum class nf_status_e { REGISTERED = 0, SUSPENDED = 1, UNDISCOVERABLE = 2 };
 
 static const std::vector<std::string> nf_status_e2str = {
     "REGISTERED", "SUSPENDED", "UNDISCOVERABLE"};
 
-enum subscr_condition_type_e { //TODO: use enum class
+
+typedef struct amf_info_s {
+  std::string amf_set_id;
+  std::string amf_region_id;
+  std::vector<guami_t> guami_list;
+} amf_info_t;
+
+typedef struct dnn_smf_info_item_s {
+  std::string dnn;
+} dnn_smf_info_item_t;
+
+typedef struct snssai_smf_info_item_s {
+  snssai_t snssai;
+  std::vector<dnn_smf_info_item_t> dnn_smf_info_list;
+
+} snssai_smf_info_item_t;
+
+typedef struct smf_info_s {
+  std::vector<snssai_smf_info_item_t> snssai_smf_info_list;
+} smf_info_t;
+
+
+
+enum subscr_condition_type_e {  // TODO: use enum class
   UNKNOWN_CONDITION = 0,
   NF_INSTANCE_ID_COND = 1,
   NF_TYPE_COND = 2,
@@ -161,12 +184,59 @@ typedef struct subscription_condition_s {
 
   virtual ~subscription_condition_s(){};
 
+  std::string to_string() const {
+    std::string s = {};
+    s.append("Type: ");
+    s.append(subscription_condition_type_e2str[type]);
+    s.append(", condition: ");
+    switch (type) {
+      case NF_INSTANCE_ID_COND: {
+        s.append(nf_instance_id);
+      } break;
+      case NF_TYPE_COND: {
+        s.append(nf_type);
+      } break;
+      case SERVICE_NAME_COND: {
+        s.append(service_name);
+      } break;
+      case AMF_COND: {
+        s.append(", AMF_Set_ID: ");
+        s.append(amf_info.amf_set_id);
+        s.append(", AMF_Region_ID: ");
+        s.append(amf_info.amf_region_id);
+      } break;
+
+      case GUAMI_LIST_COND: {
+        // TODO:
+      } break;
+
+      case NETWOTK_SLICE_COND: {
+        // TODO:
+      } break;
+
+      case NF_GROUP_COND: {
+        // TODO:
+      } break;
+
+      default: {
+        // TODO:
+      }
+    }
+    // TODO:
+
+    return s;
+  }
+
 } subscription_condition_t;
 
 enum notification_event_type_t {
-  NOTIFICATION_TYPE_NF_REGISTERED = 0,
-  NOTIFICATION_TYPE_NF_DEREGISTERED = 1,
-  NOTIFICATION_TYPE_NF_PROFILE_CHANGED = 2
+  NOTIFICATION_TYPE_UNKNOWN_EVENT = 0,
+  NOTIFICATION_TYPE_NF_REGISTERED = 1,
+  NOTIFICATION_TYPE_NF_DEREGISTERED = 2,
+  NOTIFICATION_TYPE_NF_PROFILE_CHANGED = 3
 };
+
+static const std::vector<std::string> notification_event_type_e2str = {
+    "UNKNOWN EVENT", "NF_REGISTERED", "NF_DEREGISTERED", "NF_PROFILE_CHANGED"};
 
 #endif

@@ -69,25 +69,62 @@ void nrf_subscription::set_sub_condition(const subscription_condition_t &c) {
 void nrf_subscription::get_sub_condition(subscription_condition_t &c) const {
   c = sub_condition;
 }
-/*
+
 //------------------------------------------------------------------------------
+/*
 subscription_condition_t nrf_subscription::get_sub_condition() const {
   return sub_condition;
 }
 */
+
+//------------------------------------------------------------------------------
+void nrf_subscription::set_notif_events(const std::vector<uint8_t> &ev_types) {
+  notif_events = ev_types;
+}
+
+//------------------------------------------------------------------------------
+void nrf_subscription::add_notif_event(const uint8_t &ev_type) {
+  notif_events.push_back(ev_type);
+}
+
+//------------------------------------------------------------------------------
+void nrf_subscription::get_notif_events(std::vector<uint8_t> &ev_types) const {
+  ev_types = notif_events;
+}
+
+//------------------------------------------------------------------------------
+std::vector<uint8_t> nrf_subscription::get_notif_events() const {
+  return notif_events;
+}
+
 //------------------------------------------------------------------------------
 void nrf_subscription::display() {
-  Logger::nrf_app().debug("Subscription ID: %s", subscription_id.c_str());
+  Logger::nrf_app().debug("Subscription information");
+  Logger::nrf_app().debug(".............Sub ID: %s", subscription_id.c_str());
 
-  Logger::nrf_app().debug("Notification URI: %s",
+  Logger::nrf_app().debug(".............Notification URI: %s",
                           nf_status_notification_uri.c_str());
+  Logger::nrf_app().debug(".............Subscription condition: %s",
+		  sub_condition.to_string().c_str());
+
+  std::string notif_events_str = {};
+  for (auto n: notif_events){
+	  notif_events_str.append(notification_event_type_e2str[n]);
+	  notif_events_str.append(", ");
+  }
+  Logger::nrf_app().debug(".............Notification Events: %s",
+		  notif_events_str.c_str());
+
+
 }
 
 //------------------------------------------------------------------------------
 void nrf_subscription::subscribe_nf_status_registered() {
   Logger::nrf_app().debug("Subscribe to NF status change event");
-  ev_connection = m_event_sub.subscribe_nf_status_change( //TODO: To be updated
-      boost::bind(&nrf_subscription::handle_nf_status_registered, this, _1));
+  ev_connection =
+      m_event_sub.subscribe_nf_status_change(  // TODO: To be updated
+          boost::bind(&nrf_subscription::handle_nf_status_registered, this,
+                      _1));
 }
 
 //------------------------------------------------------------------------------

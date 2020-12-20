@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -33,15 +33,16 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <map>
-#include <shared_mutex>
 #include <memory>
+#include <nlohmann/json.hpp>
+#include <shared_mutex>
 #include <utility>
 #include <vector>
-#include <nlohmann/json.hpp>
 
+#include "3gpp_29.510.h"
+#include "logger.hpp"
 #include "nrf.h"
 #include "nrf_event.hpp"
-#include "logger.hpp"
 
 namespace oai {
 namespace nrf {
@@ -50,48 +51,44 @@ namespace app {
 using namespace std;
 
 class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
-
  public:
   nrf_profile(nrf_event &ev)
-      :
-      m_event_sub(ev),
-      nf_type(NF_TYPE_UNKNOWN),
-      heartBeat_timer(0),
-      snssais(),
-      ipv4_addresses(),
-      priority(0),
-      capacity(0) {
+      : m_event_sub(ev),
+        nf_type(NF_TYPE_UNKNOWN),
+        heartBeat_timer(0),
+        snssais(),
+        ipv4_addresses(),
+        priority(0),
+        capacity(0) {
     nf_instance_name = "";
     nf_status = "";
-    json_data = { };
+    json_data = {};
   }
   nrf_profile(nrf_event &ev, const nf_type_t type)
-      :
-      m_event_sub(ev),
-      nf_type(type),
-      heartBeat_timer(0),
-      snssais(),
-      ipv4_addresses(),
-      priority(0),
-      capacity(0) {
+      : m_event_sub(ev),
+        nf_type(type),
+        heartBeat_timer(0),
+        snssais(),
+        ipv4_addresses(),
+        priority(0),
+        capacity(0) {
     nf_instance_name = "";
     nf_status = "";
-    json_data = { };
+    json_data = {};
   }
 
   nrf_profile(nrf_event &ev, const std::string &id)
-      :
-      m_event_sub(ev),
-      nf_instance_id(id),
-      heartBeat_timer(0),
-      snssais(),
-      ipv4_addresses(),
-      priority(0),
-      capacity(0),
-      nf_type(NF_TYPE_UNKNOWN) {
+      : m_event_sub(ev),
+        nf_instance_id(id),
+        heartBeat_timer(0),
+        snssais(),
+        ipv4_addresses(),
+        priority(0),
+        capacity(0),
+        nf_type(NF_TYPE_UNKNOWN) {
     nf_instance_name = "";
     nf_status = "";
-    json_data = { };
+    json_data = {};
   }
 
   nrf_profile(nrf_profile &b) = delete;
@@ -341,7 +338,7 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
    * @param [uint64_t] ms: current time
    * @return void
    */
-  void subscribe_task_tick (uint64_t ms);
+  void subscribe_task_tick(uint64_t ms);
 
   /*
    * Handle heartbeart timeout event
@@ -360,7 +357,7 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
  protected:
   nrf_event &m_event_sub;
   bs2::connection task_connection;
-  //From NFProfile (Section 6.1.6.2.2@3GPP TS 29.510 V16.0.0 (2019-06))
+  // From NFProfile (Section 6.1.6.2.2@3GPP TS 29.510 V16.0.0 (2019-06))
   std::string nf_instance_id;
   std::string nf_instance_name;
   nf_type_t nf_type;
@@ -370,7 +367,7 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
   std::vector<struct in_addr> ipv4_addresses;
   uint16_t priority;
   uint16_t capacity;
-  nlohmann::json json_data;  //store extra json data
+  nlohmann::json json_data;  // store extra json data
 
   /*
    std::vector<PlmnId> m_PlmnList;
@@ -433,32 +430,24 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
    bool m_NfServicePersistenceIsSet;
    std::vector<NFService> m_NfServices;
    bool m_NfServicesIsSet;
-   std::vector<DefaultNotificationSubscription> m_DefaultNotificationSubscriptions;
-   bool m_DefaultNotificationSubscriptionsIsSet;
+   std::vector<DefaultNotificationSubscription>
+   m_DefaultNotificationSubscriptions; bool
+   m_DefaultNotificationSubscriptionsIsSet;
    */
 };
 
 class amf_profile : public nrf_profile {
-
  public:
-  amf_profile(nrf_event &ev)
-      :
-      nrf_profile(ev, NF_TYPE_AMF) {
-    amf_info = { };
-  }
+  amf_profile(nrf_event &ev) : nrf_profile(ev, NF_TYPE_AMF) { amf_info = {}; }
 
-  amf_profile(nrf_event &ev, const std::string &id)
-      :
-      nrf_profile(ev, id) {
+  amf_profile(nrf_event &ev, const std::string &id) : nrf_profile(ev, id) {
     nf_type = NF_TYPE_AMF;
-    amf_info = { };
+    amf_info = {};
   }
 
   amf_profile(amf_profile &b) = delete;
 
-  ~amf_profile() {
-
-  }
+  ~amf_profile() {}
   /*
    * Add an AMF info
    * @param [const amf_info_t &] info: AMF info
@@ -516,19 +505,12 @@ class amf_profile : public nrf_profile {
 };
 
 class smf_profile : public nrf_profile {
-
  public:
-  smf_profile(nrf_event &ev)
-      :
-      nrf_profile(ev, NF_TYPE_SMF) {
-    smf_info = { };
-  }
+  smf_profile(nrf_event &ev) : nrf_profile(ev, NF_TYPE_SMF) { smf_info = {}; }
 
-  smf_profile(nrf_event &ev, const std::string &id)
-      :
-      nrf_profile(ev, id) {
+  smf_profile(nrf_event &ev, const std::string &id) : nrf_profile(ev, id) {
     nf_type = NF_TYPE_SMF;
-    smf_info = { };
+    smf_info = {};
   }
 
   smf_profile(smf_profile &b) = delete;
@@ -588,8 +570,8 @@ class smf_profile : public nrf_profile {
  private:
   smf_info_t smf_info;
 };
-}
-}
-}
+}  // namespace app
+}  // namespace nrf
+}  // namespace oai
 
 #endif

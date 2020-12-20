@@ -21,7 +21,6 @@
 
 #ifndef FILE_NRF_SEEN
 #define FILE_NRF_SEEN
-#include "3gpp_23.003.h"
 
 #define HEART_BEAT_TIMER 10
 
@@ -68,31 +67,14 @@ typedef enum patch_op_type_s {
 static const std::vector<std::string> patch_op_type_e2str = {
     "ADD", "REMOVE", "REPLACE", "MOVE", "COPY", "TEST", "UNKNOWN"};
 
-typedef struct amf_info_s {
-  std::string amf_set_id;
-  std::string amf_region_id;
-  std::vector<guami_t> guami_list;
-} amf_info_t;
-
-typedef struct dnn_smf_info_item_s {
-  std::string dnn;
-} dnn_smf_info_item_t;
-
-typedef struct snssai_smf_info_item_s {
-  snssai_t snssai;
-  std::vector<dnn_smf_info_item_t> dnn_smf_info_list;
-
-} snssai_smf_info_item_t;
-
-typedef struct smf_info_s {
-  std::vector<snssai_smf_info_item_t> snssai_smf_info_list;
-} smf_info_t;
-
 // Event Subscription IDs)
 typedef uint32_t evsub_id_t;
 #define EVSUB_ID_FMT "0x%" PRIx32
 #define EVSUB_ID_SCAN_FMT SCNx32
 #define INVALID_EVSUB_ID ((evsub_id_t)0x00000000)
 #define UNASSIGNED_EVSUB_ID ((evsub_id_t)0x00000000)
+
+#define NNRF_NFM_BASE "/nnrf-nfm/"
+#define NNRF_NFM_NF_INSTANCE "/nf-instances/"
 
 #endif

@@ -172,11 +172,15 @@ bool SubscriptionData::validityTimeIsSet() const {
 void SubscriptionData::unsetValidityTime() {
   m_ValidityTimeIsSet = false;
 }
-std::vector<NotificationEventType>& SubscriptionData::getReqNotifEvents() {
+std::vector<std::string> SubscriptionData::getReqNotifEvents() const {
   return m_ReqNotifEvents;
 }
+void  SubscriptionData::getReqNotifEvents(std::vector<std::string> &value) const {
+	value = m_ReqNotifEvents;
+}
+
 void SubscriptionData::setReqNotifEvents(
-    std::vector<NotificationEventType> const &value) {
+    std::vector<std::string> const &value) {
   m_ReqNotifEvents = value;
   m_ReqNotifEventsIsSet = true;
 }

@@ -27,15 +27,17 @@
  \email: Tien-Thinh.Nguyen@eurecom.fr
  */
 
-#include <stdexcept>
+#include "nrf_client.hpp"
 
 #include <curl/curl.h>
 #include <pistache/http.h>
 #include <pistache/mime.h>
 #include <nlohmann/json.hpp>
+#include <stdexcept>
 
+#include "3gpp_29.500.h"
 #include "logger.hpp"
-#include "nrf_client.hpp"
+#include "nrf_config.hpp"
 
 using namespace Pistache::Http;
 using namespace Pistache::Http::Mime;
@@ -43,6 +45,7 @@ using namespace oai::nrf::app;
 using json = nlohmann::json;
 
 extern nrf_client *nrf_client_inst;
+extern nrf_config nrf_cfg;
 
 //------------------------------------------------------------------------------
 // To read content of the response from NF
@@ -109,7 +112,13 @@ void nrf_client::notify_subscribed_event(
   // Fill the json part
   nlohmann::json json_data = {};
   json_data["event"] = "NF_REGISTERED";
-  json_data["nfInstanceUri"] = profile.get()->get_nf_instance_id();
+  std::string instance_uri =
+      std::string(inet_ntoa(*((struct in_addr *)&nrf_cfg.sbi.addr4))) + ":" +
+      std::to_string(nrf_cfg.sbi.port) + NNRF_NFM_BASE +
+      nrf_cfg.sbi_api_version + NNRF_NFM_NF_INSTANCE +
+      profile.get()->get_nf_instance_id();
+  Logger::nrf_app().debug("NF instance URI: %s", instance_uri.c_str());
+  json_data["nfInstanceUri"] = instance_uri;
   std::string body = json_data.dump();
 
   // create and add an easy handle to a  multi curl request
@@ -195,21 +204,26 @@ void nrf_client::notify_subscribed_event(
 void nrf_client::notify_subscribed_event(
     const std::shared_ptr<nrf_profile> &profile, const std::string &uri) {
   Logger::nrf_app().debug(
-      "Send notification for the subscribed event to the subscription");
+      "Send notification to the subscribed NF (URI %s)", uri.c_str());
 
-  Logger::nrf_app().debug("NF URI: %s", uri.c_str());
   // Fill the json part
   nlohmann::json json_data = {};
   json_data["event"] = "NF_REGISTERED";
-  json_data["nfInstanceUri"] = profile.get()->get_nf_instance_id();
+  std::string instance_uri =
+      std::string(inet_ntoa(*((struct in_addr *)&nrf_cfg.sbi.addr4))) + ":" +
+      std::to_string(nrf_cfg.sbi.port) + NNRF_NFM_BASE +
+      nrf_cfg.sbi_api_version + NNRF_NFM_NF_INSTANCE +
+      profile.get()->get_nf_instance_id();
+  Logger::nrf_app().debug("NF instance URI: %s", instance_uri.c_str());
+  json_data["nfInstanceUri"] = instance_uri;
   std::string body = json_data.dump();
 
   curl_global_init(CURL_GLOBAL_ALL);
   CURL *curl = curl = curl_easy_init();
+  struct curl_slist *headers = nullptr;
 
   if (curl) {
     CURLcode res = {};
-    struct curl_slist *headers = nullptr;
     // headers = curl_slist_append(headers, "charsets: utf-8");
     headers = curl_slist_append(headers, "content-type: application/json");
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
@@ -229,9 +243,23 @@ void nrf_client::notify_subscribed_event(
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
 
     Logger::nrf_app().debug("Response from NF, Http Code: %d", httpCode);
-    // TODO: in case of "307 temporary redirect"
+    if (httpCode == HTTP_STATUS_CODE_204_NO_CONTENT) {
+    } else {
+      // get cause from the response
+      json response_data = {};
+      try {
+        response_data = json::parse(*httpData.get());
+      } catch (json::exception &e) {
+        Logger::nrf_app().warn("Could not get the cause from the response");
+      }
 
+      Logger::nrf_app().debug(
+          "Response from NF, Http Code: %d, problem details %s", httpCode,
+          response_data.dump().c_str());
+    }
     curl_easy_cleanup(curl);
   }
+
+  curl_slist_free_all(headers);
   curl_global_cleanup();
 }

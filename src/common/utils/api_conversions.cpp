@@ -282,12 +282,27 @@ bool api_conv::subscription_api_to_nrf_subscription(
         subscription_condition_type_e2str[sub_condition.type].c_str());
 
     if (sub_condition.type != UNKNOWN_CONDITION) {
-    	sub.get()->set_sub_condition(sub_condition);
-    	return true;
-    } else {
-    	return false;
+      sub.get()->set_sub_condition(sub_condition);
     }
 
+  }
+
+  // NotificationEventType
+  if (api_sub.reqNotifEventsIsSet()) {
+    for (auto n : api_sub.getReqNotifEvents()) {
+      if (n.compare("NF_REGISTERED") == 0) {
+        sub.get()->add_notif_event(NOTIFICATION_TYPE_NF_REGISTERED);
+        Logger::nrf_app().debug("ReqNotifEvents: %s", n.c_str());
+      } else if (n.compare("NF_DEREGISTERED") == 0) {
+        sub.get()->add_notif_event(NOTIFICATION_TYPE_NF_DEREGISTERED);
+        Logger::nrf_app().debug("ReqNotifEvents: %s", n.c_str());
+      } else if (n.compare("NF_PROFILE_CHANGED") == 0) {
+        sub.get()->add_notif_event(NOTIFICATION_TYPE_NF_PROFILE_CHANGED);
+      } else {
+        sub.get()->add_notif_event(NOTIFICATION_TYPE_UNKNOWN_EVENT);
+      }
+      //Logger::nrf_app().debug("ReqNotifEvents: %s", n.c_str());
+    }
   }
 
   // TODO:

@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -31,22 +31,22 @@
 #define FILE_NRF_CONFIG_HPP_SEEN
 
 #include <arpa/inet.h>
-#include <libconfig.h++>
 #include <netinet/in.h>
 #include <sys/socket.h>
+#include <libconfig.h++>
 
 #include <mutex>
 #include <vector>
 
-#define NRF_CONFIG_STRING_NRF_CONFIG                            "NRF"
-#define NRF_CONFIG_STRING_PID_DIRECTORY                         "PID_DIRECTORY"
-#define NRF_CONFIG_STRING_INSTANCE                              "INSTANCE"
-#define NRF_CONFIG_STRING_INTERFACE_SBI                         "SBI_INTERFACE"
-#define NRF_CONFIG_STRING_INTERFACE_NAME                        "INTERFACE_NAME"
-#define NRF_CONFIG_STRING_IPV4_ADDRESS                          "IPV4_ADDRESS"
-#define NRF_CONFIG_STRING_PORT                                  "PORT"
-#define NRF_CONFIG_STRING_SBI_HTTP2_PORT                        "HTTP2_PORT"
-#define NRF_CONFIG_STRING_API_VERSION                           "API_VERSION"
+#define NRF_CONFIG_STRING_NRF_CONFIG "NRF"
+#define NRF_CONFIG_STRING_PID_DIRECTORY "PID_DIRECTORY"
+#define NRF_CONFIG_STRING_INSTANCE "INSTANCE"
+#define NRF_CONFIG_STRING_INTERFACE_SBI "SBI_INTERFACE"
+#define NRF_CONFIG_STRING_INTERFACE_NAME "INTERFACE_NAME"
+#define NRF_CONFIG_STRING_IPV4_ADDRESS "IPV4_ADDRESS"
+#define NRF_CONFIG_STRING_PORT "PORT"
+#define NRF_CONFIG_STRING_SBI_HTTP2_PORT "HTTP2_PORT"
+#define NRF_CONFIG_STRING_API_VERSION "API_VERSION"
 
 namespace oai {
 namespace nrf {
@@ -74,37 +74,23 @@ class nrf_config {
   interface_cfg_t sbi;
   unsigned int sbi_http2_port;
   std::string sbi_api_version;
-  //Local configuration
+  // Local configuration
   bool local_configuration;
 
-  nrf_config()
-      :
-      m_rw_lock(),
-      pid_dir(),
-      instance(0),
-      sbi() {
-
+  nrf_config() : m_rw_lock(), pid_dir(), instance(0), sbi() {
     sbi.port = 80;
     sbi_http2_port = 8080;
     sbi_api_version = "v1";
-
-  }
-  ;
+  };
   ~nrf_config();
-  void lock() {
-    m_rw_lock.lock();
-  }
-  ;
-  void unlock() {
-    m_rw_lock.unlock();
-  }
-  ;
+  void lock() { m_rw_lock.lock(); };
+  void unlock() { m_rw_lock.unlock(); };
   int load(const std::string &config_file);
   void display();
 };
 
-}
+}  // namespace app
 }  // namespace nrf
-}
+}  // namespace oai
 
 #endif /* FILE_NRF_CONFIG_HPP_SEEN */

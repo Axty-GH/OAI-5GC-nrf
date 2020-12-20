@@ -210,8 +210,9 @@ class SubscriptionData {
   /// <summary>
   ///
   /// </summary>
-  std::vector<NotificationEventType> &getReqNotifEvents();
-  void setReqNotifEvents(std::vector<NotificationEventType> const &value);
+  std::vector<std::string> getReqNotifEvents() const;
+  void  getReqNotifEvents(std::vector<std::string> &value) const;
+  void setReqNotifEvents(std::vector<std::string> const &value);
   bool reqNotifEventsIsSet() const;
   void unsetReqNotifEvents();
   /// <summary>
@@ -266,7 +267,7 @@ class SubscriptionData {
 
   std::string m_ValidityTime;
   bool m_ValidityTimeIsSet;
-  std::vector<NotificationEventType> m_ReqNotifEvents;
+  std::vector<std::string> m_ReqNotifEvents;
   bool m_ReqNotifEventsIsSet;
   PlmnId m_PlmnId;
   bool m_PlmnIdIsSet;

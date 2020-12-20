@@ -4,8 +4,8 @@
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
  * the OAI Public License, Version 1.1  (the "License"); you may not use this
- *file except in compliance with the License. You may obtain a copy of the
- *License at
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -34,7 +34,6 @@
 
 namespace bs2 = boost::signals2;
 
-
 namespace oai {
 namespace nrf {
 namespace app {
@@ -48,7 +47,7 @@ typedef bs2::signal_type<void(uint64_t),
 // Signal for NF Status
 // Subscription ID, NF Status
 typedef bs2::signal_type<void(const std::string &),
-                       bs2::keywords::mutex_type<bs2::dummy_mutex>>::type
+                         bs2::keywords::mutex_type<bs2::dummy_mutex>>::type
     nf_status_sig_t;
 
 typedef bs2::signal_type<void(const std::shared_ptr<nrf_profile> &p),

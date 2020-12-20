@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -42,18 +42,15 @@ namespace nrf {
 namespace app {
 
 class task_manager;
-//class nrf_profile;
+// class nrf_profile;
 
 class nrf_event {
-
  public:
-  nrf_event() {
-  }
-  ;
-  nrf_event(nrf_event const&) = delete;
-  void operator=(nrf_event const&) = delete;
+  nrf_event(){};
+  nrf_event(nrf_event const &) = delete;
+  void operator=(nrf_event const &) = delete;
 
-  static nrf_event& get_instance() {
+  static nrf_event &get_instance() {
     static nrf_event instance;
     return instance;
   }
@@ -66,24 +63,28 @@ class nrf_event {
   bs2::connection subscribe_task_tick(const task_sig_t::slot_type &sig,
                                       uint64_t period, uint64_t start = 0);
 
-  bs2::connection subscribe_task_tick_extended(const task_sig_t::extended_slot_type &sig,
-                                      uint64_t period, uint64_t start = 0);
+  bs2::connection subscribe_task_tick_extended(
+      const task_sig_t::extended_slot_type &sig, uint64_t period,
+      uint64_t start = 0);
 
+  bs2::connection subscribe_nf_status_change(
+      const nf_status_change_sig_t::slot_type &sig);
+  bs2::connection subscribe_nf_status_registered(
+      const nf_status_sig_t::slot_type &sig);
+  bs2::connection subscribe_nf_status_deregistered(
+      const nf_status_sig_t::slot_type &sig);
+  bs2::connection subscribe_nf_status_profile_changed(
+      const nf_status_sig_t::slot_type &sig);
 
-  bs2::connection subscribe_nf_status_change(const nf_status_change_sig_t::slot_type &sig);
-  bs2::connection subscribe_nf_status_registered(const nf_status_sig_t::slot_type &sig);
-  bs2::connection subscribe_nf_status_deregistered(const nf_status_sig_t::slot_type &sig);
-  bs2::connection subscribe_nf_status_profile_changed(const nf_status_sig_t::slot_type &sig);
  private:
   task_sig_t task_tick;
   nf_status_change_sig_t nf_status_change;
   nf_status_sig_t nf_status_registered;
   nf_status_sig_t nf_status_deregistered;
   nf_status_sig_t nf_status_profile_changed;
-
 };
-}
-}
-}
+}  // namespace app
+}  // namespace nrf
+}  // namespace oai
 
 #endif /* FILE_NRF_EVENT_HPP_SEEN */
