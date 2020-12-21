@@ -114,8 +114,6 @@ void nrf_subscription::display() {
   }
   Logger::nrf_app().debug(".............Notification Events: %s",
 		  notif_events_str.c_str());
-
-
 }
 
 //------------------------------------------------------------------------------

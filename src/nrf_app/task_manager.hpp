@@ -46,11 +46,29 @@ namespace oai {
 
       public:
         task_manager(nrf_event& ev);
+
+        /*
+         * Manage the tasks
+         * @param [void]
+         * @return void
+         */
         void manage_tasks();
+
+        /*
+         * Run the tasks (for the moment, simply call function manage_tasks)
+         * @param [void]
+         * @return void
+         */
         void run();
 
       private:
+        /*
+         * Make sure that the task tick run every 1ms
+         * @param [void]
+         * @return void
+         */
         void wait_for_cycle();
+
         nrf_event& event_sub_;
         int sfd;
       };

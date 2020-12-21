@@ -205,27 +205,109 @@ class nrf_app {
    */
   bool remove_nf_profile(const std::string &profile_id);
 
+  /*
+   * Add a subscription
+   * @param [const std::string &] sub_id: Subscription ID
+   * @param [std::shared_ptr<nrf_subscription> &] s: shared_pointer to the subscription to be added
+   * @return true if successful, otherwise, return false
+   */
   bool add_subscription(const std::string &sub_id,
                         const std::shared_ptr<nrf_subscription> &s);
 
+  /*
+   * Subscribe to the task tick event
+   * @param [uint64_t &] ms: Current time in ms
+   * @return void
+   */
   void subscribe_task_tick(uint64_t ms);
+
+  /*
+   * Handle when hearbeart timer expires
+   * @param [uint64_t] ms: current time in milliseconds
+   * @return void
+   */
   void handle_heartbeart_timeout(uint64_t ms);
 
+  /*
+   * Verify whether a subscription is authorized
+   * @param [std::shared_ptr<nrf_subscription> &] s: shared_pointer to the subscription
+   * @return true if this sub is authorized, otherwise, return false
+   */
   bool authorize_subscription(const std::shared_ptr<nrf_subscription> &s) const;
+
+  /*
+   * Generate an unique ID for the new subscription
+   * @param [const std::string &] sub_id: the generated ID
+   * @return void
+   */
   void generate_ev_subscription_id(std::string &sub_id);
+
+  /*
+   * Generate an unique ID for the new subscription
+   * @param void
+   * @return the generated ID
+   */
   evsub_id_t generate_ev_subscription_id();
 
+  /*
+   * Subscribe to the nf status events
+   * @param void
+   * @return void
+   */
   void subscribe_nf_status();
+
+  /*
+   * Subscribe to the event when a new NF registers to the NRF
+   * @param void
+   * @return void
+   */
   void subscribe_nf_status_registered();
+
+  /*
+   * Handle NF status registered event
+   * @param [const std::string &] profile_id: Profile ID of the registered NF
+   * @return void
+   */
   void handle_nf_status_registered(const std::string &profile_id);
+
+  /*
+   * Subscribe to the event when a NF de-registers from the NRF
+   * @param void
+   * @return void
+   */
   void subscribe_nf_status_deregistered();
+
+  /*
+   * Handle NF status deregistered event
+   * @param [const std::string &] profile_id: Profile ID of the deregistered NF
+   * @return void
+   */
   void handle_nf_status_deregistered(const std::string &profile_id);
+
+  /*
+   * Subscribe to the event when a registered NF changes its profile
+   * @param void
+   * @return void
+   */
   void subscribe_nf_status_profile_changed();
+
+  /*
+   * Handle NF status profile changed event
+   * @param [const std::string &] profile_id: Profile ID of the NF
+   * @return void
+   */
   void handle_nf_status_profile_changed(const std::string &profile_id);
 
+  /*
+   * Get the list of subscriptions to the profile with notification type
+   * @param [const std::string &] profile_id: Profile ID of the NF
+   * @param [const uint8_t &] notification_type: requested notification type
+   * @param [std::vector<std::string> &] uris: vector stores list of uri of subscribed NFs
+   * @return void
+   */
   void get_subscription_list(const std::string &profile_id,
-                             uint8_t notification_type,
-                             std::vector<std::string> &uris);
+                             const uint8_t &notification_type,
+                             std::vector<std::string> &uris) const;
 
  private:
   std::map<std::string, std::shared_ptr<nrf_profile>> instance_id2nrf_profile;

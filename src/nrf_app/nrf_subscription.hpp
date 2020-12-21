@@ -42,9 +42,7 @@ using namespace std;
 
 class nrf_subscription {
  public:
-  nrf_subscription(nrf_event &ev)
-      : m_event_sub(ev){
-        };
+  nrf_subscription(nrf_event &ev) : m_event_sub(ev){};
 
   nrf_subscription(nrf_subscription const &) = delete;
 
@@ -55,23 +53,107 @@ class nrf_subscription {
 
   void operator=(nrf_subscription const &) = delete;
 
+  /*
+   * Set the subscription id
+   * @param [const std::string &]: sub_id: Subscription id
+   * @return void
+   */
   void set_subscription_id(const std::string &sub_id);
+
+  /*
+   * Get the subscription id
+   * @param [std::string &]: sub_id: Subscription id
+   * @return void
+   */
   void get_subscription_id(std::string &sub_id) const;
+
+  /*
+   * Get the subscription id
+   * @param [void]
+   * @return subscription id
+   */
   std::string get_subscription_id() const;
+
+  /*
+   * Set the notification URI (URI where the notification will be sent to)
+   * @param [const std::string &]: notification_uri: Notification URI
+   * @return void
+   */
   void set_notification_uri(const std::string &notification_uri);
+
+  /*
+   * Get the notification URI (URI where the notification will be sent to)
+   * @param [std::string &]: notification_uri: Notification URI
+   * @return void
+   */
   void get_notification_uri(std::string &notification_uri) const;
-  void display();
+
+  /*
+   * Set the subscription condition
+   * @param [const subscription_condition_t &]: c: Subscription condition
+   * @return void
+   */
   void set_sub_condition(const subscription_condition_t &c);
+
+  /*
+   * Get the subscription condition
+   * @param [const subscription_condition_t &]: c: Subscription condition
+   * @return void
+   */
   void get_sub_condition(subscription_condition_t &c) const;
   // subscription_condition_t get_sub_condition() const;
 
+  /*
+   * Set the notification events
+   * @param [const std::vector<uint8_t> &]: ev_types: Array of the notification
+   * event types
+   * @return void
+   */
   void set_notif_events(const std::vector<uint8_t> &ev_types);
+
+  /*
+   * Add a notification type to the list of notification events
+   * @param [const uint8_t &]: ev_type: A notification type
+   * @return void
+   */
   void add_notif_event(const uint8_t &ev_type);
+
+  /*
+   * Get the notification events
+   * @param [std::vector<uint8_t> &]: ev_types: Array of the notification event
+   * types
+   * @return void
+   */
   void get_notif_events(std::vector<uint8_t> &ev_types) const;
+
+  /*
+   * Get the notification events
+   * @param [void]
+   * @return Array of the notification event types
+   */
   std::vector<uint8_t> get_notif_events() const;
 
+  /*
+   * Subscribe to be notified when a new NF registered to the NRF
+   * @param void
+   * @return void
+   */
   void subscribe_nf_status_registered();
+
+  /*
+   * Handle the NF Status Registered event
+   * @param [const std::shared_ptr<nrf_profile> &]: profile: pointer to the new
+   * registered NF profile
+   * @return void
+   */
   void handle_nf_status_registered(const std::shared_ptr<nrf_profile> &profile);
+
+  /*
+   * Display all the members of a subscription
+   * @param [void]
+   * @return void
+   */
+  void display();
 
  private:
   std::string nf_status_notification_uri;

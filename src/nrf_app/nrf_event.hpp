@@ -60,19 +60,43 @@ class nrf_event {
   friend class task_manager;
   friend class nrf_profile;
 
+  /*
+   * Subscribe to the task tick event
+   * @param [const task_sig_t::slot_type &] sig
+   * @param [uint64_t] period: interval between two events
+   * @param [uint64_t] start:
+   * @return void
+   */
   bs2::connection subscribe_task_tick(const task_sig_t::slot_type &sig,
                                       uint64_t period, uint64_t start = 0);
 
+  /*
+   * Subscribe to the extended task tick event
+   * @param [const task_sig_t::slot_type &] sig
+   * @param [uint64_t] period: interval between two events
+   * @param [uint64_t] start:
+   * @return void
+   */
   bs2::connection subscribe_task_tick_extended(
       const task_sig_t::extended_slot_type &sig, uint64_t period,
       uint64_t start = 0);
 
+  /*
+   * Subscribe to the nf status change event
+   * @param [const task_sig_t::slot_type &] sig
+   * @param [uint64_t] period: interval between two events
+   * @param [uint64_t] start:
+   * @return void
+   */
   bs2::connection subscribe_nf_status_change(
       const nf_status_change_sig_t::slot_type &sig);
+
   bs2::connection subscribe_nf_status_registered(
       const nf_status_sig_t::slot_type &sig);
+
   bs2::connection subscribe_nf_status_deregistered(
       const nf_status_sig_t::slot_type &sig);
+
   bs2::connection subscribe_nf_status_profile_changed(
       const nf_status_sig_t::slot_type &sig);
 

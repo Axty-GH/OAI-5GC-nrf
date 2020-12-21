@@ -645,8 +645,8 @@ void nrf_app::handle_nf_status_profile_changed(const std::string &profile_id) {
 
 //------------------------------------------------------------------------------
 void nrf_app::get_subscription_list(const std::string &profile_id,
-                                    uint8_t notification_type,
-                                    std::vector<std::string> &uris) {
+                                    const uint8_t &notification_type,
+                                    std::vector<std::string> &uris) const {
   Logger::nrf_app().debug(
       "Get the list of subscriptions related to this profile, profile id %s",
       profile_id.c_str());
