@@ -28,7 +28,11 @@
  */
 
 #include "nrf_app.hpp"
+
+#include <boost/date_time/posix_time/posix_time_types.hpp>
+#include <boost/date_time/posix_time/time_formatters.hpp>
 #include <chrono>
+
 #include "3gpp_29.500.h"
 #include "3gpp_29.510.h"
 #include "api_conversions.hpp"
@@ -406,7 +410,7 @@ bool nrf_app::update_nf_profile(const std::string &profile_id,
 //------------------------------------------------------------------------------
 std::shared_ptr<nrf_profile> nrf_app::find_nf_profile(
     const std::string &profile_id) const {
-  Logger::nrf_app().info("Find a NF profile with ID %s", profile_id.c_str());
+  //Logger::nrf_app().info("Find a NF profile with ID %s", profile_id.c_str());
 
   std::shared_lock lock(m_instance_id2nrf_profile);
   if (instance_id2nrf_profile.count(profile_id) > 0) {
@@ -420,7 +424,7 @@ std::shared_ptr<nrf_profile> nrf_app::find_nf_profile(
 //------------------------------------------------------------------------------
 bool nrf_app::find_nf_profile(const std::string &profile_id,
                               std::shared_ptr<nrf_profile> &p) const {
-  Logger::nrf_app().info("Find a NF profile with ID %s", profile_id.c_str());
+  //Logger::nrf_app().info("Find a NF profile with ID %s", profile_id.c_str());
 
   std::shared_lock lock(m_instance_id2nrf_profile);
   if (instance_id2nrf_profile.count(profile_id) > 0) {
@@ -572,16 +576,20 @@ void nrf_app::handle_nf_status_registered(const std::string &profile_id) {
                          profile_id.c_str());
 
   std::shared_ptr<nrf_profile> profile = {};
+  Logger::nrf_app().info("\tFind a NF profile with ID %s", profile_id.c_str());
   find_nf_profile(profile_id, profile);
   if (profile != nullptr) {
     std::vector<std::string> notification_uris = {};
     get_subscription_list(profile_id, NOTIFICATION_TYPE_NF_REGISTERED,
                           notification_uris);
     // send notifications
-    nrf_client_inst->notify_subscribed_event(profile, notification_uris);
+    if (notification_uris.size() > 0)
+      nrf_client_inst->notify_subscribed_event(profile, notification_uris);
+    else
+      Logger::nrf_app().debug("\tNo subscription found");
 
   } else {
-    Logger::nrf_app().error("NF profile not found, profile id %s",
+    Logger::nrf_app().error("\tNF profile not found, profile id %s",
                             profile_id.c_str());
   }
 }
@@ -648,18 +656,44 @@ void nrf_app::get_subscription_list(const std::string &profile_id,
                                     const uint8_t &notification_type,
                                     std::vector<std::string> &uris) const {
   Logger::nrf_app().debug(
-      "Get the list of subscriptions related to this profile, profile id %s",
+      "\tGet the list of subscriptions related to this profile, profile id %s",
       profile_id.c_str());
+
   std::shared_ptr<nrf_profile> profile = {};
+
   find_nf_profile(profile_id, profile);
   if (profile.get() == nullptr) {
     // error
     return;
   }
 
+
   for (auto s : instance_id2nrf_subscription) {
+      Logger::nrf_app().info("\tVerifying subscription, subscription id %s", s.first.c_str());
     std::string uri;
     s.second.get()->get_notification_uri(uri);
+
+    //check notification event type
+    bool match_notif_type = false;
+    for (auto i : s.second.get()->get_notif_events()) {
+    	if (i == notification_type) {
+    		match_notif_type = true;
+    		break;
+    	}
+    }
+    if (!match_notif_type) continue;
+
+    // check validity time
+    boost::posix_time::ptime t(boost::posix_time::microsec_clock::local_time());
+    Logger::nrf_app().debug("\tCurrent time %s",
+                            boost::posix_time::to_iso_string(t).c_str());
+    if (t > s.second.get()->get_validity_time()) {
+      Logger::nrf_app().debug(
+          "\tThis subscription expires, current time %s, validity time %s",
+          boost::posix_time::to_iso_string(t).c_str(),
+          boost::posix_time::to_iso_string(s.second.get()->get_validity_time()).c_str());
+      continue;
+    }
 
     subscription_condition_t condition = {};
     s.second.get()->get_sub_condition(condition);
@@ -668,7 +702,7 @@ void nrf_app::get_subscription_list(const std::string &profile_id,
       case NF_INSTANCE_ID_COND: {
         if (profile_id.compare(condition.nf_instance_id) == 0) {
           uris.push_back(uri);
-          Logger::nrf_app().debug("Subscription id %s, uri %s", s.first.c_str(),
+          Logger::nrf_app().debug("\tSubscription id %s, uri %s", s.first.c_str(),
                                   uri.c_str());
         }
 
@@ -677,7 +711,7 @@ void nrf_app::get_subscription_list(const std::string &profile_id,
         std::string nf_type = nf_type_e2str[profile.get()->get_nf_type()];
         if (nf_type.compare(condition.nf_type) == 0) {
           uris.push_back(uri);
-          Logger::nrf_app().debug("Subscription id %s, uri %s", s.first.c_str(),
+          Logger::nrf_app().debug("\tSubscription id %s, uri %s", s.first.c_str(),
                                   uri.c_str());
         }
       } break;
@@ -687,7 +721,7 @@ void nrf_app::get_subscription_list(const std::string &profile_id,
         profile.get()->get_nf_instance_name(service_name);
         if (service_name.compare(condition.service_name) == 0) {
           uris.push_back(uri);
-          Logger::nrf_app().debug("Subscription id %s, uri %s", s.first.c_str(),
+          Logger::nrf_app().debug("\tSubscription id %s, uri %s", s.first.c_str(),
                                   uri.c_str());
         }
 
@@ -702,7 +736,7 @@ void nrf_app::get_subscription_list(const std::string &profile_id,
                0) and
               (info.amf_set_id.compare(condition.amf_info.amf_set_id) == 0)) {
             uris.push_back(uri);
-            Logger::nrf_app().debug("Subscription id %s, uri %s",
+            Logger::nrf_app().debug("\tSubscription id %s, uri %s",
                                     s.first.c_str(), uri.c_str());
           }
         }
@@ -725,7 +759,6 @@ void nrf_app::get_subscription_list(const std::string &profile_id,
       }
     }
 
-    //TODO: reqNotifEvents
 
   }
   // TODO:

@@ -178,31 +178,32 @@ void nrf_profile::get_json_data(nlohmann::json &data) const {
 
 //------------------------------------------------------------------------------
 void nrf_profile::display() {
+  Logger::nrf_app().debug("NF instance info");
 
-  Logger::nrf_app().debug("............Instance ID: %s",
+  Logger::nrf_app().debug("\tInstance ID: %s",
                           nf_instance_id.c_str());
 
-  Logger::nrf_app().debug("............Instance name: %s",
+  Logger::nrf_app().debug("\tInstance name: %s",
                           nf_instance_name.c_str());
-  Logger::nrf_app().debug("............Instance type: %s",
+  Logger::nrf_app().debug("\tInstance type: %s",
                           nf_type_e2str[nf_type].c_str());
-  Logger::nrf_app().debug("............Status: %s", nf_status.c_str());
-  Logger::nrf_app().debug("............HeartBeat timer: %d", heartBeat_timer);
-  Logger::nrf_app().debug("............Priority: %d", priority);
-  Logger::nrf_app().debug("............Capacity: %d", capacity);
+  Logger::nrf_app().debug("\tStatus: %s", nf_status.c_str());
+  Logger::nrf_app().debug("\tHeartBeat timer: %d", heartBeat_timer);
+  Logger::nrf_app().debug("\tPriority: %d", priority);
+  Logger::nrf_app().debug("\tCapacity: %d", capacity);
   //SNSSAIs
   for (auto s : snssais) {
-    Logger::nrf_app().debug("............NNSSAI(SST, SD): %d, %s", s.sST,
+    Logger::nrf_app().debug("\tNNSSAI(SST, SD): %d, %s", s.sST,
                             s.sD.c_str());
   }
 
   //IPv4 Addresses
   for (auto address : ipv4_addresses) {
-    Logger::nrf_app().debug("............IPv4 Addr: %s", inet_ntoa(address));
+    Logger::nrf_app().debug("\tIPv4 Addr: %s", inet_ntoa(address));
   }
 
   if (!json_data.empty()) {
-    Logger::nrf_app().debug("............Json Data: %s",
+    Logger::nrf_app().debug("\tJson Data: %s",
                             json_data.dump().c_str());
   }
 }
@@ -496,16 +497,16 @@ void amf_profile::get_amf_info(amf_info_t &info) const {
 void amf_profile::display() {
 
   nrf_profile::display();
-  Logger::nrf_app().debug("............AMF Info");
+  Logger::nrf_app().debug("\tAMF Info");
   Logger::nrf_app().debug(
-      ".....................AMF Set ID: %s, AMF Region ID: %s",
+      "\t\tAMF Set ID: %s, AMF Region ID: %s",
       amf_info.amf_set_id.c_str(), amf_info.amf_region_id.c_str());
 
   for (auto g : amf_info.guami_list) {
-    Logger::nrf_app().debug(".....................AMF GUAMI List, AMF_ID:  %s",
+    Logger::nrf_app().debug("\t\tAMF GUAMI List, AMF_ID:  %s",
                             g.amf_id.c_str());
     Logger::nrf_app().debug(
-        "........................AMF GUAMI List, PLMN (MCC: %s, MNC: %s)",
+        "\t\tAMF GUAMI List, PLMN (MCC: %s, MNC: %s)",
         g.plmn.mcc.c_str(), g.plmn.mnc.c_str());
   }
 }

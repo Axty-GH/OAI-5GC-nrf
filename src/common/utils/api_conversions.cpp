@@ -35,6 +35,8 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
+#include <boost/date_time/posix_time/posix_time_types.hpp>
+#include <boost/date_time/posix_time/time_parsers.hpp>
 #include <nlohmann/json.hpp>
 #include <regex>
 
@@ -58,20 +60,20 @@ bool api_conv::profile_api_to_nrf_profile(
 
   profile.get()->set_nf_instance_id(api_profile.getNfInstanceId());
   profile.get()->set_nf_instance_name(api_profile.getNfInstanceName());
-  Logger::nrf_app().debug("............Instance name: %s",
+  Logger::nrf_app().debug("\tInstance name: %s",
                           profile.get()->get_nf_instance_name().c_str());
 
   profile.get()->set_nf_status(api_profile.getNfStatus());
-  Logger::nrf_app().debug("............Status: %s",
+  Logger::nrf_app().debug("\tStatus: %s",
                           profile.get()->get_nf_status().c_str());
   profile.get()->set_nf_heartBeat_timer(api_profile.getHeartBeatTimer());
-  Logger::nrf_app().debug("............HeartBeart timer: %d",
+  Logger::nrf_app().debug("\tHeartBeart timer: %d",
                           profile.get()->get_nf_heartBeat_timer());
   profile.get()->set_nf_priority(api_profile.getPriority());
-  Logger::nrf_app().debug("............Priority: %d",
+  Logger::nrf_app().debug("\tPriority: %d",
                           profile.get()->get_nf_priority());
   profile.get()->set_nf_capacity(api_profile.getCapacity());
-  Logger::nrf_app().debug("............Capacity: %d",
+  Logger::nrf_app().debug("\tCapacity: %d",
                           profile.get()->get_nf_capacity());
   // SNSSAIs
   std::vector<Snssai> snssai = api_profile.getSNssais();
@@ -80,7 +82,7 @@ bool api_conv::profile_api_to_nrf_profile(
     sn.sD = s.getSd();
     sn.sST = s.getSst();
     profile.get()->add_snssai(sn);
-    Logger::nrf_app().debug("............SNSSAI (SD, SST): %d, %s", sn.sST,
+    Logger::nrf_app().debug("\tSNSSAI (SD, SST): %d, %s", sn.sST,
                             sn.sD.c_str());
   }
 
@@ -95,7 +97,7 @@ bool api_conv::profile_api_to_nrf_profile(
                              util::trim(address).c_str());
     }
 
-    Logger::nrf_app().debug("............IPv4 Addr: %s", address.c_str());
+    Logger::nrf_app().debug("\tIPv4 Addr: %s", address.c_str());
     profile.get()->add_nf_ipv4_addresses(addr4);
   }
 
@@ -103,14 +105,14 @@ bool api_conv::profile_api_to_nrf_profile(
 
   switch (nf_type) {
     case NF_TYPE_AMF: {
-      Logger::nrf_app().debug("............AMF profile, AMF Info");
+      Logger::nrf_app().debug("\tAMF profile, AMF Info");
       profile.get()->set_nf_type(NF_TYPE_AMF);
       amf_info_t info = {};
       AmfInfo amf_info_api = api_profile.getAmfInfo();
       info.amf_region_id = amf_info_api.getAmfRegionId();
       info.amf_set_id = amf_info_api.getAmfSetId();
 
-      Logger::nrf_app().debug("............AMF Set ID: %s, AMF Region ID: %s",
+      Logger::nrf_app().debug("\t\tAMF Set ID: %s, AMF Region ID: %s",
                               info.amf_set_id.c_str(),
                               info.amf_region_id.c_str());
 
@@ -120,10 +122,10 @@ bool api_conv::profile_api_to_nrf_profile(
         guami.plmn.mcc = g.getPlmnId().getMcc();
         guami.plmn.mnc = g.getPlmnId().getMnc();
         info.guami_list.push_back(guami);
-        Logger::nrf_app().debug("............AMF GUAMI, AMF_ID:  %s",
+        Logger::nrf_app().debug("\t\tAMF GUAMI, AMF_ID:  %s",
                                 guami.amf_id.c_str());
         Logger::nrf_app().debug(
-            "....................., PLMN (MCC: %s, MNC: %s)",
+            "\t\tAMF GUAMI, PLMN (MCC: %s, MNC: %s)",
             guami.plmn.mcc.c_str(), guami.plmn.mnc.c_str());
       }
       (std::static_pointer_cast<amf_profile>(profile))
@@ -131,7 +133,7 @@ bool api_conv::profile_api_to_nrf_profile(
           ->add_amf_info(info);
     } break;
     case NF_TYPE_SMF: {
-      Logger::nrf_app().debug("............SMF profile, SMF Info");
+      Logger::nrf_app().debug("\tSMF profile, SMF Info");
       profile.get()->set_nf_type(NF_TYPE_SMF);
       smf_info_t info = {};
       SmfInfo smf_info_api = api_profile.getSmfInfo();
@@ -140,13 +142,13 @@ bool api_conv::profile_api_to_nrf_profile(
         snssai_smf_info_item_t snssai = {};
         snssai.snssai.sD = s.getSNssai().getSd();
         snssai.snssai.sST = s.getSNssai().getSst();
-        Logger::nrf_app().debug(".......................NSSAI SD: %s, SST: %d",
+        Logger::nrf_app().debug("\t\tNSSAI SD: %s, SST: %d",
                                 snssai.snssai.sD.c_str(), snssai.snssai.sST);
         for (auto d : s.getDnnSmfInfoList()) {
           dnn_smf_info_item_t dnn = {};
           dnn.dnn = d.getDnn();
           snssai.dnn_smf_info_list.push_back(dnn);
-          Logger::nrf_app().debug("......................DNN: %s",
+          Logger::nrf_app().debug("\t\tDNN: %s",
                                   dnn.dnn.c_str());
         }
         info.snssai_smf_info_list.push_back(snssai);
@@ -301,10 +303,15 @@ bool api_conv::subscription_api_to_nrf_subscription(
       } else {
         sub.get()->add_notif_event(NOTIFICATION_TYPE_UNKNOWN_EVENT);
       }
-      //Logger::nrf_app().debug("ReqNotifEvents: %s", n.c_str());
     }
   }
 
+  if (api_sub.validityTimeIsSet()) {
+	  std::string str = api_sub.getValidityTime();
+	  boost::posix_time::ptime p (boost::posix_time::from_iso_string(str));
+	  sub.get()->set_validity_time(p);
+      Logger::nrf_app().debug("Validity Time: %s", str.c_str());
+  }
   // TODO:
   return true;
 }

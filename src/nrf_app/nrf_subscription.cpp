@@ -28,7 +28,10 @@
  */
 
 #include "nrf_subscription.hpp"
+
+#include <boost/date_time/posix_time/time_formatters.hpp>
 #include <nlohmann/json.hpp>
+
 #include "logger.hpp"
 
 using namespace oai::nrf::app;
@@ -98,13 +101,28 @@ std::vector<uint8_t> nrf_subscription::get_notif_events() const {
 }
 
 //------------------------------------------------------------------------------
+void nrf_subscription::set_validity_time(const boost::posix_time::ptime &t) {
+  validity_time = t;
+}
+
+//------------------------------------------------------------------------------
+void nrf_subscription::get_validity_time(boost::posix_time::ptime &t) const {
+  t = validity_time;
+}
+
+//------------------------------------------------------------------------------
+boost::posix_time::ptime nrf_subscription::get_validity_time() const {
+  return validity_time;
+}
+
+//------------------------------------------------------------------------------
 void nrf_subscription::display() {
   Logger::nrf_app().debug("Subscription information");
-  Logger::nrf_app().debug(".............Sub ID: %s", subscription_id.c_str());
+  Logger::nrf_app().debug("\tSub ID: %s", subscription_id.c_str());
 
-  Logger::nrf_app().debug(".............Notification URI: %s",
+  Logger::nrf_app().debug("\tNotification URI: %s",
                           nf_status_notification_uri.c_str());
-  Logger::nrf_app().debug(".............Subscription condition: %s",
+  Logger::nrf_app().debug("\tSubscription condition: %s",
 		  sub_condition.to_string().c_str());
 
   std::string notif_events_str = {};
@@ -112,8 +130,11 @@ void nrf_subscription::display() {
 	  notif_events_str.append(notification_event_type_e2str[n]);
 	  notif_events_str.append(", ");
   }
-  Logger::nrf_app().debug(".............Notification Events: %s",
+  Logger::nrf_app().debug("\tNotification Events: %s",
 		  notif_events_str.c_str());
+  Logger::nrf_app().debug("\tValidity time: %s",
+		  boost::posix_time::to_iso_string(validity_time).c_str());
+
 }
 
 //------------------------------------------------------------------------------

@@ -30,6 +30,8 @@
 #ifndef FILE_NRF_SUBSCRIPTION_HPP_SEEN
 #define FILE_NRF_SUBSCRIPTION_HPP_SEEN
 
+#include <boost/date_time/posix_time/posix_time_types.hpp>
+#include <boost/date_time/posix_time/time_parsers.hpp>
 #include "3gpp_29.510.h"
 #include "logger.hpp"
 #include "nrf_event.hpp"
@@ -42,7 +44,11 @@ using namespace std;
 
 class nrf_subscription {
  public:
-  nrf_subscription(nrf_event &ev) : m_event_sub(ev){};
+  nrf_subscription(nrf_event &ev) : m_event_sub(ev){
+
+	  validity_time = boost::posix_time::from_iso_string("20991231T235959Z");
+
+  };
 
   nrf_subscription(nrf_subscription const &) = delete;
 
@@ -134,6 +140,27 @@ class nrf_subscription {
   std::vector<uint8_t> get_notif_events() const;
 
   /*
+   * Set the validity time
+   * @param [const boost::posix_time::ptime &]t:  validity time
+   * @return
+   */
+  void set_validity_time(const boost::posix_time::ptime &t);
+
+  /*
+   * Get the validity time
+   * @param [boost::posix_time::ptime &]t:  validity time
+   * @return
+   */
+  void get_validity_time(boost::posix_time::ptime &t) const;
+
+  /*
+   * Get the validity time
+   * @param [void]
+   * @return [boost::posix_time::ptime &] validity time
+   */
+  boost::posix_time::ptime get_validity_time() const;
+
+  /*
    * Subscribe to be notified when a new NF registered to the NRF
    * @param void
    * @return void
@@ -162,6 +189,8 @@ class nrf_subscription {
   std::vector<uint8_t> notif_events;
   nrf_event &m_event_sub;
   bs2::connection ev_connection;
+  boost::posix_time::ptime validity_time;
+
 };
 }  // namespace app
 }  // namespace nrf
