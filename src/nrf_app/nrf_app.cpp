@@ -235,16 +235,27 @@ void nrf_app::handle_update_nf_instance(
 }
 
 //------------------------------------------------------------------------------
-void nrf_app::handle_get_nf_instances(const std::string &nf_type,
-                                      const uint32_t &limit_item,
-                                      int &http_code,
-                                      const uint8_t http_version) {
+void nrf_app::handle_get_nf_instances(
+    const std::string &nf_type, std::vector<std::string> &uris,
+    const uint32_t &limit_item, int &http_code, const uint8_t http_version,
+    oai::nrf::model::ProblemDetails &problem_details) {
   Logger::nrf_app().info(
       "Handle Retrieve a collection of NF Instances (HTTP version %d)",
       http_version);
+  // TODO: verify if the NF Service Consumer is allowed to retrieve the
+  // registered NF instances
 
   std::vector<std::shared_ptr<nrf_profile>> profiles = {};
   nf_type_t type = api_conv::string_to_nf_type(nf_type);
+  if (type == NF_TYPE_UNKNOWN) {
+    Logger::nrf_app().debug("Unknown requested nf_type: %s", nf_type.c_str());
+    http_code = HTTP_STATUS_CODE_400_BAD_REQUEST;
+    problem_details.setCause(
+        protocol_application_error_e2str[MANDATORY_IE_INCORRECT]);
+    return;
+  }
+
+  http_code = HTTP_STATUS_CODE_200_OK;
   find_nf_profiles(type, profiles);
 
   if (profiles.size() == 0) {
@@ -252,6 +263,13 @@ void nrf_app::handle_get_nf_instances(const std::string &nf_type,
   }
 
   for (auto profile : profiles) {
+    std::string instance_uri =
+        std::string(inet_ntoa(*((struct in_addr *)&nrf_cfg.sbi.addr4))) + ":" +
+        std::to_string(nrf_cfg.sbi.port) + NNRF_NFM_BASE +
+        nrf_cfg.sbi_api_version + NNRF_NFM_NF_INSTANCE +
+        profile.get()->get_nf_instance_id();
+
+    uris.push_back(instance_uri);
     profile.get()->display();
   }
 }

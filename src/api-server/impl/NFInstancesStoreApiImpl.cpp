@@ -12,7 +12,7 @@
 
 #include "NFInstancesStoreApiImpl.h"
 #include "logger.hpp"
-#include "nrf_app.hpp"
+#include "3gpp_29.500.h"
 
 namespace oai {
 namespace nrf {
@@ -54,13 +54,35 @@ void NFInstancesStoreApiImpl::get_nf_instances(
   }
 
   int http_code = 0;
-  m_nrf_app->handle_get_nf_instances(nf_type, limit_item, http_code, 1);
+  std::vector<std::string> uris = {};
+  ProblemDetails problem_details = {};
+  m_nrf_app->handle_get_nf_instances(nf_type, uris, limit_item, http_code, 1, problem_details);
 
-  nlohmann::json json_data = { };
-  //to_json(json_data, nf_profile);
-  //response.send(Pistache::Http::Code::Ok, json_data.dump().c_str());
+  nlohmann::json json_data = {};
+  //TODO: std::string content_type = "application/3gppHal+json";
+  std::string content_type = "application/json";
 
-  response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+  if (http_code != HTTP_STATUS_CODE_200_OK) {
+    to_json(json_data, problem_details);
+    content_type = "application/problem+json";
+  } else {
+    // convert URIs to Json
+    json_data["_links"]["item"] = nlohmann::json::array();
+    json_data["_links"]["self"] = "";
+    for (auto u : uris) {
+    	 nlohmann::json json_item = {};
+    	 json_item["href"] = u;
+      json_data["_links"]["item"].push_back(json_item);
+    }
+  }
+
+  Logger::nrf_sbi().debug("Json data: %s", json_data.dump().c_str());
+
+  // content type
+  response.headers().add<Pistache::Http::Header::ContentType>(
+      Pistache::Http::Mime::MediaType(content_type));
+  response.send(Pistache::Http::Code(http_code), json_data.dump().c_str());
+
 }
 void NFInstancesStoreApiImpl::options_nf_instances(
     Pistache::Http::ResponseWriter &response) {

@@ -112,11 +112,12 @@ void nrf_client::notify_subscribed_event(
   // Fill the json part
   nlohmann::json json_data = {};
   json_data["event"] = notification_event_type_e2str[event_type];
+
+  std::vector<struct in_addr> instance_addrs = {};
+  profile.get()->get_nf_ipv4_addresses(instance_addrs);
+  //TODO: use the first IPv4 addr for now
   std::string instance_uri =
-      std::string(inet_ntoa(*((struct in_addr *)&nrf_cfg.sbi.addr4))) + ":" +
-      std::to_string(nrf_cfg.sbi.port) + NNRF_NFM_BASE +
-      nrf_cfg.sbi_api_version + NNRF_NFM_NF_INSTANCE +
-      profile.get()->get_nf_instance_id();
+      std::string(inet_ntoa(*((struct in_addr *)&(instance_addrs[0]))));
   Logger::nrf_app().debug("NF instance URI: %s", instance_uri.c_str());
   json_data["nfInstanceUri"] = instance_uri;
 
@@ -228,11 +229,18 @@ void nrf_client::notify_subscribed_event(
   // Fill the json part
   nlohmann::json json_data = {};
   json_data["event"] = "NF_REGISTERED";
+  /*
   std::string instance_uri =
       std::string(inet_ntoa(*((struct in_addr *)&nrf_cfg.sbi.addr4))) + ":" +
       std::to_string(nrf_cfg.sbi.port) + NNRF_NFM_BASE +
       nrf_cfg.sbi_api_version + NNRF_NFM_NF_INSTANCE +
       profile.get()->get_nf_instance_id();
+  */
+  std::vector<struct in_addr> instance_addrs = {};
+  profile.get()->get_nf_ipv4_addresses(instance_addrs);
+  //TODO: use the first IPv4 addr for now
+  std::string instance_uri =
+      std::string(inet_ntoa(*((struct in_addr *)&(instance_addrs[0]))));
   Logger::nrf_app().debug("NF instance URI: %s", instance_uri.c_str());
   json_data["nfInstanceUri"] = instance_uri;
   std::string body = json_data.dump();

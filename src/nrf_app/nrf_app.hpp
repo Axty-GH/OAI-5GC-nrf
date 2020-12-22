@@ -76,14 +76,19 @@ class nrf_app {
   /*
    * Handle a Get NF Instance Information
    * @param [const std::string &] nf_type: NF's type
+   * @param [std::vector<std::string> &] uris: List of registered NFs in the NRF
+   *                                           that satisfy the retrieval filter
+   * criteria
    * @param [const uint32_t &] limit_item: Maximum number of items returned
    * @param [int &] http_code: HTTP code used to return to the consumer
    * @param [const uint8_t] http_version: HTTP version
+   * @param [ProblemDetails &] problem_details: Store details of the error
    * @return void
    */
-  void handle_get_nf_instances(const std::string &nf_type,
-                               const uint32_t &limit_item, int &http_code,
-                               const uint8_t http_version);
+  void handle_get_nf_instances(
+      const std::string &nf_type, std::vector<std::string> &uris,
+      const uint32_t &limit_item, int &http_code, const uint8_t http_version,
+      oai::nrf::model::ProblemDetails &problem_details);
 
   /*
    * Handle a Update NF Instance request
@@ -163,9 +168,9 @@ class nrf_app {
    * @return void
    */
   void handle_update_subscription(const std::string &sub_id,
-                                 const std::vector<PatchItem> &patchItem,
-                                 int &http_code, const uint8_t http_version,
-                                 ProblemDetails &problem_details);
+                                  const std::vector<PatchItem> &patchItem,
+                                  int &http_code, const uint8_t http_version,
+                                  ProblemDetails &problem_details);
 
   /*
    * Insert a nrf profile
@@ -236,7 +241,8 @@ class nrf_app {
   /*
    * Add a subscription
    * @param [const std::string &] sub_id: Subscription ID
-   * @param [std::shared_ptr<nrf_subscription> &] s: shared_pointer to the subscription to be added
+   * @param [std::shared_ptr<nrf_subscription> &] s: shared_pointer to the
+   * subscription to be added
    * @return true if successful, otherwise, return false
    */
   bool add_subscription(const std::string &sub_id,
@@ -273,7 +279,8 @@ class nrf_app {
 
   /*
    * Verify whether a subscription is authorized
-   * @param [std::shared_ptr<nrf_subscription> &] s: shared_pointer to the subscription
+   * @param [std::shared_ptr<nrf_subscription> &] s: shared_pointer to the
+   * subscription
    * @return true if this sub is authorized, otherwise, return false
    */
   bool authorize_subscription(const std::shared_ptr<nrf_subscription> &s) const;
@@ -345,7 +352,8 @@ class nrf_app {
    * Get the list of subscriptions to the profile with notification type
    * @param [const std::string &] profile_id: Profile ID of the NF
    * @param [const uint8_t &] notification_type: requested notification type
-   * @param [std::vector<std::string> &] uris: vector stores list of uri of subscribed NFs
+   * @param [std::vector<std::string> &] uris: vector stores list of uri of
+   * subscribed NFs
    * @return void
    */
   void get_subscription_list(const std::string &profile_id,
