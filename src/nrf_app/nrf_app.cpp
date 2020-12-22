@@ -383,6 +383,85 @@ void nrf_app::handle_remove_subscription(const std::string &sub_id,
         protocol_application_error_e2str[SUBSCRIPTION_NOT_FOUND]);
   }
 }
+
+//------------------------------------------------------------------------------
+void nrf_app::handle_update_subscription(
+    const std::string &sub_id, const std::vector<PatchItem> &patchItem,
+    int &http_code, const uint8_t http_version,
+    ProblemDetails &problem_details) {
+  Logger::nrf_app().info(
+      "Handle an Update of subscription to NF Instance (HTTP version %d)",
+      http_version);
+
+  // Find the existing subscription
+  std::shared_ptr<nrf_subscription> ss = {};
+
+  ss = find_subscription(sub_id);
+  bool op_success = false;
+
+  if (ss.get() != nullptr) {
+    // patchItem should contain only 1 element
+    for (auto p : patchItem) {
+      patch_op_type_t op = api_conv::string_to_patch_operation(p.getOp());
+      // Verify Path
+      if ((p.getPath().substr(0, 1).compare("/") != 0) or
+          (p.getPath().length() < 2)) {
+        Logger::nrf_app().warn("Bad value for operation path: %s ",
+                               p.getPath().c_str());
+        http_code = HTTP_STATUS_CODE_400_BAD_REQUEST;
+        problem_details.setCause(
+            protocol_application_error_e2str[MANDATORY_IE_INCORRECT]);
+        return;
+      }
+
+      std::string path = p.getPath().substr(1);
+
+      switch (op) {
+        case PATCH_OP_REPLACE: {
+          if (path.compare("validityTime") == 0) {
+            try {
+              // TODO: (section 5.2.2.5.6, Update of Subscription to NF
+              // Instances, 3GPP TS 29.510 V16.0.0 (2019-06)) if the NRF accepts
+              // the extension of the lifetime of the subscription, but it
+              // assigns a validity time different than the value suggested by
+              // the NF Service Consumer, a "200 OK" response code shall be
+              // returned
+              boost::posix_time::ptime pt(
+                  boost::posix_time::from_iso_string(p.getValue()));
+              ss.get()->set_validity_time(pt);
+              Logger::nrf_app().debug("New validity time: %s",
+                                      p.getValue().c_str());
+              Logger::nrf_app().debug("Updated a subscription to the DB");
+              // display the info
+              ss.get()->display();
+              http_code = HTTP_STATUS_CODE_204_NO_CONTENT;
+              op_success = true;
+            } catch (std::exception &e) {
+              std::cout << "  Exception: " << e.what() << std::endl;
+            }
+          }
+        } break;
+
+        default: {
+          Logger::nrf_app().warn("Requested operation is not valid!");
+        }
+      }
+
+      if (!op_success) {
+        http_code = HTTP_STATUS_CODE_400_BAD_REQUEST;
+        problem_details.setCause(
+            protocol_application_error_e2str[MANDATORY_IE_INCORRECT]);
+      }
+    }
+  } else {
+    Logger::nrf_app().debug("Subscription with ID %s does not exit",
+                            sub_id.c_str());
+    http_code = HTTP_STATUS_CODE_404_NOT_FOUND;
+    problem_details.setCause(
+        protocol_application_error_e2str[SUBSCRIPTION_NOT_FOUND]);
+  }
+}
+
 //------------------------------------------------------------------------------
 bool nrf_app::add_nf_profile(const std::string &profile_id,
                              const std::shared_ptr<nrf_profile> &p) {
@@ -544,6 +623,20 @@ bool nrf_app::remove_subscription(const std::string &sub_id) {
     Logger::nrf_app().info(
         "Remove_subscription, subscription not found (ID %s)", sub_id.c_str());
     return false;
+  }
+}
+
+//------------------------------------------------------------------------------
+std::shared_ptr<nrf_subscription> nrf_app::find_subscription(
+    const std::string &sub_id) const {
+  // Logger::nrf_app().info("Find a subscription with ID %s", sub_id.c_str());
+
+  std::shared_lock lock(m_instance_id2nrf_subscription);
+  if (instance_id2nrf_subscription.count(sub_id) > 0) {
+    return instance_id2nrf_subscription.at(sub_id);
+  } else {
+    Logger::nrf_app().info("Subscription (ID %s) not found", sub_id.c_str());
+    return nullptr;
   }
 }
 

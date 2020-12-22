@@ -151,6 +151,22 @@ class nrf_app {
   void handle_remove_subscription(const std::string &sub_id, int &http_code,
                                   const uint8_t http_version,
                                   ProblemDetails &problem_details);
+
+  /*
+   * Handle a Update of Subscription to NF Instances
+   * @param [const std::string &] sub_id: Subscription ID
+   * @param [const std::vector<PatchItem> &] patchItem: List of modifications
+   * need to be applied
+   * @param [int &] http_code: HTTP code used to return to the consumer
+   * @param [const uint8_t] http_version: HTTP version
+   * @param [ProblemDetails &] problem_details: Store details of the error
+   * @return void
+   */
+  void handle_update_subscription(const std::string &sub_id,
+                                 const std::vector<PatchItem> &patchItem,
+                                 int &http_code, const uint8_t http_version,
+                                 ProblemDetails &problem_details);
+
   /*
    * Insert a nrf profile
    * @param [const std::string &] profile_id: Profile ID
@@ -232,6 +248,15 @@ class nrf_app {
    * @return true if successful, otherwise, return false
    */
   bool remove_subscription(const std::string &sub_id);
+
+  /*
+   * Find a subscription with its ID
+   * @param [const std::string &] sub_id: Subscription ID
+   * @return shared pointer to the subscription if found, otherwise nullptr
+   */
+  std::shared_ptr<nrf_subscription> find_subscription(
+      const std::string &sub_id) const;
+
   /*
    * Subscribe to the task tick event
    * @param [uint64_t &] ms: Current time in ms

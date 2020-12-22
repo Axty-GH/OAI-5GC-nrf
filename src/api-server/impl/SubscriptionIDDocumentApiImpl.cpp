@@ -37,7 +37,8 @@ void SubscriptionIDDocumentApiImpl::remove_subscription(
 
   int http_code = 0;
   ProblemDetails problem_details = {};
-  m_nrf_app->handle_remove_subscription(subscriptionID, http_code, 1, problem_details);
+  m_nrf_app->handle_remove_subscription(subscriptionID, http_code, 1,
+                                        problem_details);
 
   nlohmann::json json_data = {};
   std::string content_type = "application/json";
@@ -59,9 +60,39 @@ void SubscriptionIDDocumentApiImpl::remove_subscription(
 void SubscriptionIDDocumentApiImpl::update_subscription(
     const std::string &subscriptionID, const std::vector<PatchItem> &patchItem,
     Pistache::Http::ResponseWriter &response) {
-  response.send(Pistache::Http::Code::Ok, "Do some magic\n");
-}
+  Logger::nrf_sbi().info(
+      "Got a request to update of subscription to NF instances, subscription "
+      "ID %s",
+      subscriptionID.c_str());
 
+  int http_code = 0;
+  ProblemDetails problem_details = {};
+  m_nrf_app->handle_update_subscription(subscriptionID, patchItem, http_code, 1,
+                                        problem_details);
+
+  // TODO: (section 5.2.2.5.6, Update of Subscription to NF Instances,
+  // 3GPP TS 29.510 V16.0.0 (2019-06)) if the NRF accepts the extension
+  // of the lifetime of the subscription, but it assigns a validity time
+  // different than the value suggested by the NF Service Consumer, a
+  // "200 OK" response code shall be returned
+
+  nlohmann::json json_data = {};
+  std::string content_type = "application/json";
+
+  if (http_code != HTTP_STATUS_CODE_204_NO_CONTENT) {
+    to_json(json_data, problem_details);
+    content_type = "application/problem+json";
+    // content type
+    response.headers().add<Pistache::Http::Header::ContentType>(
+        Pistache::Http::Mime::MediaType(content_type));
+    response.send(Pistache::Http::Code(http_code), json_data.dump().c_str());
+  } else {
+    // content type
+    response.headers().add<Pistache::Http::Header::ContentType>(
+        Pistache::Http::Mime::MediaType(content_type));
+    response.send(Pistache::Http::Code(http_code));
+  }
+}
 }  // namespace api
 }  // namespace nrf
 }  // namespace oai
