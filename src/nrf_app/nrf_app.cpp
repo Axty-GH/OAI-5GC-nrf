@@ -366,6 +366,24 @@ void nrf_app::handle_create_subscription(
 }
 
 //------------------------------------------------------------------------------
+void nrf_app::handle_remove_subscription(const std::string &sub_id,
+                                         int &http_code,
+                                         const uint8_t http_version,
+                                         ProblemDetails &problem_details) {
+  Logger::nrf_app().info(
+      "Handle Remove an existing subscription (HTTP version %d)", http_version);
+
+  // Remove the subscription
+  if (remove_subscription(sub_id)) {
+    http_code = HTTP_STATUS_CODE_204_NO_CONTENT;
+  } else {
+    // error
+    http_code = HTTP_STATUS_CODE_404_NOT_FOUND;
+    problem_details.setCause(
+        protocol_application_error_e2str[SUBSCRIPTION_NOT_FOUND]);
+  }
+}
+//------------------------------------------------------------------------------
 bool nrf_app::add_nf_profile(const std::string &profile_id,
                              const std::shared_ptr<nrf_profile> &p) {
   /*
@@ -402,7 +420,7 @@ bool nrf_app::update_nf_profile(const std::string &profile_id,
     instance_id2nrf_profile.at(profile_id) = p;
     return true;
   } else {
-    Logger::nrf_app().info("NF profile (ID %d) not found", profile_id.c_str());
+    Logger::nrf_app().info("NF profile (ID %s) not found", profile_id.c_str());
     return false;
   }
 }
@@ -410,7 +428,7 @@ bool nrf_app::update_nf_profile(const std::string &profile_id,
 //------------------------------------------------------------------------------
 std::shared_ptr<nrf_profile> nrf_app::find_nf_profile(
     const std::string &profile_id) const {
-  //Logger::nrf_app().info("Find a NF profile with ID %s", profile_id.c_str());
+  // Logger::nrf_app().info("Find a NF profile with ID %s", profile_id.c_str());
 
   std::shared_lock lock(m_instance_id2nrf_profile);
   if (instance_id2nrf_profile.count(profile_id) > 0) {
@@ -424,7 +442,7 @@ std::shared_ptr<nrf_profile> nrf_app::find_nf_profile(
 //------------------------------------------------------------------------------
 bool nrf_app::find_nf_profile(const std::string &profile_id,
                               std::shared_ptr<nrf_profile> &p) const {
-  //Logger::nrf_app().info("Find a NF profile with ID %s", profile_id.c_str());
+  // Logger::nrf_app().info("Find a NF profile with ID %s", profile_id.c_str());
 
   std::shared_lock lock(m_instance_id2nrf_profile);
   if (instance_id2nrf_profile.count(profile_id) > 0) {
@@ -450,14 +468,14 @@ void nrf_app::find_nf_profiles(
 
 //------------------------------------------------------------------------------
 bool nrf_app::is_profile_exist(const std::string &profile_id) const {
-  Logger::nrf_app().info("Check if a profile with this ID %d exist",
+  Logger::nrf_app().info("Check if a profile with this ID %s exist",
                          profile_id.c_str());
 
   std::shared_lock lock(m_instance_id2nrf_profile);
   if (instance_id2nrf_profile.count(profile_id) > 0) {
     return true;
   } else {
-    Logger::nrf_app().info("NF profile (ID %d) not found", profile_id.c_str());
+    Logger::nrf_app().info("NF profile (ID %s) not found", profile_id.c_str());
     return false;
   }
 }
@@ -468,11 +486,11 @@ bool nrf_app::remove_nf_profile(const std::shared_ptr<nrf_profile> &snp) {
   snp.get()->get_nf_instance_id(key);
   std::unique_lock lock(m_instance_id2nrf_profile);
   if (instance_id2nrf_profile.erase(key)) {
-    Logger::nrf_app().info("Removed NF profile (ID %d) from the list",
+    Logger::nrf_app().info("Removed NF profile (ID %s) from the list",
                            key.c_str());
     return true;
   } else {
-    Logger::nrf_app().info("Remove_NF_profile, profile not found (ID %d)",
+    Logger::nrf_app().info("Remove_NF_profile, profile not found (ID %s)",
                            key.c_str());
     return false;
   }
@@ -482,11 +500,11 @@ bool nrf_app::remove_nf_profile(const std::shared_ptr<nrf_profile> &snp) {
 bool nrf_app::remove_nf_profile(const std::string &profile_id) {
   std::unique_lock lock(m_instance_id2nrf_profile);
   if (instance_id2nrf_profile.erase(profile_id)) {
-    Logger::nrf_app().info("Removed NF profile (ID %d) from the list",
+    Logger::nrf_app().info("Removed NF profile (ID %s) from the list",
                            profile_id.c_str());
     return true;
   } else {
-    Logger::nrf_app().info("Remove_NF_profile, profile not found (ID %d)",
+    Logger::nrf_app().info("Remove_NF_profile, profile not found (ID %s)",
                            profile_id.c_str());
     return false;
   }
@@ -513,6 +531,20 @@ bool nrf_app::add_subscription(const std::string &sub_id,
   // Create or update if subscription exist
   instance_id2nrf_subscription[sub_id] = s;
   return true;
+}
+
+//------------------------------------------------------------------------------
+bool nrf_app::remove_subscription(const std::string &sub_id) {
+  std::unique_lock lock(m_instance_id2nrf_subscription);
+  if (instance_id2nrf_subscription.erase(sub_id)) {
+    Logger::nrf_app().info("Removed subscription (ID %s) from the list",
+                           sub_id.c_str());
+    return true;
+  } else {
+    Logger::nrf_app().info(
+        "Remove_subscription, subscription not found (ID %s)", sub_id.c_str());
+    return false;
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -584,7 +616,8 @@ void nrf_app::handle_nf_status_registered(const std::string &profile_id) {
                           notification_uris);
     // send notifications
     if (notification_uris.size() > 0)
-      nrf_client_inst->notify_subscribed_event(profile, NOTIFICATION_TYPE_NF_REGISTERED, notification_uris);
+      nrf_client_inst->notify_subscribed_event(
+          profile, NOTIFICATION_TYPE_NF_REGISTERED, notification_uris);
     else
       Logger::nrf_app().debug("\tNo subscription found");
 
@@ -614,13 +647,13 @@ void nrf_app::handle_nf_status_deregistered(const std::string &profile_id) {
     get_subscription_list(profile_id, NOTIFICATION_TYPE_NF_DEREGISTERED,
                           notification_uris);
     // send notifications
-    nrf_client_inst->notify_subscribed_event(profile, NOTIFICATION_TYPE_NF_DEREGISTERED, notification_uris);
+    nrf_client_inst->notify_subscribed_event(
+        profile, NOTIFICATION_TYPE_NF_DEREGISTERED, notification_uris);
 
   } else {
     Logger::nrf_app().error("NF profile not found, profile id %s",
                             profile_id.c_str());
   }
-
 }
 
 //------------------------------------------------------------------------------
@@ -641,14 +674,15 @@ void nrf_app::handle_nf_status_profile_changed(const std::string &profile_id) {
     std::vector<std::string> notification_uris = {};
     get_subscription_list(profile_id, NOTIFICATION_TYPE_NF_PROFILE_CHANGED,
                           notification_uris);
-    //Notification data includes NF profile (other alternative, includes profile_changes)
+    // Notification data includes NF profile (other alternative, includes
+    // profile_changes)
     // send notifications
-    nrf_client_inst->notify_subscribed_event(profile, NOTIFICATION_TYPE_NF_PROFILE_CHANGED, notification_uris);
+    nrf_client_inst->notify_subscribed_event(
+        profile, NOTIFICATION_TYPE_NF_PROFILE_CHANGED, notification_uris);
   } else {
     Logger::nrf_app().error("NF profile not found, profile id %s",
                             profile_id.c_str());
   }
-
 }
 
 //------------------------------------------------------------------------------
@@ -667,19 +701,19 @@ void nrf_app::get_subscription_list(const std::string &profile_id,
     return;
   }
 
-
   for (auto s : instance_id2nrf_subscription) {
-      Logger::nrf_app().info("\tVerifying subscription, subscription id %s", s.first.c_str());
+    Logger::nrf_app().info("\tVerifying subscription, subscription id %s",
+                           s.first.c_str());
     std::string uri;
     s.second.get()->get_notification_uri(uri);
 
-    //check notification event type
+    // check notification event type
     bool match_notif_type = false;
     for (auto i : s.second.get()->get_notif_events()) {
-    	if (i == notification_type) {
-    		match_notif_type = true;
-    		break;
-    	}
+      if (i == notification_type) {
+        match_notif_type = true;
+        break;
+      }
     }
     if (!match_notif_type) continue;
 
@@ -691,7 +725,8 @@ void nrf_app::get_subscription_list(const std::string &profile_id,
       Logger::nrf_app().debug(
           "\tThis subscription expires, current time %s, validity time %s",
           boost::posix_time::to_iso_string(t).c_str(),
-          boost::posix_time::to_iso_string(s.second.get()->get_validity_time()).c_str());
+          boost::posix_time::to_iso_string(s.second.get()->get_validity_time())
+              .c_str());
       continue;
     }
 
@@ -702,8 +737,8 @@ void nrf_app::get_subscription_list(const std::string &profile_id,
       case NF_INSTANCE_ID_COND: {
         if (profile_id.compare(condition.nf_instance_id) == 0) {
           uris.push_back(uri);
-          Logger::nrf_app().debug("\tSubscription id %s, uri %s", s.first.c_str(),
-                                  uri.c_str());
+          Logger::nrf_app().debug("\tSubscription id %s, uri %s",
+                                  s.first.c_str(), uri.c_str());
         }
 
       } break;
@@ -711,8 +746,8 @@ void nrf_app::get_subscription_list(const std::string &profile_id,
         std::string nf_type = nf_type_e2str[profile.get()->get_nf_type()];
         if (nf_type.compare(condition.nf_type) == 0) {
           uris.push_back(uri);
-          Logger::nrf_app().debug("\tSubscription id %s, uri %s", s.first.c_str(),
-                                  uri.c_str());
+          Logger::nrf_app().debug("\tSubscription id %s, uri %s",
+                                  s.first.c_str(), uri.c_str());
         }
       } break;
 
@@ -721,8 +756,8 @@ void nrf_app::get_subscription_list(const std::string &profile_id,
         profile.get()->get_nf_instance_name(service_name);
         if (service_name.compare(condition.service_name) == 0) {
           uris.push_back(uri);
-          Logger::nrf_app().debug("\tSubscription id %s, uri %s", s.first.c_str(),
-                                  uri.c_str());
+          Logger::nrf_app().debug("\tSubscription id %s, uri %s",
+                                  s.first.c_str(), uri.c_str());
         }
 
       } break;
@@ -758,8 +793,6 @@ void nrf_app::get_subscription_list(const std::string &profile_id,
         // TODO:
       }
     }
-
-
   }
   // TODO:
 }

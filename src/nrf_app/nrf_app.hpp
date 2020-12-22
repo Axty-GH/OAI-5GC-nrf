@@ -129,6 +129,7 @@ class nrf_app {
   /*
    * Handle a Register NF Instance request
    * @param [SubscriptionData &] subscription_data: Subscription data
+   * @param [std::string &] sub_id: Subscription ID
    * @param [int &] http_code: HTTP code used to return to the consumer
    * @param [const uint8_t] http_version: HTTP version
    * @param [ProblemDetails &] problem_details: Store details of the error
@@ -139,6 +140,17 @@ class nrf_app {
                                   const uint8_t http_version,
                                   ProblemDetails &problem_details);
 
+  /*
+   * Handle a NFStatusUnSubscribe request (removes an existing subscription)
+   * @param [const std::string &] sub_id: Subscription ID
+   * @param [int &] http_code: HTTP code used to return to the consumer
+   * @param [const uint8_t] http_version: HTTP version
+   * @param [ProblemDetails &] problem_details: Store details of the error
+   * @return void
+   */
+  void handle_remove_subscription(const std::string &sub_id, int &http_code,
+                                  const uint8_t http_version,
+                                  ProblemDetails &problem_details);
   /*
    * Insert a nrf profile
    * @param [const std::string &] profile_id: Profile ID
@@ -214,6 +226,12 @@ class nrf_app {
   bool add_subscription(const std::string &sub_id,
                         const std::shared_ptr<nrf_subscription> &s);
 
+  /*
+   * Remove a subscription from the list
+   * @param [std::string &] sub_id: ID of the subscription to be removed
+   * @return true if successful, otherwise, return false
+   */
+  bool remove_subscription(const std::string &sub_id);
   /*
    * Subscribe to the task tick event
    * @param [uint64_t &] ms: Current time in ms
