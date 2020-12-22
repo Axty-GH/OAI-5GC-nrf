@@ -482,7 +482,6 @@ void nrf_profile::handle_heartbeart_timeout(uint64_t ms) {
   set_nf_status("SUSPENDED");
 }
 
-
 //------------------------------------------------------------------------------
 void amf_profile::add_amf_info(const amf_info_t &info) {
   amf_info = info;
@@ -601,7 +600,6 @@ bool amf_profile::remove_profile_info(
 //------------------------------------------------------------------------------
 void amf_profile::to_json(nlohmann::json &data) const {
   nrf_profile::to_json(data);
-  Logger::nrf_app().debug("[AMF] To Json");
   //AMF Info
   data["amfInfo"]["amfSetId"] = amf_info.amf_set_id;
   data["amfInfo"]["amfRegionId"] = amf_info.amf_region_id;

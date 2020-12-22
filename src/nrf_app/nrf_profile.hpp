@@ -354,6 +354,7 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
    */
   void unsubscribe_task_tick();
 
+
  protected:
   nrf_event &m_event_sub;
   bs2::connection task_connection;

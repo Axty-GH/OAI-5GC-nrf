@@ -84,7 +84,7 @@ CURL *nrf_client::curl_create_handle(const std::string &uri,
 
 //------------------------------------------------------------------------------
 void nrf_client::notify_subscribed_event(
-    const std::shared_ptr<nrf_profile> &profile,
+    const std::shared_ptr<nrf_profile> &profile, const uint8_t &event_type,
     const std::vector<std::string> &uris) {
   Logger::nrf_app().debug(
       "Send notification for the subscribed event to the subscriptions");
@@ -111,7 +111,7 @@ void nrf_client::notify_subscribed_event(
 
   // Fill the json part
   nlohmann::json json_data = {};
-  json_data["event"] = "NF_REGISTERED";
+  json_data["event"] = notification_event_type_e2str[event_type];
   std::string instance_uri =
       std::string(inet_ntoa(*((struct in_addr *)&nrf_cfg.sbi.addr4))) + ":" +
       std::to_string(nrf_cfg.sbi.port) + NNRF_NFM_BASE +
@@ -119,6 +119,25 @@ void nrf_client::notify_subscribed_event(
       profile.get()->get_nf_instance_id();
   Logger::nrf_app().debug("NF instance URI: %s", instance_uri.c_str());
   json_data["nfInstanceUri"] = instance_uri;
+
+  // NF profile
+  if ((event_type == NOTIFICATION_TYPE_NF_REGISTERED) or
+      (event_type == NOTIFICATION_TYPE_NF_PROFILE_CHANGED)) {
+    nlohmann::json json_profile = {};
+    switch (profile.get()->get_nf_type()) {
+      case NF_TYPE_AMF: {
+        std::static_pointer_cast<amf_profile>(profile).get()->to_json(
+            json_profile);
+      } break;
+      case NF_TYPE_SMF: {
+        std::static_pointer_cast<smf_profile>(profile).get()->to_json(
+            json_profile);
+      } break;
+      default: { profile.get()->to_json(json_profile); }
+    }
+    json_data["nfProfile"] = json_profile;
+  }
+
   std::string body = json_data.dump();
 
   // create and add an easy handle to a  multi curl request
@@ -203,8 +222,8 @@ void nrf_client::notify_subscribed_event(
 //------------------------------------------------------------------------------
 void nrf_client::notify_subscribed_event(
     const std::shared_ptr<nrf_profile> &profile, const std::string &uri) {
-  Logger::nrf_app().debug(
-      "Send notification to the subscribed NF (URI %s)", uri.c_str());
+  Logger::nrf_app().debug("Send notification to the subscribed NF (URI %s)",
+                          uri.c_str());
 
   // Fill the json part
   nlohmann::json json_data = {};

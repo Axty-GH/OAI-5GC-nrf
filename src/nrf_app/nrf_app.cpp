@@ -584,7 +584,7 @@ void nrf_app::handle_nf_status_registered(const std::string &profile_id) {
                           notification_uris);
     // send notifications
     if (notification_uris.size() > 0)
-      nrf_client_inst->notify_subscribed_event(profile, notification_uris);
+      nrf_client_inst->notify_subscribed_event(profile, NOTIFICATION_TYPE_NF_REGISTERED, notification_uris);
     else
       Logger::nrf_app().debug("\tNo subscription found");
 
@@ -614,7 +614,7 @@ void nrf_app::handle_nf_status_deregistered(const std::string &profile_id) {
     get_subscription_list(profile_id, NOTIFICATION_TYPE_NF_DEREGISTERED,
                           notification_uris);
     // send notifications
-    nrf_client_inst->notify_subscribed_event(profile, notification_uris);
+    nrf_client_inst->notify_subscribed_event(profile, NOTIFICATION_TYPE_NF_DEREGISTERED, notification_uris);
 
   } else {
     Logger::nrf_app().error("NF profile not found, profile id %s",
@@ -641,9 +641,9 @@ void nrf_app::handle_nf_status_profile_changed(const std::string &profile_id) {
     std::vector<std::string> notification_uris = {};
     get_subscription_list(profile_id, NOTIFICATION_TYPE_NF_PROFILE_CHANGED,
                           notification_uris);
+    //Notification data includes NF profile (other alternative, includes profile_changes)
     // send notifications
-    nrf_client_inst->notify_subscribed_event(profile, notification_uris);
-
+    nrf_client_inst->notify_subscribed_event(profile, NOTIFICATION_TYPE_NF_PROFILE_CHANGED, notification_uris);
   } else {
     Logger::nrf_app().error("NF profile not found, profile id %s",
                             profile_id.c_str());
