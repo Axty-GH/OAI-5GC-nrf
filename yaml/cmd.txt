@@ -13,3 +13,6 @@ curl -X POST http://192.168.1.23/nnrf-nfm/v1/subscriptions -d '{"nfStatusNotific
 curl -X POST -H "Content-Type: application/json" "http://192.168.1.23/nnrf-nfm/v1/subscriptions" -d '{"nfStatusNotificationUri":"http://192.168.1.23/nnrf-nfm/v1/nf-instances/343a924e-6494-4927-860b-d45692c95c2d", "subscrCond": {"NfTypeCond": {"nfType":"AMF"}}, "reqNotifEvents":["NF_REGISTERED", "NF_DEREGISTERED"], "validityTime":"20020131T235959" }' 
 
 curl -X PATCH -H "Content-Type: application/json" http://192.168.1.23/nnrf-nfm/v1/subscriptions/1  -d '[{"op":"replace","path":"/validityTime", "value": "20201231T235959"}]'
+
+
+curl -X GET  "http://192.168.1.23/nnrf-disc/v1//nf-instances?target-nf-type="AMF"&requester-nf-type="AMF""

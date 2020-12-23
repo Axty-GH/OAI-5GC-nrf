@@ -37,6 +37,7 @@
 #include "SubscriptionData.h"
 #include "nrf_event.hpp"
 #include "nrf_profile.hpp"
+#include "nrf_search_result.hpp"
 #include "nrf_subscription.hpp"
 #include "uint_generator.hpp"
 
@@ -169,6 +170,25 @@ class nrf_app {
    */
   void handle_update_subscription(const std::string &sub_id,
                                   const std::vector<PatchItem> &patchItem,
+                                  int &http_code, const uint8_t http_version,
+                                  ProblemDetails &problem_details);
+
+  /*
+   * Handle NFDiscover to discover the set of NF Instances
+   * @param [const std::string &] target_nf_type: target NF type
+   * @param [const std::string &] requester_nf_type: Requester NF type
+   * @param [const std::string &] requester_nf_instance_id: Requester NF
+   * instance id
+   * @param [std::string &] search_id: Store search result ID
+   * @param [int &] http_code: HTTP code used to return to the consumer
+   * @param [const uint8_t] http_version: HTTP version
+   * @param [ProblemDetails &] problem_details: Store details of the error
+   * @return void
+   */
+  void handle_search_nf_instances(const std::string &target_nf_type,
+                                  const std::string &requester_nf_type,
+                                  const std::string &requester_nf_instance_id,
+								  std::string &search_id,
                                   int &http_code, const uint8_t http_version,
                                   ProblemDetails &problem_details);
 
@@ -360,16 +380,55 @@ class nrf_app {
                              const uint8_t &notification_type,
                              std::vector<std::string> &uris) const;
 
+  /*
+   * Verify whether the requester is allowed to discover the NF services
+   * @param [const std::string &] requester_instance_id: Requester instance ID
+   * @param [const std::string &] requester_nf_type: Requester nf type
+   * @return void
+   */
+  bool is_service_discover_allowed(const std::string &requester_instance_id,
+                                   const std::string &requester_nf_type);
+
+  /*
+   * Generate an unique ID for the search result
+   * @param [const std::string &] search_id: the generated search ID
+   * @return void
+   */
+  void generate_search_id(std::string &search_id);
+
+  /*
+   * Add a search result to the DB
+   * @param [const std::string &] id: Search ID
+   * @param [const std::shared_ptr<nrf_search_result> &] s: Pointer to the search result
+   * @return void
+   */
+  bool add_search_result(const std::string &id,
+                         const std::shared_ptr<nrf_search_result> &s);
+
+  /*
+   * Find a search result with its ID
+   * @param [const std::string &] search_id: Search ID
+   * @param [std::shared_ptr<nrf_search_result> &] s: Pointer to the search result
+   * @return true if found, otherwise false
+   */
+  bool find_search_result(const std::string &search_id,
+                       std::shared_ptr<nrf_search_result> &p) const;
+
  private:
   std::map<std::string, std::shared_ptr<nrf_profile>> instance_id2nrf_profile;
   mutable std::shared_mutex m_instance_id2nrf_profile;
 
   std::map<std::string, std::shared_ptr<nrf_subscription>>
-      instance_id2nrf_subscription;
-  mutable std::shared_mutex m_instance_id2nrf_subscription;
+      subscrition_id2nrf_subscription;
+  mutable std::shared_mutex m_subscription_id2nrf_subscription;
   nrf_event &m_event_sub;
   util::uint_generator<uint32_t> evsub_id_generator;
   std::vector<bs2::connection> connections;
+
+  util::uint_generator<uint32_t> search_id_generator;
+  std::map<std::string, std::shared_ptr<nrf_search_result>>
+      search_id2search_result;
+  mutable std::shared_mutex m_search_id2search_result;
 };
 }  // namespace app
 }  // namespace nrf

@@ -40,6 +40,7 @@
 #include "logger.hpp"
 #include "nrf_client.hpp"
 #include "nrf_config.hpp"
+#include "nrf_search_result.hpp"
 
 using namespace oai::nrf::app;
 using namespace oai::nrf::model;
@@ -53,7 +54,8 @@ nrf_client *nrf_client_inst = nullptr;
 nrf_app::nrf_app(const std::string &config_file, nrf_event &ev)
     : m_event_sub(ev),
       m_instance_id2nrf_profile(),
-      m_instance_id2nrf_subscription() {
+      m_subscription_id2nrf_subscription(),
+      m_search_id2search_result() {
   Logger::nrf_app().startup("Starting...");
 
   try {
@@ -481,6 +483,66 @@ void nrf_app::handle_update_subscription(
 }
 
 //------------------------------------------------------------------------------
+void nrf_app::handle_search_nf_instances(
+    const std::string &target_nf_type, const std::string &requester_nf_type,
+    const std::string &requester_nf_instance_id, std::string &search_id,
+    int &http_code, const uint8_t http_version,
+    ProblemDetails &problem_details) {
+  Logger::nrf_app().info(
+      "Handle NFDiscover to discover the set of NF Instances (HTTP version %d)",
+      http_version);
+
+  // Check if requester is allowed to discover the NF services
+  if (!is_service_discover_allowed(requester_nf_instance_id,
+                                   requester_nf_type)) {
+    http_code = HTTP_STATUS_CODE_403_FORBIDDEN;
+    Logger::nrf_app().debug(
+        "Requester (instance id %s) is not allowed to discover the NF "
+        "instances",
+        requester_nf_instance_id.c_str());
+    problem_details.setCause(
+        protocol_application_error_e2str[MODIFICATION_NOT_ALLOWED]);
+    return;
+  }
+
+  nf_type_t target_type = api_conv::string_to_nf_type(target_nf_type);
+  nf_type_t requester_type = api_conv::string_to_nf_type(requester_nf_type);
+
+  if ((target_type == NF_TYPE_UNKNOWN) or (requester_type == NF_TYPE_UNKNOWN)) {
+    Logger::nrf_app().debug("Unknown target type/requester type");
+    http_code = HTTP_STATUS_CODE_400_BAD_REQUEST;
+    problem_details.setCause(
+        protocol_application_error_e2str[OPTIONAL_IE_INCORRECT]);
+    return;
+  }
+
+  Logger::nrf_app().debug(
+      "target nf type %s, requester nf type %s, requester nf instance id %s",
+      target_nf_type.c_str(), requester_nf_type.c_str(),
+      requester_nf_instance_id.c_str());
+
+  std::shared_ptr<nrf_search_result> ss = std::make_shared<nrf_search_result>();
+  // generate a search ID and assign to the search result
+  generate_search_id(search_id);
+  ss.get()->set_search_id(search_id);
+
+  // set search result
+  std::vector<std::shared_ptr<nrf_profile>> profiles = {};
+  find_nf_profiles(target_type, profiles);
+  if (profiles.size() > 0) {
+    ss.get()->set_nf_instances(profiles);
+  }
+  // set validity period
+  ss.get()->set_validity_period(100000);  // 100s
+  // add to the DB
+  add_search_result(search_id, ss);
+  Logger::nrf_app().debug("Added a search result with ID %s to the DB",
+                          search_id.c_str());
+  ss.get()->display();
+  http_code = HTTP_STATUS_CODE_200_OK;
+}
+
+//------------------------------------------------------------------------------
 bool nrf_app::add_nf_profile(const std::string &profile_id,
                              const std::shared_ptr<nrf_profile> &p) {
   /*
@@ -610,30 +672,30 @@ bool nrf_app::remove_nf_profile(const std::string &profile_id) {
 //------------------------------------------------------------------------------
 bool nrf_app::add_subscription(const std::string &sub_id,
                                const std::shared_ptr<nrf_subscription> &s) {
-  std::unique_lock lock(m_instance_id2nrf_subscription);
+  std::unique_lock lock(m_subscription_id2nrf_subscription);
   /*
    //if profile with this id exist, update
-   if (instance_id2nrf_subscription.count(sub_id) > 0) {
+   if (subscrition_id2nrf_subscription.count(sub_id) > 0) {
    Logger::nrf_app().info(
    "Update a subscription to the list (Subscription ID %s)",
    sub_id.c_str());
-   instance_id2nrf_subscription.at(sub_id) = s;
+   subscrition_id2nrf_subscription.at(sub_id) = s;
    } else {
    //if not, add to the list
    Logger::nrf_app().info(
    "Insert a subscription to the list (Subscription ID %s)",
    sub_id.c_str());
-   instance_id2nrf_subscription.emplace(sub_id, s);
+   subscrition_id2nrf_subscription.emplace(sub_id, s);
    }*/
   // Create or update if subscription exist
-  instance_id2nrf_subscription[sub_id] = s;
+  subscrition_id2nrf_subscription[sub_id] = s;
   return true;
 }
 
 //------------------------------------------------------------------------------
 bool nrf_app::remove_subscription(const std::string &sub_id) {
-  std::unique_lock lock(m_instance_id2nrf_subscription);
-  if (instance_id2nrf_subscription.erase(sub_id)) {
+  std::unique_lock lock(m_subscription_id2nrf_subscription);
+  if (subscrition_id2nrf_subscription.erase(sub_id)) {
     Logger::nrf_app().info("Removed subscription (ID %s) from the list",
                            sub_id.c_str());
     return true;
@@ -649,9 +711,9 @@ std::shared_ptr<nrf_subscription> nrf_app::find_subscription(
     const std::string &sub_id) const {
   // Logger::nrf_app().info("Find a subscription with ID %s", sub_id.c_str());
 
-  std::shared_lock lock(m_instance_id2nrf_subscription);
-  if (instance_id2nrf_subscription.count(sub_id) > 0) {
-    return instance_id2nrf_subscription.at(sub_id);
+  std::shared_lock lock(m_subscription_id2nrf_subscription);
+  if (subscrition_id2nrf_subscription.count(sub_id) > 0) {
+    return subscrition_id2nrf_subscription.at(sub_id);
   } else {
     Logger::nrf_app().info("Subscription (ID %s) not found", sub_id.c_str());
     return nullptr;
@@ -812,7 +874,7 @@ void nrf_app::get_subscription_list(const std::string &profile_id,
     return;
   }
 
-  for (auto s : instance_id2nrf_subscription) {
+  for (auto s : subscrition_id2nrf_subscription) {
     Logger::nrf_app().info("\tVerifying subscription, subscription id %s",
                            s.first.c_str());
     std::string uri;
@@ -906,4 +968,39 @@ void nrf_app::get_subscription_list(const std::string &profile_id,
     }
   }
   // TODO:
+}
+
+//------------------------------------------------------------------------------
+bool nrf_app::is_service_discover_allowed(
+    const std::string &requester_instance_id,
+    const std::string &requester_nf_type) {
+  // TODO:
+  return true;
+}
+
+//------------------------------------------------------------------------------
+void nrf_app::generate_search_id(std::string &search_id) {
+  search_id = std::to_string(search_id_generator.get_uid());
+}
+
+//------------------------------------------------------------------------------
+bool nrf_app::add_search_result(const std::string &id,
+                                const std::shared_ptr<nrf_search_result> &s) {
+  std::unique_lock lock(m_search_id2search_result);
+  // Create or update if search result exist
+  search_id2search_result[id] = s;
+  return true;
+}
+
+bool nrf_app::find_search_result(const std::string &search_id,
+                                 std::shared_ptr<nrf_search_result> &s) const {
+  std::shared_lock lock(m_search_id2search_result);
+  if (search_id2search_result.count(search_id) > 0) {
+    s = search_id2search_result.at(search_id);
+    return true;
+  } else {
+    Logger::nrf_app().info("Search result (ID %s) not found",
+                           search_id.c_str());
+    return false;
+  }
 }

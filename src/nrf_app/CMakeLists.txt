@@ -32,6 +32,7 @@ add_library (NRF STATIC
   nrf_profile.cpp
   nrf_subscription.cpp 
   nrf_client.cpp 
+  nrf_search_result.cpp 
   task_manager.cpp
   nrf_event.cpp
 )
