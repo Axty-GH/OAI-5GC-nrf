@@ -209,7 +209,6 @@ if(GIT_FOUND)
   )
 endif()
 
-
 add_definitions("-DPACKAGE_VERSION=\"Branch: ${GIT_BRANCH} Abrev. Hash: ${GIT_COMMIT_HASH} Date: ${GIT_COMMIT_DATE}\"")
 add_definitions("-DPACKAGE_BUGREPORT=\"openaircn-user@lists.eurecom.fr\"")
 
@@ -233,14 +232,12 @@ include(CheckLibraryExists)
 include(CheckSymbolExists)
 include(CheckTypeSize)
 
-
 ###############################################################################
 # Debug and build related options
 ###############################################################################
 
 add_boolean_option( DISPLAY_LICENCE_INFO            False    "If a module has a licence banner to show")
 add_boolean_option( LOG_OAI                         False    "Thread safe logging utility")
-
 
 # System packages that are required
 # We use either the cmake buildin, in ubuntu are in: /usr/share/cmake*/Modules/
@@ -264,13 +261,7 @@ endif(STATIC_LINKING)
 
 ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/../../src/common ${CMAKE_CURRENT_BINARY_DIR}/common)
 ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/../../src/common/utils ${CMAKE_CURRENT_BINARY_DIR}/utils)
-#ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/../../src/pfcp ${CMAKE_CURRENT_BINARY_DIR}/pfcp)
-#ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/../../src/udp ${CMAKE_CURRENT_BINARY_DIR}/udp)
 ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/../../src/api-server ${CMAKE_CURRENT_BINARY_DIR}/api-server)
-#ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/../../src/nas ${CMAKE_CURRENT_BINARY_DIR}/nas)
-
-#ENABLE_TESTING()
-#ADD_SUBDIRECTORY(${CMAKE_CURRENT_SOURCE_DIR}/../../src/test ${CMAKE_CURRENT_BINARY_DIR}/test)
 
 ################################################################################
 # Specific part for oai_nrf folder
@@ -280,30 +271,16 @@ include_directories(${SRC_TOP_DIR}/nrf_app)
 include_directories(${SRC_TOP_DIR}/oai_nrf)
 include_directories(${SRC_TOP_DIR}/common)
 include_directories(${SRC_TOP_DIR}/common/utils)
-#include_directories(${SRC_TOP_DIR}/common/utils/bstr)
-#include_directories(${SRC_TOP_DIR}/pfcp)
-#include_directories(${SRC_TOP_DIR}/udp)
 include_directories(${SRC_TOP_DIR}/../build/ext/spdlog/include)
+include_directories(${SRC_TOP_DIR}/../build/ext/cpp-jwt)
 include_directories(${SRC_TOP_DIR}/api-server)
 include_directories(${SRC_TOP_DIR}/api-server/api)
 include_directories(${SRC_TOP_DIR}/api-server/impl)
 include_directories(${SRC_TOP_DIR}/api-server/model)
-#include_directories(${SRC_TOP_DIR}/nas)
-#include_directories(${SRC_TOP_DIR}/nas/ies)
-#include_directories(${SRC_TOP_DIR}/nas/mm)
-#include_directories(${SRC_TOP_DIR}/nas/mm/msg)
-#include_directories(${SRC_TOP_DIR}/nas/sm)
-#include_directories(${SRC_TOP_DIR}/nas/sm/msg)
-#include_directories(${SRC_TOP_DIR}/nas/security)
-#include_directories(${SRC_TOP_DIR}/ngap)
-#include_directories(${SRC_TOP_DIR}/ngap/asn1c)
-#include_directories(${SRC_TOP_DIR}/ngap/ies)
 
 add_executable(nrf
   ${SRC_TOP_DIR}/oai-nrf/main.cpp
   ${SRC_TOP_DIR}/oai-nrf/options.cpp
-#  ${SRC_TOP_DIR}/itti/itti.cpp
-#  ${SRC_TOP_DIR}/itti/itti_msg.cpp
   )
 
 IF(STATIC_LINKING)

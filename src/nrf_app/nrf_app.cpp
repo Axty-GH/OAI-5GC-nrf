@@ -41,6 +41,7 @@
 #include "nrf_client.hpp"
 #include "nrf_config.hpp"
 #include "nrf_search_result.hpp"
+#include "nrf_jwt.hpp"
 
 using namespace oai::nrf::app;
 using namespace oai::nrf::model;
@@ -49,6 +50,7 @@ using namespace std::chrono;
 extern nrf_app *nrf_app_inst;
 extern nrf_config nrf_cfg;
 nrf_client *nrf_client_inst = nullptr;
+nrf_jwt *nrf_jwt_inst = nullptr;
 
 //------------------------------------------------------------------------------
 nrf_app::nrf_app(const std::string &config_file, nrf_event &ev)
@@ -60,6 +62,7 @@ nrf_app::nrf_app(const std::string &config_file, nrf_event &ev)
 
   try {
     nrf_client_inst = new nrf_client();
+    nrf_jwt_inst = new nrf_jwt();
   } catch (std::exception &e) {
     Logger::nrf_app().error("Cannot create NRF_APP: %s", e.what());
     throw;
@@ -1004,3 +1007,4 @@ bool nrf_app::find_search_result(const std::string &search_id,
     return false;
   }
 }
+

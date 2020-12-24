@@ -20,6 +20,7 @@
 ################################################################################
 
 include_directories(${SRC_TOP_DIR}/../build/ext/spdlog/include)
+include_directories(${SRC_TOP_DIR}/../build/ext/cpp-jwt)
 include_directories(${SRC_TOP_DIR}/api-server/api)
 include_directories(${SRC_TOP_DIR}/api-server/impl)
 include_directories(${SRC_TOP_DIR}/api-server/model)
@@ -33,6 +34,7 @@ add_library (NRF STATIC
   nrf_subscription.cpp 
   nrf_client.cpp 
   nrf_search_result.cpp 
+  nrf_jwt.cpp 
   task_manager.cpp
   nrf_event.cpp
 )
