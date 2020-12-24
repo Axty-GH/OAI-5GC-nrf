@@ -41,36 +41,44 @@ void nrf_search_result::set_search_id(const std::string &id) { search_id = id; }
 //------------------------------------------------------------------------------
 void nrf_search_result::get_search_id(std::string &id) const { id = search_id; }
 
+//------------------------------------------------------------------------------
 std::string nrf_search_result::get_search_id() const { return search_id; }
 
+//------------------------------------------------------------------------------
 void nrf_search_result::set_nf_instances(
     const std::vector<std::shared_ptr<nrf_profile>> &instances) {
   nf_instances = instances;
 }
 
+//------------------------------------------------------------------------------
 void nrf_search_result::add_nf_instance(
     const std::shared_ptr<nrf_profile> &instance) {
   nf_instances.push_back(instance);
 }
 
+//------------------------------------------------------------------------------
 void nrf_search_result::get_nf_instances(
     std::vector<std::shared_ptr<nrf_profile>> &instances) const {
   instances = nf_instances;
 }
 
+//------------------------------------------------------------------------------
 std::vector<std::shared_ptr<nrf_profile>> nrf_search_result::get_nf_instances()
     const {
   return nf_instances;
 }
 
+//------------------------------------------------------------------------------
 void nrf_search_result::set_validity_period(const uint64_t &p) {
   validity_period = p;
 }
 
+//------------------------------------------------------------------------------
 void nrf_search_result::get_validity_period(uint64_t &p) const {
   p = validity_period;
 }
 
+//------------------------------------------------------------------------------
 uint64_t nrf_search_result::get_validity_period() const {
   return validity_period;
 }

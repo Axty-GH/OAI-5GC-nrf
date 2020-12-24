@@ -102,6 +102,7 @@ void DiscNFInstancesStoreApiImpl::search_nf_instances(
     Logger::nrf_sbi().debug("\tRequested NF instance id:  %s",
                             requester_nf_instance_id.c_str());
   }
+  // TODO: other query parameters
 
   int http_code = 0;
   ProblemDetails problem_details = {};

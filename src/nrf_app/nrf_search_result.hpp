@@ -41,11 +41,10 @@ using namespace std;
 
 class nrf_search_result {
  public:
-	nrf_search_result() {
+  nrf_search_result(){
 
   };
-
-	nrf_search_result(nrf_search_result const &) = delete;
+  nrf_search_result(nrf_search_result const &) = delete;
 
   virtual ~nrf_search_result() {
     Logger::nrf_app().debug("Delete NRF Subscription instance...");
@@ -76,29 +75,35 @@ class nrf_search_result {
 
   /*
    * Set the nf instances
-   * @param [std::vector<std::shared_ptr<nrf_profile>> &]: instances: Array of nrf profile instances
+   * @param [std::vector<std::shared_ptr<nrf_profile>> &]: instances: Array of
+   * nrf profile instances
    * @return void
    */
-  void set_nf_instances(const std::vector<std::shared_ptr<nrf_profile>> &instances);
+  void set_nf_instances(
+      const std::vector<std::shared_ptr<nrf_profile>> &instances);
 
   /*
    * Add an nf instance to the list of nrf profile instances
-   * @param [const std::shared_ptr<nrf_profile> &]: instance: A nrf profile instance
+   * @param [const std::shared_ptr<nrf_profile> &]: instance: A nrf profile
+   * instance
    * @return void
    */
   void add_nf_instance(const std::shared_ptr<nrf_profile> &instance);
 
   /*
    * Get the nf instances
-   * @param [std::vector<std::shared_ptr<nrf_profile>> &]: instances: Store array of nrf profile instances
+   * @param [std::vector<std::shared_ptr<nrf_profile>> &]: instances: Store
+   * array of nrf profile instances
    * @return void
    */
-  void get_nf_instances(std::vector<std::shared_ptr<nrf_profile>> &instances) const;
+  void get_nf_instances(
+      std::vector<std::shared_ptr<nrf_profile>> &instances) const;
 
   /*
    * Get the nf instances
    * @param [void]
-   * @return std::vector<std::shared_ptr<nrf_profile>>: array of nrf profile instances
+   * @return std::vector<std::shared_ptr<nrf_profile>>: array of nrf profile
+   * instances
    */
   std::vector<std::shared_ptr<nrf_profile>> get_nf_instances() const;
 
