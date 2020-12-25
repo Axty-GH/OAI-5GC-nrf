@@ -11,6 +11,7 @@
  */
 
 #include "StoredSearchDocumentApiImpl.h"
+#include "3gpp_29.500.h"
 
 namespace oai {
 namespace nrf {
@@ -30,7 +31,34 @@ StoredSearchDocumentApiImpl::StoredSearchDocumentApiImpl(
 
 void StoredSearchDocumentApiImpl::retrieve_stored_search(
     const std::string &searchId, Pistache::Http::ResponseWriter &response) {
-  response.send(Pistache::Http::Code::Ok, "Do some magic\n");
+
+  Logger::nrf_sbi().info("Got a request to retrieve a stored search with ID %s",
+                         searchId.c_str());
+
+  nlohmann::json sr_json = { };
+  nlohmann::json json_data = { };
+  json_data["nfInstances"] = nlohmann::json::array();
+
+  std::string content_type = "application/json";
+
+  std::shared_ptr<nrf_search_result> search_result = { };
+  m_nrf_app->find_search_result(searchId, search_result);
+
+  // convert the profile to Json
+  if (search_result != nullptr) {
+    search_result.get()->to_json(sr_json, search_result.get()->get_limit_nf_instances());
+    json_data["nfInstances"] = sr_json["nfInstances"];
+  }
+
+  Logger::nrf_sbi().debug("Json data: %s", json_data.dump().c_str());
+
+  // content type
+  response.headers().add < Pistache::Http::Header::ContentType
+      > (Pistache::Http::Mime::MediaType(content_type));
+  //TODO: add headers:  Cache-Control, ETag
+
+  response.send(Pistache::Http::Code(HTTP_STATUS_CODE_200_OK),
+                json_data.dump().c_str());
 }
 
 }

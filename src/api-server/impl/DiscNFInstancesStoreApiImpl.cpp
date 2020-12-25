@@ -102,13 +102,22 @@ void DiscNFInstancesStoreApiImpl::search_nf_instances(
     Logger::nrf_sbi().debug("\tRequested NF instance id:  %s",
                             requester_nf_instance_id.c_str());
   }
+
+  uint32_t limit_nfs  = 0;
+  if (!limit.isEmpty()) {
+    limit_nfs = limit.get();
+    Logger::nrf_sbi().debug("\tMaximum number of NFProfiles to be returned in the response: %d",
+                            limit_nfs);
+  }
+
+
   // TODO: other query parameters
 
   int http_code = 0;
   ProblemDetails problem_details = {};
   std::string search_id = {};
   m_nrf_app->handle_search_nf_instances(target_nf_type, requester_nf_type,
-                                        requester_nf_instance_id, search_id,
+                                        requester_nf_instance_id, limit_nfs, search_id,
                                         http_code, 1, problem_details);
 
   nlohmann::json json_data = {};
@@ -122,14 +131,19 @@ void DiscNFInstancesStoreApiImpl::search_nf_instances(
     content_type = "application/problem+json";
   } else {
     // convert the profile to Json
-    if (search_result != nullptr) search_result.get()->to_json(json_data);
+    if (search_result != nullptr) search_result.get()->to_json(json_data, limit_nfs);
   }
+
+  //TODO: applying client restrictions in terms of the number of
+  //instances to be returned (i.e. "limit" or "max-
+  //payload-size" query parameters) .
 
   Logger::nrf_sbi().debug("Json data: %s", json_data.dump().c_str());
 
   // content type
   response.headers().add<Pistache::Http::Header::ContentType>(
       Pistache::Http::Mime::MediaType(content_type));
+  //TODO: add headers:  Cache-Control, ETag
 
   response.send(Pistache::Http::Code(http_code), json_data.dump().c_str());
 }
