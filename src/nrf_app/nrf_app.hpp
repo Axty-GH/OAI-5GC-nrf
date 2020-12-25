@@ -179,6 +179,7 @@ class nrf_app {
    * @param [const std::string &] requester_nf_type: Requester NF type
    * @param [const std::string &] requester_nf_instance_id: Requester NF
    * instance id
+   * @param [uint32_t &] limit_nfs: Maximum number of NFProfiles to be returned in the response:
    * @param [std::string &] search_id: Store search result ID
    * @param [int &] http_code: HTTP code used to return to the consumer
    * @param [const uint8_t] http_version: HTTP version
@@ -188,7 +189,7 @@ class nrf_app {
   void handle_search_nf_instances(const std::string &target_nf_type,
                                   const std::string &requester_nf_type,
                                   const std::string &requester_nf_instance_id,
-								  std::string &search_id,
+                                  uint32_t &limit_nfs, std::string &search_id,
                                   int &http_code, const uint8_t http_version,
                                   ProblemDetails &problem_details);
 
