@@ -34,7 +34,7 @@ void AccessTokenRequestApi::init() {
 void AccessTokenRequestApi::setupRoutes() {
     using namespace Pistache::Rest;
 
-    Routes::Post(*router, base + nrf_cfg.sbi_api_version + "/oauth2/token", Routes::bind(&AccessTokenRequestApi::access_token_request_handler, this));
+    Routes::Post(*router, base + "/oauth2/token", Routes::bind(&AccessTokenRequestApi::access_token_request_handler, this));
 
     // Default handler, called when a route is not found
     router->addCustomHandler(Routes::bind(&AccessTokenRequestApi::access_token_request_api_default_handler, this));

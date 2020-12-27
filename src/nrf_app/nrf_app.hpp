@@ -35,11 +35,13 @@
 #include "PatchItem.h"
 #include "ProblemDetails.h"
 #include "SubscriptionData.h"
+#include "AccessTokenRsp.h"
 #include "nrf_event.hpp"
 #include "nrf_profile.hpp"
 #include "nrf_search_result.hpp"
 #include "nrf_subscription.hpp"
 #include "uint_generator.hpp"
+
 
 namespace oai {
 namespace nrf {
@@ -192,6 +194,20 @@ class nrf_app {
                                   uint32_t &limit_nfs, std::string &search_id,
                                   int &http_code, const uint8_t http_version,
                                   ProblemDetails &problem_details);
+
+  /*
+   * Handle a Register NF Instance request
+   * @param [const std::string &] request_body: includes access token request
+   * @param [AccessTokenRsp &] access_token_rsp: Access token response
+   * @param [int &] http_code: HTTP code used to return to the consumer
+   * @param [const uint8_t] http_version: HTTP version
+   * @param [ProblemDetails &] problem_details: Store details of the error
+   * @return void
+   */
+  void handle_access_token_request(const std::string &request_body,
+                                   AccessTokenRsp &access_token_rsp,
+                                   int &http_code, const uint8_t http_version,
+                                   ProblemDetails &problem_details);
 
   /*
    * Insert a nrf profile

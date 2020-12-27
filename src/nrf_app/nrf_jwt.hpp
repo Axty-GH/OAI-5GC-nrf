@@ -30,16 +30,20 @@
 #ifndef FILE_NRF_JWT_HPP_SEEN
 #define FILE_NRF_JWT_HPP_SEEN
 
+#include <string>
+
 namespace oai {
 namespace nrf {
 namespace app {
 
 class nrf_jwt {
  private:
-
-
  public:
-	  void test_jwt();
+  void test_jwt();
+  bool generate_signature(const std::string &nf_consumer_id,
+                          std::string &signature) const;
+  bool get_secret_key(const std::string &nf_consumer_id,
+                      std::string &key) const;
 };
 
 }  // namespace app
