@@ -272,7 +272,7 @@ install_nghttp2_from_git() {
 #arg2 is debug (0 or 1) (install debug libraries)
 install_cpp_jwt_from_git() {
   if [ $1 -eq 0 ]; then
-    read -p "Do you want to install Cpp-jwt ? <y/N> " prompt
+    read -p "Do you want to install CPP-JWT ? <y/N> " prompt
     OPTION=""
   else
     prompt='y'
@@ -291,12 +291,21 @@ install_cpp_jwt_from_git() {
     libgtest-dev \
     libssl-dev
     ret=$?;[[ $ret -ne 0 ]] && return $ret
-   
+#install libgtest
+    pushd $OPENAIRCN_DIR/build/ext    
+    cd /usr/src/gtest
+    $SUDO cmake CMakeLists.txt
+    $SUDO make
+    $SUDO cp *.a /usr/lib
+    ret=$?;[[ $ret -ne 0 ]] && popd && return $ret
+    popd
+    
     GIT_URL=https://github.com/arun11299/cpp-jwt.git
     echo "Install Cpp-jwt from $GIT_URL"
     pushd $OPENAIRCN_DIR/build/ext
-    echo "Downloading Cpp-jwt"
-    if [[ $OPTION =~ [yY](es)* ]]
+    echo "Downloading CPP-JWT"
+    
+    if [[ $prompt =~ [yY](es)* ]]
     then
       $SUDO rm -rf cpp-jwt
     fi
