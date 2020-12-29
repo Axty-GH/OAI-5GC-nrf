@@ -37,17 +37,21 @@ using namespace oai::nrf::app;
 
 //------------------------------------------------------------------------------
 bool nrf_jwt::generate_signature(const std::string &nf_consumer_id,
+                                 const std::string &scope,
+                                 const std::string &nf_type,
+                                 const std::string &target_nf_type,
+                                 const std::string &nrf_instance_id,
                                  std::string &signature) const {
   std::string key;
-  get_secret_key(nf_consumer_id, key);
+  get_secret_key(scope, nf_type, target_nf_type, key);
   // Create JWT object
-  //TODO
+  // TODO
   jwt::jwt_object obj{jwt::params::algorithm("HS256"),
-                      jwt::params::payload({{"iss", "nrf_instance_id"},
-                                            {"sub", "nf_consumer_id"},
-                                            {"aud", "nf_producer_id"},
-                                            {"scope", "nf_producer_name"},
-                                            {"exp", "100"}}),
+                      jwt::params::payload({{"iss", nrf_instance_id},
+                                            {"sub", nf_consumer_id},
+                                            {"aud", target_nf_type},
+                                            {"scope", scope},
+                                            {"exp", "1000"}}),  // in second
                       jwt::params::secret(key)};
 
   // Get the encoded string/assertion
@@ -55,7 +59,39 @@ bool nrf_jwt::generate_signature(const std::string &nf_consumer_id,
 }
 
 //------------------------------------------------------------------------------
-bool nrf_jwt::get_secret_key(const std::string &nf_consumer_id,
+bool nrf_jwt::generate_signature(const std::string &nf_consumer_id,
+                                 const std::string &scope,
+                                 const std::string &target_nf_instance_Id,
+                                 const std::string &nrf_instance_id,
+                                 std::string &signature) const {
+  std::string key;
+  get_secret_key(scope, target_nf_instance_Id, key);
+  // Create JWT object
+  // TODO
+  jwt::jwt_object obj{jwt::params::algorithm("HS256"),
+                      jwt::params::payload({{"iss", nrf_instance_id},
+                                            {"sub", nf_consumer_id},
+                                            {"aud", target_nf_instance_Id},
+                                            {"scope", scope},
+                                            {"exp", "1000"}}),  // in second
+                      jwt::params::secret(key)};
+
+  // Get the encoded string/assertion
+  signature = obj.signature();
+}
+
+//------------------------------------------------------------------------------
+bool nrf_jwt::get_secret_key(const std::string &scope,
+                             const std::string &nf_type,
+                             const std::string &target_nf_type,
+                             std::string &key) const {
+  // TODO:
+  key = "secret";
+}
+
+//------------------------------------------------------------------------------
+bool nrf_jwt::get_secret_key(const std::string &scope,
+                             const std::string &target_nf_instance_Id,
                              std::string &key) const {
   // TODO:
   key = "secret";

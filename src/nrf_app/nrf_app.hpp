@@ -441,7 +441,7 @@ class nrf_app {
                           std::shared_ptr<nrf_search_result> &p) const;
 
  private:
-  std::string instance_id;  // NRF instance id
+  std::string nrf_instance_id;  // NRF instance id
   std::map<std::string, std::shared_ptr<nrf_profile>> instance_id2nrf_profile;
   mutable std::shared_mutex m_instance_id2nrf_profile;
 

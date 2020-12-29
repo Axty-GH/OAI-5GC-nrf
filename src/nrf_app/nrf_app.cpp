@@ -81,7 +81,7 @@ nrf_app::nrf_app(const std::string &config_file, nrf_event &ev)
 
 //------------------------------------------------------------------------------
 void nrf_app::generate_uuid() {
-    instance_id = to_string(boost::uuids::random_generator()());
+  nrf_instance_id = to_string(boost::uuids::random_generator()());
 }
 
 //------------------------------------------------------------------------------
@@ -572,6 +572,7 @@ void nrf_app::handle_access_token_request(const std::string &request_body,
       "Handle a request to request an OAuth2 access token from NRF (HTTP "
       "version %d)",
       http_version);
+
   std::map<std::string, std::string> access_token_req;
   // Process request_body
   std::vector<std::string> key_values;
@@ -602,10 +603,30 @@ void nrf_app::handle_access_token_request(const std::string &request_body,
     return;
   }
 
+  // TODO: authorize NF service consumer
+
   // Generate signature
   std::string signature = {};
-  if (!nrf_jwt_inst->generate_signature(access_token_req.at("nfInstanceId"),
-                                        signature)) {
+  bool result = false;
+  if ((access_token_req.count("nfType") > 0) and
+      (access_token_req.count("targetNfType") > 0)) {
+    nf_type_t nf_type =
+        api_conv::string_to_nf_type(access_token_req.at("nfType"));
+    nf_type_t target_nf_type =
+        api_conv::string_to_nf_type(access_token_req.at("targetNfType"));
+
+    result = nrf_jwt_inst->generate_signature(
+        access_token_req.at("nfInstanceId"), access_token_req.at("scope"),
+        access_token_req.at("nfType"), access_token_req.at("targetNfType"),
+        nrf_instance_id, signature);
+
+  } else if (access_token_req.count("targetNfInstanceId") > 0) {
+    result = nrf_jwt_inst->generate_signature(
+        access_token_req.at("nfInstanceId"), access_token_req.at("scope"),
+        access_token_req.at("targetNfInstanceId"), nrf_instance_id, signature);
+  }
+
+  if (!result) {
     http_code = HTTP_STATUS_CODE_400_BAD_REQUEST;
     problem_details.setCause(
         protocol_application_error_e2str[MANDATORY_QUERY_PARAM_INCORRECT]);

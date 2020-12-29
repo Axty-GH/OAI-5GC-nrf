@@ -18,4 +18,4 @@ curl -X PATCH -H "Content-Type: application/json" http://192.168.1.23/nnrf-nfm/v
 curl -X GET  "http://192.168.1.23/nnrf-disc/v1//nf-instances?target-nf-type="AMF"&requester-nf-type="AMF""
 
 #Access Token
-curl -d "grant_type=client_credentials&nfInstanceId=343a924e-6494-4927-860b-d45692c95c2d&scope=nf_name" -H "Content-Type: application/x-www-form-urlencoded" -X POST http://192.168.1.23/oauth2/token
+curl -d "grant_type=client_credentials&nfInstanceId=343a924e-6494-4927-860b-d45692c95c2d&scope=nsmf-pdusession" -H "Content-Type: application/x-www-form-urlencoded" -X POST http://192.168.1.23/oauth2/token
