@@ -31,17 +31,16 @@
 #define FILE_NRF_APP_HPP_SEEN
 
 #include <string>
+#include "AccessTokenRsp.h"
 #include "NFProfile.h"
 #include "PatchItem.h"
 #include "ProblemDetails.h"
 #include "SubscriptionData.h"
-#include "AccessTokenRsp.h"
 #include "nrf_event.hpp"
 #include "nrf_profile.hpp"
 #include "nrf_search_result.hpp"
 #include "nrf_subscription.hpp"
 #include "uint_generator.hpp"
-
 
 namespace oai {
 namespace nrf {
@@ -61,6 +60,13 @@ class nrf_app {
       if (i.connected()) i.disconnect();
     }
   }
+
+  /*
+   * Generate a random UUID for NRF instance
+   * @param [void]
+   * @return void
+   */
+  void generate_uuid();
 
   /*
    * Handle a Register NF Instance request
@@ -181,7 +187,8 @@ class nrf_app {
    * @param [const std::string &] requester_nf_type: Requester NF type
    * @param [const std::string &] requester_nf_instance_id: Requester NF
    * instance id
-   * @param [uint32_t &] limit_nfs: Maximum number of NFProfiles to be returned in the response:
+   * @param [uint32_t &] limit_nfs: Maximum number of NFProfiles to be returned
+   * in the response:
    * @param [std::string &] search_id: Store search result ID
    * @param [int &] http_code: HTTP code used to return to the consumer
    * @param [const uint8_t] http_version: HTTP version
@@ -416,7 +423,8 @@ class nrf_app {
   /*
    * Add a search result to the DB
    * @param [const std::string &] id: Search ID
-   * @param [const std::shared_ptr<nrf_search_result> &] s: Pointer to the search result
+   * @param [const std::shared_ptr<nrf_search_result> &] s: Pointer to the
+   * search result
    * @return void
    */
   bool add_search_result(const std::string &id,
@@ -425,13 +433,15 @@ class nrf_app {
   /*
    * Find a search result with its ID
    * @param [const std::string &] search_id: Search ID
-   * @param [std::shared_ptr<nrf_search_result> &] s: Pointer to the search result
+   * @param [std::shared_ptr<nrf_search_result> &] s: Pointer to the search
+   * result
    * @return true if found, otherwise false
    */
   bool find_search_result(const std::string &search_id,
-                       std::shared_ptr<nrf_search_result> &p) const;
+                          std::shared_ptr<nrf_search_result> &p) const;
 
  private:
+  std::string instance_id;  // NRF instance id
   std::map<std::string, std::shared_ptr<nrf_profile>> instance_id2nrf_profile;
   mutable std::shared_mutex m_instance_id2nrf_profile;
 

@@ -34,6 +34,8 @@
 #include <boost/algorithm/string/split.hpp>
 #include <boost/date_time/posix_time/posix_time_types.hpp>
 #include <boost/date_time/posix_time/time_formatters.hpp>
+#include <boost/uuid/random_generator.hpp>
+#include <boost/uuid/uuid_io.hpp>
 #include <chrono>
 
 #include "3gpp_29.500.h"
@@ -75,6 +77,11 @@ nrf_app::nrf_app(const std::string &config_file, nrf_event &ev)
   subscribe_nf_status();
 
   Logger::nrf_app().startup("Started");
+}
+
+//------------------------------------------------------------------------------
+void nrf_app::generate_uuid() {
+    instance_id = to_string(boost::uuids::random_generator()());
 }
 
 //------------------------------------------------------------------------------
