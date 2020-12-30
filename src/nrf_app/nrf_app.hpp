@@ -462,4 +462,4 @@ class nrf_app {
 }  // namespace oai
 #include "nrf_config.hpp"
 
-#endif /* FILE_SMF_APP_HPP_SEEN */
+#endif /* FILE_NRF_APP_HPP_SEEN */

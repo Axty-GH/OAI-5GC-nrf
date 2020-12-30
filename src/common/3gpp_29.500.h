@@ -19,8 +19,8 @@
  *      contact@openairinterface.org
  */
 
-#ifndef FILE_3GPP_29_500_SMF_SEEN
-#define FILE_3GPP_29_500_SMF_SEEN
+#ifndef FILE_3GPP_29_500_SEEN
+#define FILE_3GPP_29_500_SEEN
 
 enum http_status_code_e {
   HTTP_STATUS_CODE_100_CONTINUE = 100,
@@ -86,5 +86,5 @@ static const std::vector<std::string> protocol_application_error_e2str {
     "NF_CONGESTION_RISK", "INSUFFICIENT_RESOURCES", "UNSPECIFIED_NF_FAILURE",
     "SYSTEM_FAILURE", "NF_CONGESTION" };
 
-#endif
+#endif //FILE_3GPP_29_500_SEEN
 
