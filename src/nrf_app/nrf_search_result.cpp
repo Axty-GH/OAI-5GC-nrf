@@ -36,19 +36,13 @@
 using namespace oai::nrf::app;
 
 //------------------------------------------------------------------------------
-void nrf_search_result::set_search_id(const std::string &id) {
-  search_id = id;
-}
+void nrf_search_result::set_search_id(const std::string &id) { search_id = id; }
 
 //------------------------------------------------------------------------------
-void nrf_search_result::get_search_id(std::string &id) const {
-  id = search_id;
-}
+void nrf_search_result::get_search_id(std::string &id) const { id = search_id; }
 
 //------------------------------------------------------------------------------
-std::string nrf_search_result::get_search_id() const {
-  return search_id;
-}
+std::string nrf_search_result::get_search_id() const { return search_id; }
 
 //------------------------------------------------------------------------------
 void nrf_search_result::set_nf_instances(
@@ -69,7 +63,8 @@ void nrf_search_result::get_nf_instances(
 }
 
 //------------------------------------------------------------------------------
-std::vector<std::shared_ptr<nrf_profile>> nrf_search_result::get_nf_instances() const {
+std::vector<std::shared_ptr<nrf_profile>> nrf_search_result::get_nf_instances()
+    const {
   return nf_instances;
 }
 
@@ -126,16 +121,17 @@ void nrf_search_result::display() {
 }
 
 //------------------------------------------------------------------------------
-void nrf_search_result::to_json(nlohmann::json &data, const uint32_t &limit_nfs) const {
-  data = { };
+void nrf_search_result::to_json(nlohmann::json &data,
+                                const uint32_t &limit_nfs) const {
+  data = {};
 
   data["validityPeriod"] = validity_period;
   data["nfInstances"] = nlohmann::json::array();
-  uint32_t limit = limit_nfs>0?limit_nfs:nf_instances.size();
+  uint32_t limit = limit_nfs > 0 ? limit_nfs : nf_instances.size();
   int i = 0;
   for (auto instance : nf_instances) {
     if (i < limit) {
-      nlohmann::json instance_json = { };
+      nlohmann::json instance_json = {};
       instance.get()->to_json(instance_json);
       data["nfInstances"].push_back(instance_json);
     } else {

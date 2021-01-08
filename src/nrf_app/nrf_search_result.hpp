@@ -42,16 +42,15 @@ using namespace std;
 class nrf_search_result {
  public:
   nrf_search_result() {
-    limit_nf_instances = 10;  //default value, TODO: to be removed
-  }
-  ;
-  nrf_search_result(nrf_search_result const&) = delete;
+    limit_nf_instances = 10;  // default value, TODO: to be removed
+  };
+  nrf_search_result(nrf_search_result const &) = delete;
 
   virtual ~nrf_search_result() {
     Logger::nrf_app().debug("Delete NRF Subscription instance...");
   }
 
-  void operator=(nrf_search_result const&) = delete;
+  void operator=(nrf_search_result const &) = delete;
 
   /*
    * Set the search id
@@ -145,14 +144,16 @@ class nrf_search_result {
 
   /*
    * Set the maximum number of NFProfiles to be returned in the response
-   * @param [const uint32_t &] l: the maximum number of NFProfiles to be returned in the response
+   * @param [const uint32_t &] l: the maximum number of NFProfiles to be
+   * returned in the response
    * @return void
    */
   void set_limit_nf_instances(const uint32_t &l);
 
   /*
    * Get the maximum number of NFProfiles to be returned in the response
-   * @param [uint32_t &] l: the maximum number of NFProfiles to be returned in the response
+   * @param [uint32_t &] l: the maximum number of NFProfiles to be returned in
+   * the response
    * @return void
    */
   void get_limit_nf_instances(uint32_t &l) const;
@@ -174,8 +175,8 @@ class nrf_search_result {
   /*
    * Represent NF profile as json object
    * @param [nlohmann::json &] data: Json data
-   * @param [uint32_t &] limit_nfs: maximum number of NF profiles stored in the json data
-   *                     0, means without any restriction
+   * @param [uint32_t &] limit_nfs: maximum number of NF profiles stored in the
+   * json data 0, means without any restriction
    * @return void
    */
   void to_json(nlohmann::json &data, const uint32_t &limit_nfs) const;

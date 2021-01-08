@@ -44,10 +44,8 @@ using namespace std;
 
 class nrf_subscription {
  public:
-  nrf_subscription(nrf_event &ev) : m_event_sub(ev){
-
-	  validity_time = boost::posix_time::from_iso_string("20991231T235959Z");
-
+  nrf_subscription(nrf_event &ev) : m_event_sub(ev) {
+    validity_time = boost::posix_time::from_iso_string("20991231T235959Z");
   };
 
   nrf_subscription(nrf_subscription const &) = delete;
@@ -190,7 +188,6 @@ class nrf_subscription {
   nrf_event &m_event_sub;
   bs2::connection ev_connection;
   boost::posix_time::ptime validity_time;
-
 };
 }  // namespace app
 }  // namespace nrf

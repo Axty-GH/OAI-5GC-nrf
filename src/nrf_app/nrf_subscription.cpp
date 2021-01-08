@@ -123,18 +123,18 @@ void nrf_subscription::display() {
   Logger::nrf_app().debug("\tNotification URI: %s",
                           nf_status_notification_uri.c_str());
   Logger::nrf_app().debug("\tSubscription condition: %s",
-		  sub_condition.to_string().c_str());
+                          sub_condition.to_string().c_str());
 
   std::string notif_events_str = {};
-  for (auto n: notif_events){
-	  notif_events_str.append(notification_event_type_e2str[n]);
-	  notif_events_str.append(", ");
+  for (auto n : notif_events) {
+    notif_events_str.append(notification_event_type_e2str[n]);
+    notif_events_str.append(", ");
   }
   Logger::nrf_app().debug("\tNotification Events: %s",
-		  notif_events_str.c_str());
-  Logger::nrf_app().debug("\tValidity time: %s",
-		  boost::posix_time::to_iso_string(validity_time).c_str());
-
+                          notif_events_str.c_str());
+  Logger::nrf_app().debug(
+      "\tValidity time: %s",
+      boost::posix_time::to_iso_string(validity_time).c_str());
 }
 
 //------------------------------------------------------------------------------

@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -38,42 +38,41 @@
 using namespace oai::nrf::app;
 
 namespace oai {
-  namespace nrf {
-    namespace app {
+namespace nrf {
+namespace app {
 
-    class nrf_event;
-    class task_manager {
+class nrf_event;
+class task_manager {
+ public:
+  task_manager(nrf_event& ev);
 
-      public:
-        task_manager(nrf_event& ev);
+  /*
+   * Manage the tasks
+   * @param [void]
+   * @return void
+   */
+  void manage_tasks();
 
-        /*
-         * Manage the tasks
-         * @param [void]
-         * @return void
-         */
-        void manage_tasks();
+  /*
+   * Run the tasks (for the moment, simply call function manage_tasks)
+   * @param [void]
+   * @return void
+   */
+  void run();
 
-        /*
-         * Run the tasks (for the moment, simply call function manage_tasks)
-         * @param [void]
-         * @return void
-         */
-        void run();
+ private:
+  /*
+   * Make sure that the task tick run every 1ms
+   * @param [void]
+   * @return void
+   */
+  void wait_for_cycle();
 
-      private:
-        /*
-         * Make sure that the task tick run every 1ms
-         * @param [void]
-         * @return void
-         */
-        void wait_for_cycle();
-
-        nrf_event& event_sub_;
-        int sfd;
-      };
-    }
-  }
-}
+  nrf_event& event_sub_;
+  int sfd;
+};
+}  // namespace app
+}  // namespace nrf
+}  // namespace oai
 
 #endif

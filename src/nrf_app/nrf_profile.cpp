@@ -73,6 +73,7 @@ void nrf_profile::set_nf_type(const nf_type_t &type) { nf_type = type; }
 
 //------------------------------------------------------------------------------
 nf_type_t nrf_profile::get_nf_type() const { return nf_type; }
+
 //------------------------------------------------------------------------------
 void nrf_profile::set_nf_status(const std::string &status) {
   std::unique_lock lock(heartbeart_mutex);
@@ -130,6 +131,7 @@ void nrf_profile::get_nf_snssais(std::vector<snssai_t> &s) const {
 
 //------------------------------------------------------------------------------
 void nrf_profile::add_snssai(const snssai_t &s) { snssais.push_back(s); }
+
 //------------------------------------------------------------------------------
 void nrf_profile::set_nf_ipv4_addresses(const std::vector<struct in_addr> &a) {
   ipv4_addresses = a;
@@ -157,9 +159,7 @@ void nrf_profile::get_json_data(nlohmann::json &data) const {
 //------------------------------------------------------------------------------
 void nrf_profile::display() {
   Logger::nrf_app().debug("NF instance info");
-
   Logger::nrf_app().debug("\tInstance ID: %s", nf_instance_id.c_str());
-
   Logger::nrf_app().debug("\tInstance name: %s", nf_instance_name.c_str());
   Logger::nrf_app().debug("\tInstance type: %s",
                           nf_type_e2str[nf_type].c_str());
@@ -419,7 +419,6 @@ void nrf_profile::to_json(nlohmann::json &data) const {
     nlohmann::json tmp = inet_ntoa(address);
     data["ipv4Addresses"].push_back(tmp);
   }
-
   data["priority"] = priority;
   data["capacity"] = capacity;
   data["json_data"] = json_data;
@@ -496,18 +495,23 @@ bool nrf_profile::unsubscribe_heartbeat_timeout_nfregistration() {
 
 //------------------------------------------------------------------------------
 void nrf_profile::handle_heartbeart_timeout(uint64_t ms) {
-  Logger::nrf_app().info("\nHandle heartbeart timeout profile %s, time %d",
-                         nf_instance_id.c_str(), ms);
+  Logger::nrf_app().info(
+      "\nHandle heartbeart timeout, NF instance ID %s, time %d",
+      nf_instance_id.c_str(), ms);
   set_nf_status("SUSPENDED");
 }
 
 //------------------------------------------------------------------------------
 void nrf_profile::handle_heartbeart_timeout_nfregistration(uint64_t ms) {
   Logger::nrf_app().info(
-      "\nHandle the first Heartbeat timeout NF instance id %s, current time %d",
+      "\nHandle the first Heartbeat timeout, NF instance ID %s, current time "
+      "%d",
       nf_instance_id.c_str(), ms);
   // Set status to SUSPENDED and unsubscribe to the HBT
-  set_nf_status("SUSPENDED");
+  if (!is_updated) {
+    set_nf_status("SUSPENDED");
+    set_status_updated(false);
+  }
   unsubscribe_heartbeat_timeout_nfregistration();
 }
 
@@ -517,7 +521,8 @@ void nrf_profile::handle_heartbeart_timeout_nfupdate(uint64_t ms) {
                             std::chrono::system_clock::now().time_since_epoch())
                             .count();
   Logger::nrf_app().info(
-      "\nHandle heartbeart timeout (NF update) profile %s, time %ld, current "
+      "\nHandle heartbeart timeout (NF update), NF instance ID %s, time %ld, "
+      "current "
       "ms %ld",
       nf_instance_id.c_str(), ms, current_ms);
   if (!is_updated) {
@@ -547,8 +552,7 @@ void amf_profile::display() {
                           amf_info.amf_region_id.c_str());
 
   for (auto g : amf_info.guami_list) {
-    Logger::nrf_app().debug("\t\tAMF GUAMI List, AMF_ID:  %s",
-                            g.amf_id.c_str());
+    Logger::nrf_app().debug("\t\tAMF GUAMI List, AMF_ID: %s", g.amf_id.c_str());
     Logger::nrf_app().debug("\t\tAMF GUAMI List, PLMN (MCC: %s, MNC: %s)",
                             g.plmn.mcc.c_str(), g.plmn.mnc.c_str());
   }
@@ -561,7 +565,7 @@ bool amf_profile::replace_profile_info(const std::string &path,
   if (result) return true;
   // for AMF info
   if (path.compare("amfInfo") == 0) {
-    Logger::nrf_app().debug("Does not support this operation for amfInfo");
+    Logger::nrf_app().debug("Do not support this operation for amfInfo");
     return false;
   }
 
@@ -588,7 +592,7 @@ bool amf_profile::add_profile_info(const std::string &path,
 
   // add an element to a list of json object
   if (path.compare("amfInfo") == 0) {
-    Logger::nrf_app().info("Does not support this operation for amfInfo");
+    Logger::nrf_app().info("Do not support this operation for amfInfo");
     return false;
   }
 
@@ -615,7 +619,7 @@ bool amf_profile::remove_profile_info(const std::string &path) {
   if (result) return true;
   // for AMF info
   if (path.compare("amfInfo") == 0) {
-    Logger::nrf_app().debug("Does not support this operation for amfInfo");
+    Logger::nrf_app().debug("Do not support this operation for amfInfo");
     return false;
   }
 
@@ -660,9 +664,7 @@ void smf_profile::get_smf_info(smf_info_t &infos) const { infos = smf_info; }
 //------------------------------------------------------------------------------
 void smf_profile::display() {
   nrf_profile::display();
-
   Logger::nrf_app().debug("............SMF Info");
-
   for (auto s : smf_info.snssai_smf_info_list) {
     Logger::nrf_app().debug(
         "....................SNSSAI SMF Info List, SNSSAI (SD: %s, SST: %d)",
@@ -700,7 +702,6 @@ bool smf_profile::add_profile_info(const std::string &path,
     json_data[path] = value;
     return true;
   }
-
   return false;
 }
 
@@ -736,7 +737,7 @@ bool smf_profile::remove_profile_info(const std::string &path) {
   if (result) return true;
   // for SMF info
   if (path.compare("smfInfo") == 0) {
-    Logger::nrf_app().debug("Does not support this operation for smfInfo");
+    Logger::nrf_app().debug("Do not support this operation for smfInfo");
     return false;
   }
 

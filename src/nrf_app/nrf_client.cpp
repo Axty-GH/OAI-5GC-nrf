@@ -115,7 +115,7 @@ void nrf_client::notify_subscribed_event(
 
   std::vector<struct in_addr> instance_addrs = {};
   profile.get()->get_nf_ipv4_addresses(instance_addrs);
-  //TODO: use the first IPv4 addr for now
+  // TODO: use the first IPv4 addr for now
   std::string instance_uri =
       std::string(inet_ntoa(*((struct in_addr *)&(instance_addrs[0]))));
   Logger::nrf_app().debug("NF instance URI: %s", instance_uri.c_str());
@@ -238,7 +238,7 @@ void nrf_client::notify_subscribed_event(
   */
   std::vector<struct in_addr> instance_addrs = {};
   profile.get()->get_nf_ipv4_addresses(instance_addrs);
-  //TODO: use the first IPv4 addr for now
+  // TODO: use the first IPv4 addr for now
   std::string instance_uri =
       std::string(inet_ntoa(*((struct in_addr *)&(instance_addrs[0]))));
   Logger::nrf_app().debug("NF instance URI: %s", instance_uri.c_str());

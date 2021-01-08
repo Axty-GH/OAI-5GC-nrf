@@ -63,7 +63,7 @@ class nrf_client {
    * @return void
    */
   void notify_subscribed_event(const std::shared_ptr<nrf_profile> &profile,
-		                        const uint8_t &event_type,
+                               const uint8_t &event_type,
                                const std::vector<std::string> &uris);
 
   /*

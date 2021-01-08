@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -62,7 +62,7 @@ int nrf_config::load_interface(const Setting &if_cfg, interface_cfg_t &cfg) {
   if_cfg.lookupValue(NRF_CONFIG_STRING_INTERFACE_NAME, cfg.if_name);
   util::trim(cfg.if_name);
   if (not boost::iequals(cfg.if_name, "none")) {
-    std::string address = { };
+    std::string address = {};
     if_cfg.lookupValue(NRF_CONFIG_STRING_IPV4_ADDRESS, address);
     util::trim(address);
     if (boost::iequals(address, "read")) {
@@ -70,36 +70,36 @@ int nrf_config::load_interface(const Setting &if_cfg, interface_cfg_t &cfg) {
                                          cfg.mtu)) {
         Logger::nrf_app().error(
             "Could not read %s network interface configuration", cfg.if_name);
-        return RETURNerror ;
+        return RETURNerror;
       }
     } else {
-      std::vector < std::string > words;
+      std::vector<std::string> words;
       boost::split(words, address, boost::is_any_of("/"),
                    boost::token_compress_on);
       if (words.size() != 2) {
-        Logger::nrf_app().error(
-            "Bad value " NRF_CONFIG_STRING_IPV4_ADDRESS " = %s in config file",
-            address.c_str());
-        return RETURNerror ;
+        Logger::nrf_app().error("Bad value " NRF_CONFIG_STRING_IPV4_ADDRESS
+                                " = %s in config file",
+                                address.c_str());
+        return RETURNerror;
       }
       unsigned char buf_in_addr[sizeof(struct in6_addr)];
-      if (inet_pton(AF_INET, util::trim(words.at(0)).c_str(), buf_in_addr)
-          == 1) {
+      if (inet_pton(AF_INET, util::trim(words.at(0)).c_str(), buf_in_addr) ==
+          1) {
         memcpy(&cfg.addr4, buf_in_addr, sizeof(struct in_addr));
       } else {
         Logger::nrf_app().error(
-            "In conversion: Bad value " NRF_CONFIG_STRING_IPV4_ADDRESS " = %s in config file",
+            "In conversion: Bad value " NRF_CONFIG_STRING_IPV4_ADDRESS
+            " = %s in config file",
             util::trim(words.at(0)).c_str());
-        return RETURNerror ;
+        return RETURNerror;
       }
-      cfg.network4.s_addr = htons(
-          ntohs(cfg.addr4.s_addr)
-              & 0xFFFFFFFF << (32 - std::stoi(util::trim(words.at(1)))));
+      cfg.network4.s_addr =
+          htons(ntohs(cfg.addr4.s_addr) &
+                0xFFFFFFFF << (32 - std::stoi(util::trim(words.at(1)))));
     }
     if_cfg.lookupValue(NRF_CONFIG_STRING_PORT, cfg.port);
-
   }
-  return RETURNok ;
+  return RETURNok;
 }
 
 //------------------------------------------------------------------------------
@@ -126,7 +126,7 @@ int nrf_config::load(const string &config_file) {
     const Setting &nrf_cfg = root[NRF_CONFIG_STRING_NRF_CONFIG];
   } catch (const SettingNotFoundException &nfex) {
     Logger::nrf_app().error("%s : %s", nfex.what(), nfex.getPath());
-    return RETURNerror ;
+    return RETURNerror;
   }
 
   const Setting &nrf_cfg = root[NRF_CONFIG_STRING_NRF_CONFIG];
@@ -146,25 +146,26 @@ int nrf_config::load(const string &config_file) {
   }
 
   try {
-
     const Setting &sbi_cfg = nrf_cfg[NRF_CONFIG_STRING_INTERFACE_SBI];
     load_interface(sbi_cfg, sbi);
 
-    //HTTP2 port
-    if (!(sbi_cfg.lookupValue(NRF_CONFIG_STRING_SBI_HTTP2_PORT, sbi_http2_port))) {
+    // HTTP2 port
+    if (!(sbi_cfg.lookupValue(NRF_CONFIG_STRING_SBI_HTTP2_PORT,
+                              sbi_http2_port))) {
       Logger::nrf_app().error(NRF_CONFIG_STRING_SBI_HTTP2_PORT "failed");
       throw(NRF_CONFIG_STRING_SBI_HTTP2_PORT "failed");
     }
 
-    //SBI API VERSION
-    if (!(sbi_cfg.lookupValue(NRF_CONFIG_STRING_API_VERSION, sbi_api_version))) {
+    // SBI API VERSION
+    if (!(sbi_cfg.lookupValue(NRF_CONFIG_STRING_API_VERSION,
+                              sbi_api_version))) {
       Logger::nrf_app().error(NRF_CONFIG_STRING_API_VERSION "failed");
       throw(NRF_CONFIG_STRING_API_VERSION "failed");
     }
 
   } catch (const SettingNotFoundException &nfex) {
     Logger::nrf_app().error("%s : %s", nfex.what(), nfex.getPath());
-    return RETURNerror ;
+    return RETURNerror;
   }
 
   return true;
@@ -185,10 +186,7 @@ void nrf_config::display() {
   Logger::nrf_app().info("    HTTP2 port ..........: %d", sbi_http2_port);
   Logger::nrf_app().info("    API version..........: %s",
                          sbi_api_version.c_str());
-
 }
 
 //------------------------------------------------------------------------------
-nrf_config::~nrf_config() {
-}
-
+nrf_config::~nrf_config() {}
