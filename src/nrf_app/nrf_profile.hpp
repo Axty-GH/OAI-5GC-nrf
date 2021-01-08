@@ -59,10 +59,13 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
         snssais(),
         ipv4_addresses(),
         priority(0),
-        capacity(0) {
+        capacity(0),
+		heartbeart_mutex(){
     nf_instance_name = "";
     nf_status = "";
     json_data = {};
+    first_update = false;
+    is_updated = false;
   }
   nrf_profile(nrf_event &ev, const nf_type_t type)
       : m_event_sub(ev),
@@ -71,10 +74,13 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
         snssais(),
         ipv4_addresses(),
         priority(0),
-        capacity(0) {
+        capacity(0),
+		heartbeart_mutex(){
     nf_instance_name = "";
     nf_status = "";
     json_data = {};
+    first_update = false;
+    is_updated = false;
   }
 
   nrf_profile(nrf_event &ev, const std::string &id)
@@ -85,10 +91,13 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
         ipv4_addresses(),
         priority(0),
         capacity(0),
-        nf_type(NF_TYPE_UNKNOWN) {
+        nf_type(NF_TYPE_UNKNOWN),
+		heartbeart_mutex(){
     nf_instance_name = "";
     nf_status = "";
     json_data = {};
+    first_update = false;
+    is_updated = false;
   }
 
   nrf_profile(nrf_profile &b) = delete;
@@ -96,6 +105,7 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
   virtual ~nrf_profile() {
     Logger::nrf_app().debug("Delete NRF Profile instance...");
     if (task_connection.connected()) task_connection.disconnect();
+    if (first_hb_connection.connected()) first_hb_connection.disconnect();
   }
 
   /*
@@ -338,26 +348,40 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
    * @param [uint64_t] ms: current time
    * @return void
    */
-  void subscribe_task_tick(uint64_t ms);
+  void subscribe_heartbeat_timeout_nfupdate(uint64_t ms);
 
+  void subscribe_heartbeat_timeout_nfregistration(uint64_t ms);
   /*
    * Handle heartbeart timeout event
    * @param [uint64_t] ms: current time
    * @return void
    */
   void handle_heartbeart_timeout(uint64_t ms);
+  void handle_heartbeart_timeout_nfregistration(uint64_t ms);
+  void handle_heartbeart_timeout_nfupdate(uint64_t ms);
 
   /*
    * Unubscribe to task tick event
    * @param void
    * @return void
    */
-  void unsubscribe_task_tick();
+  bool unsubscribe_heartbeat_timeout_nfupdate();
+  bool unsubscribe_heartbeat_timeout_nfregistration();
 
+  /*
+   * Set status updated to true
+   * @param void
+   * @return void
+   */
+  void set_status_updated(bool status);
 
  protected:
   nrf_event &m_event_sub;
-  bs2::connection task_connection;
+  bs2::connection task_connection; //connection for the task tick for heartbeart
+  bs2::connection first_hb_connection; //connection for the first heartbearttimer
+  bool first_update;
+  bool is_updated;
+  mutable std::shared_mutex heartbeart_mutex;
   // From NFProfile (Section 6.1.6.2.2@3GPP TS 29.510 V16.0.0 (2019-06))
   std::string nf_instance_id;
   std::string nf_instance_name;
@@ -529,6 +553,7 @@ class smf_profile : public nrf_profile {
    * @return void
    */
   void get_smf_info(smf_info_t &infos) const;
+
 
   /*
    * Print related-information for a SMF profile

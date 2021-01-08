@@ -140,7 +140,7 @@ void nrf_app::handle_register_nf_instance(
     uint64_t ms = std::chrono::duration_cast<std::chrono::milliseconds>(
                       std::chrono::system_clock::now().time_since_epoch())
                       .count();
-    sn.get()->subscribe_task_tick(ms);
+    // sn.get()->subscribe_heartbeat_timeout_nfregistration(ms);
 
     // Notify NF status change event
     m_event_sub.nf_status_registered(nf_instance_id);  // from nrf_app
@@ -238,6 +238,25 @@ void nrf_app::handle_update_nf_instance(
     // for NF Heartbeat procedure
     if (is_heartbeart_procedure && (http_code = HTTP_STATUS_CODE_200_OK)) {
       http_code = HTTP_STATUS_CODE_204_NO_CONTENT;
+      uint64_t ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+                        std::chrono::system_clock::now().time_since_epoch())
+                        .count();
+
+      Logger::nrf_app().debug("Received a NF update %ld, %d", ms,
+                              ms % (HEART_BEAT_TIMER * 1000));
+
+      // If this happens before the first Heartbeattimer expires -> remove this
+      // timer
+      /*     if (sn.get()->unsubscribe_heartbeat_timeout_nfregistration()) {
+               // Heartbeart management for this NF profile
+               // get current time
+
+               sn.get()->subscribe_heartbeat_timeout_nfupdate(ms);
+           }
+           */
+      sn.get()->subscribe_heartbeat_timeout_nfupdate(ms);
+      // update NF updated flag
+      sn.get()->set_status_updated(true);
     }
 
   } else {

@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -29,18 +29,16 @@
 
 #include "task_manager.hpp"
 
-#include <thread>
 #include <unistd.h>
 #include <iostream>
+#include <thread>
 
 #include "logger.hpp"
 
 using namespace oai::nrf::app;
 
 //------------------------------------------------------------------------------
-task_manager::task_manager(nrf_event &ev)
-    :
-    event_sub_(ev) {
+task_manager::task_manager(nrf_event &ev) : event_sub_(ev) {
   struct itimerspec its;
 
   sfd = timerfd_create(CLOCK_MONOTONIC, 0);
@@ -57,13 +55,14 @@ task_manager::task_manager(nrf_event &ev)
 }
 
 //------------------------------------------------------------------------------
-void task_manager::run() {
-  manage_tasks();
-}
+void task_manager::run() { manage_tasks(); }
 
 //------------------------------------------------------------------------------
 void task_manager::manage_tasks() {
-  uint64_t t = 0;
+  // starting from current time
+  uint64_t t = std::chrono::duration_cast<std::chrono::milliseconds>(
+                   std::chrono::system_clock::now().time_since_epoch())
+                   .count();
 
   while (1) {
     event_sub_.task_tick(t);
