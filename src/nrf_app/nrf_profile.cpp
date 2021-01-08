@@ -75,6 +75,7 @@ void nrf_profile::set_nf_type(const nf_type_t &type) { nf_type = type; }
 nf_type_t nrf_profile::get_nf_type() const { return nf_type; }
 //------------------------------------------------------------------------------
 void nrf_profile::set_nf_status(const std::string &status) {
+  std::unique_lock lock(heartbeart_mutex);
   nf_status = status;
 }
 
@@ -426,23 +427,22 @@ void nrf_profile::to_json(nlohmann::json &data) const {
 
 //------------------------------------------------------------------------------
 void nrf_profile::subscribe_heartbeat_timeout_nfregistration(uint64_t ms) {
+  // For the first timeout, we use 2*HEART_BEAT_TIMER as interval
   struct itimerspec its;
-  its.it_value.tv_sec = HEART_BEAT_TIMER;  // seconds
-  its.it_value.tv_nsec = 0;                // 100 * 1000 * 1000; //100ms
+  its.it_value.tv_sec = 2 * HEART_BEAT_TIMER;  // seconds
+  its.it_value.tv_nsec = 0;                    // 100 * 1000 * 1000; //100ms
   const uint64_t interval =
       its.it_value.tv_sec * 1000 +
       its.it_value.tv_nsec / 1000000;  // convert sec, nsec to msec
-  // TODO: remove hardcoded 2*HEART_BEAT_TIMER
+
   Logger::nrf_app().debug(
-      "Subscribe to task tick to be noticed when the first Heartbearttimer "
-      "(%d) expires (after NF registration) %ld, %d",
-      2 * HEART_BEAT_TIMER, ms, ms % (HEART_BEAT_TIMER * 1000));
+      "Subscribe to the HeartBeartTimer expire event (after NF "
+      "registration): interval %d, current time %ld",
+      2 * HEART_BEAT_TIMER, ms);
   first_hb_connection = m_event_sub.subscribe_task_tick(
       boost::bind(&nrf_profile::handle_heartbeart_timeout_nfregistration, this,
                   _1),
-      interval,
-      (HEART_BEAT_TIMER * 1000 * 2 +
-       ms % (HEART_BEAT_TIMER * 1000)) /* start at time 0 */);
+      interval, ms + interval);
 }
 
 //------------------------------------------------------------------------------
@@ -455,9 +455,9 @@ void nrf_profile::subscribe_heartbeat_timeout_nfupdate(uint64_t ms) {
       its.it_value.tv_nsec / 1000000;  // convert sec, nsec to msec
 
   Logger::nrf_app().debug(
-      "Subscribe to task tick to be noticed when the Heartbearttimer (%d) "
-      "expires (after NF update) %ld, %d",
-      HEART_BEAT_TIMER, ms, ms % (HEART_BEAT_TIMER * 1000));
+      "Subscribe to HeartbeatTimer expire event (after NF update): interval "
+      "%d, current time %ld",
+      HEART_BEAT_TIMER, ms);
 
   if (!first_update) {
     ms = ms + 2000;  // Not a realtime NF: adding 2000ms interval between the
@@ -473,7 +473,8 @@ void nrf_profile::subscribe_heartbeat_timeout_nfupdate(uint64_t ms) {
 bool nrf_profile::unsubscribe_heartbeat_timeout_nfupdate() {
   if (task_connection.connected()) {
     task_connection.disconnect();
-    Logger::nrf_app().debug("Unsubscribe to the Heartbeat Timer timeout event");
+    Logger::nrf_app().debug(
+        "Unsubscribe to the Heartbeat Timer timeout event (after NF Update)");
     return true;
   } else {
     return false;
@@ -485,7 +486,8 @@ bool nrf_profile::unsubscribe_heartbeat_timeout_nfregistration() {
   if (first_hb_connection.connected()) {
     first_hb_connection.disconnect();
     Logger::nrf_app().debug(
-        "Unsubscribe to the first Heartbeat Timer timeout event");
+        "Unsubscribe to the first Heartbeat Timer timeout event (after NF "
+        "Registration)");
     return true;
   } else {
     return false;
@@ -502,8 +504,9 @@ void nrf_profile::handle_heartbeart_timeout(uint64_t ms) {
 //------------------------------------------------------------------------------
 void nrf_profile::handle_heartbeart_timeout_nfregistration(uint64_t ms) {
   Logger::nrf_app().info(
-      "\nHandle the first heartbeart timeout profile %s, time %d",
+      "\nHandle the first Heartbeat timeout NF instance id %s, current time %d",
       nf_instance_id.c_str(), ms);
+  // Set status to SUSPENDED and unsubscribe to the HBT
   set_nf_status("SUSPENDED");
   unsubscribe_heartbeat_timeout_nfregistration();
 }
