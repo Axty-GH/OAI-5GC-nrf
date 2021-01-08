@@ -120,7 +120,13 @@ void NFInstanceIDDocumentApiImpl::register_nf_instance(
     to_json(json_data, problem_details);
     content_type = "application/problem+json";
   } else {
-    to_json(json_data, nFProfile);
+	std::shared_ptr<nrf_profile> profile =
+	      m_nrf_app->find_nf_profile(nfInstanceID);
+    if (profile.get()!=nullptr) {
+    	profile.get()->to_json(json_data);
+        //to_json(json_data, nFProfile);
+    }
+
     // Location header
     response.headers().add<Pistache::Http::Header::Location>(
         m_address + base + nrf_cfg.sbi_api_version + "/nf-instances/" +
@@ -157,8 +163,9 @@ void NFInstanceIDDocumentApiImpl::update_nf_instance(
     to_json(json_data, problem_details);
     content_type = "application/problem+json";
   } else if (http_code == HTTP_STATUS_CODE_200_OK) {
-    // convert the profile to Json
-    profile.get()->to_json(json_data);
+    if (profile.get() != nullptr)
+      // convert the profile to Json
+      profile.get()->to_json(json_data);
   }
 
   Logger::nrf_sbi().debug("Json data: %s", json_data.dump().c_str());
