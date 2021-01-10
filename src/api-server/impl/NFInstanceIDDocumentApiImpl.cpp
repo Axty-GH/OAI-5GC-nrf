@@ -173,6 +173,7 @@ void NFInstanceIDDocumentApiImpl::update_nf_instance(
   // content type
   response.headers().add<Pistache::Http::Header::ContentType>(
       Pistache::Http::Mime::MediaType(content_type));
+
   if (http_code != HTTP_STATUS_CODE_204_NO_CONTENT)
     response.send(Pistache::Http::Code(http_code), json_data.dump().c_str());
   else

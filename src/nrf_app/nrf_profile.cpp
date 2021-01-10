@@ -4,8 +4,8 @@
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
  * the OAI Public License, Version 1.1  (the "License"); you may not use this
- *file except in compliance with the License. You may obtain a copy of the
- *License at
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -76,6 +76,7 @@ nf_type_t nrf_profile::get_nf_type() const { return nf_type; }
 
 //------------------------------------------------------------------------------
 void nrf_profile::set_nf_status(const std::string &status) {
+  Logger::nrf_app().debug("Set NF status to %s", status.c_str());
   std::unique_lock lock(heartbeart_mutex);
   nf_status = status;
 }
@@ -458,13 +459,13 @@ void nrf_profile::subscribe_heartbeat_timeout_nfupdate(uint64_t ms) {
       "%d, current time %ld",
       HEART_BEAT_TIMER, ms);
 
-  if (!first_update) {
+  if (first_update) {
     ms = ms + 2000;  // Not a realtime NF: adding 2000ms interval between the
                      // expected NF update message and HBT
     task_connection = m_event_sub.subscribe_task_tick(
         boost::bind(&nrf_profile::handle_heartbeart_timeout_nfupdate, this, _1),
         interval, ms + interval);
-    first_update = true;
+    first_update = false;
   }
 }
 

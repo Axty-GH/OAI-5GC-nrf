@@ -4,8 +4,8 @@
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
  * the OAI Public License, Version 1.1  (the "License"); you may not use this
- *file except in compliance with the License. You may obtain a copy of the
- *License at
+ * file except in compliance with the License. You may obtain a copy of the
+ * License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -237,18 +237,18 @@ void nrf_app::handle_update_nf_instance(
     }
 
     // for NF Heartbeat procedure
-    if (is_heartbeart_procedure && (http_code = HTTP_STATUS_CODE_200_OK)) {
+    if (is_heartbeart_procedure and (http_code == HTTP_STATUS_CODE_200_OK)) {
       http_code = HTTP_STATUS_CODE_204_NO_CONTENT;
       uint64_t ms = std::chrono::duration_cast<std::chrono::milliseconds>(
                         std::chrono::system_clock::now().time_since_epoch())
                         .count();
 
-      Logger::nrf_app().debug("Received a NF update %ld", ms);
+      Logger::nrf_app().debug("Received a NF update for Heartbeat update, current time %ld", ms);
       // If this happens before the first Heartbeattimer expires -> remove this
       // timer
       if (sn.get()->unsubscribe_heartbeat_timeout_nfregistration()) {
-        // Sleep 100ms to avoid Boost connection related issue
-        unsigned int microsecond = 100000;  // 100ms
+        // Sleep 10ms to avoid Boost connection related issue
+        unsigned int microsecond = 10000;  // 10ms
         usleep(microsecond);
         ms = std::chrono::duration_cast<std::chrono::milliseconds>(
                  std::chrono::system_clock::now().time_since_epoch())
@@ -261,6 +261,9 @@ void nrf_app::handle_update_nf_instance(
       // sn.get()->subscribe_heartbeat_timeout_nfupdate(ms);
       // update NF updated flag
       sn.get()->set_status_updated(true);
+      //update NF status
+      sn.get()->set_nf_status("REGISTERED");
+      return;
     }
 
   } else {
@@ -696,7 +699,7 @@ bool nrf_app::update_nf_profile(const std::string &profile_id,
   // if profile with this id exist, return false
   if (instance_id2nrf_profile.count(profile_id) > 0) {
     // if not, update to the list
-    Logger::nrf_app().info("Update a NF profile to the list (profile ID %s)",
+    Logger::nrf_app().info("Updated the NF profile (profile ID %s)",
                            profile_id.c_str());
     instance_id2nrf_profile.at(profile_id) = p;
     return true;
@@ -905,7 +908,7 @@ void nrf_app::handle_nf_status_registered(const std::string &profile_id) {
   std::shared_ptr<nrf_profile> profile = {};
   Logger::nrf_app().info("\tFind a NF profile with ID %s", profile_id.c_str());
   find_nf_profile(profile_id, profile);
-  if (profile != nullptr) {
+  if (profile.get() != nullptr) {
     std::vector<std::string> notification_uris = {};
     get_subscription_list(profile_id, NOTIFICATION_TYPE_NF_REGISTERED,
                           notification_uris);
@@ -937,7 +940,7 @@ void nrf_app::handle_nf_status_deregistered(const std::string &profile_id) {
 
   std::shared_ptr<nrf_profile> profile = {};
   find_nf_profile(profile_id, profile);
-  if (profile != nullptr) {
+  if (profile.get() != nullptr) {
     std::vector<std::string> notification_uris = {};
     get_subscription_list(profile_id, NOTIFICATION_TYPE_NF_DEREGISTERED,
                           notification_uris);
@@ -965,7 +968,7 @@ void nrf_app::handle_nf_status_profile_changed(const std::string &profile_id) {
                          profile_id.c_str());
   std::shared_ptr<nrf_profile> profile = {};
   find_nf_profile(profile_id, profile);
-  if (profile != nullptr) {
+  if (profile.get() != nullptr) {
     std::vector<std::string> notification_uris = {};
     get_subscription_list(profile_id, NOTIFICATION_TYPE_NF_PROFILE_CHANGED,
                           notification_uris);

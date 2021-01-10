@@ -64,7 +64,7 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
     nf_instance_name = "";
     nf_status = "";
     json_data = {};
-    first_update = false;
+    first_update = true;
     is_updated = false;
   }
   nrf_profile(nrf_event &ev, const nf_type_t type)
@@ -79,7 +79,7 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
     nf_instance_name = "";
     nf_status = "";
     json_data = {};
-    first_update = false;
+    first_update = true;
     is_updated = false;
   }
 
@@ -96,7 +96,7 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
     nf_instance_name = "";
     nf_status = "";
     json_data = {};
-    first_update = false;
+    first_update = true;
     is_updated = false;
   }
 
@@ -114,6 +114,7 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
    * @return void
    */
   void set_nf_instance_id(const std::string &instance_id);
+
   /*
    * Get NF instance ID
    * @param [std::string &] instance_id: store instance id
