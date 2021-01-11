@@ -52,6 +52,10 @@ typedef bs2::signal_type<void(const std::string &),
 
 typedef bs2::signal_type<void(const std::shared_ptr<nrf_profile> &p),
                          bs2::keywords::mutex_type<bs2::dummy_mutex>>::type
+    nf_deregistered_sig_t;
+
+typedef bs2::signal_type<void(const std::shared_ptr<nrf_profile> &p),
+                         bs2::keywords::mutex_type<bs2::dummy_mutex>>::type
     nf_status_change_sig_t;
 
 }  // namespace app

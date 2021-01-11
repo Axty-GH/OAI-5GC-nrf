@@ -248,8 +248,7 @@ void nrf_app::handle_update_nf_instance(
                         std::chrono::system_clock::now().time_since_epoch())
                         .count();
 
-      Logger::nrf_app().debug(
-          "NF update for Heartbeat, current time %ld", ms);
+      Logger::nrf_app().debug("NF update for Heartbeat, current time %ld", ms);
       // If this happens before the first Heartbeattimer expires -> remove this
       // timer
       if (sn.get()->unsubscribe_heartbeat_timeout_nfregistration()) {
@@ -357,13 +356,18 @@ void nrf_app::handle_deregister_nf_instance(const std::string &nf_instance_id,
   Logger::nrf_app().info("Handle Deregister an NF Instance (HTTP version %d)",
                          http_version);
 
-  if (is_profile_exist(nf_instance_id)) {
+  std::shared_ptr<nrf_profile> profile = {};
+  profile = find_nf_profile(nf_instance_id);
+
+  if (profile.get() != nullptr) {
+    // TODO: notify NF status changed event
+    // Notify NF status deregistered event
+    m_event_sub.nf_status_deregistered(profile);  // from nrf_app
+
     if (remove_nf_profile(nf_instance_id)) {
       Logger::nrf_app().debug("Removed NF profile with profile ID %s",
                               nf_instance_id.c_str());
       http_code = HTTP_STATUS_CODE_204_NO_CONTENT;
-      // Notify NF status change event
-      m_event_sub.nf_status_deregistered(nf_instance_id);  // from nrf_app
       return;
     } else {
       http_code = HTTP_STATUS_CODE_500_INTERNAL_SERVER_ERROR;
@@ -940,28 +944,20 @@ void nrf_app::subscribe_nf_status_deregistered() {
 }
 
 //------------------------------------------------------------------------------
-void nrf_app::handle_nf_status_deregistered(const std::string &profile_id) {
+void nrf_app::handle_nf_status_deregistered(
+    const std::shared_ptr<nrf_profile> &p) {
   Logger::nrf_app().info("Handle NF status deregistered event, profile id %s",
-                         profile_id.c_str());
+                         p.get()->get_nf_instance_id().c_str());
 
-  std::shared_ptr<nrf_profile> profile = {};
-  Logger::nrf_app().info("\tFind a NF profile with ID %s", profile_id.c_str());
-  find_nf_profile(profile_id, profile);
-  if (profile.get() != nullptr) {
-    std::vector<std::string> notification_uris = {};
-    get_subscription_list(profile_id, NOTIFICATION_TYPE_NF_DEREGISTERED,
-                          notification_uris);
-    // send notifications
-    if (notification_uris.size() > 0)
-      nrf_client_inst->notify_subscribed_event(
-          profile, NOTIFICATION_TYPE_NF_DEREGISTERED, notification_uris);
-    else
-      Logger::nrf_app().debug("\tNo subscription found");
-
-  } else {
-    Logger::nrf_app().error("NF profile not found, profile id %s",
-                            profile_id.c_str());
-  }
+  std::vector<std::string> notification_uris = {};
+  get_subscription_list(p.get()->get_nf_instance_id(),
+                        NOTIFICATION_TYPE_NF_DEREGISTERED, notification_uris);
+  // send notifications
+  if (notification_uris.size() > 0)
+    nrf_client_inst->notify_subscribed_event(
+        p, NOTIFICATION_TYPE_NF_DEREGISTERED, notification_uris);
+  else
+    Logger::nrf_app().debug("\tNo subscription found");
 }
 
 //------------------------------------------------------------------------------

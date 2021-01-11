@@ -95,7 +95,7 @@ class nrf_event {
       const nf_status_sig_t::slot_type &sig);
 
   bs2::connection subscribe_nf_status_deregistered(
-      const nf_status_sig_t::slot_type &sig);
+      const nf_deregistered_sig_t::slot_type &sig);
 
   bs2::connection subscribe_nf_status_profile_changed(
       const nf_status_sig_t::slot_type &sig);
@@ -104,7 +104,7 @@ class nrf_event {
   task_sig_t task_tick;
   nf_status_change_sig_t nf_status_change;
   nf_status_sig_t nf_status_registered;
-  nf_status_sig_t nf_status_deregistered;
+  nf_deregistered_sig_t nf_status_deregistered;
   nf_status_sig_t nf_status_profile_changed;
 };
 }  // namespace app

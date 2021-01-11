@@ -373,10 +373,10 @@ class nrf_app {
 
   /*
    * Handle NF status deregistered event
-   * @param [const std::string &] profile_id: Profile ID of the deregistered NF
+   * @param [const std::shared_ptr<nrf_profile> &] profile: pointer to the deregistered NF
    * @return void
    */
-  void handle_nf_status_deregistered(const std::string &profile_id);
+  void handle_nf_status_deregistered(const std::shared_ptr<nrf_profile> &p);
 
   /*
    * Subscribe to the event when a registered NF changes its profile

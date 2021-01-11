@@ -78,7 +78,7 @@ bs2::connection nrf_event::subscribe_nf_status_registered(
 
 //------------------------------------------------------------------------------
 bs2::connection nrf_event::subscribe_nf_status_deregistered(
-    const nf_status_sig_t::slot_type &sig) {
+    const nf_deregistered_sig_t::slot_type &sig) {
   return nf_status_deregistered.connect(sig);
 }
 
