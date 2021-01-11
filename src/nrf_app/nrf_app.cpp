@@ -312,7 +312,7 @@ void nrf_app::handle_get_nf_instances(
     std::string instance_uri;
     std::vector<struct in_addr> profile_addresses = {};
     profile.get()->get_nf_ipv4_addresses(profile_addresses);
-    //use the first IP addr
+    //TODO: use the first IP addr
     if (profile_addresses.size() > 0) {
     	instance_uri = std::string(inet_ntoa(*((struct in_addr *)&profile_addresses[0])));
         uris.push_back(instance_uri);
@@ -321,6 +321,7 @@ void nrf_app::handle_get_nf_instances(
   }
 }
 
+//------------------------------------------------------------------------------
 void nrf_app::handle_get_nf_instance(const std::string &nf_instance_id,
                                      std::shared_ptr<nrf_profile> &profile,
                                      int &http_code, const uint8_t http_version,
