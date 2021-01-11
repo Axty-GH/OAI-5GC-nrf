@@ -144,7 +144,7 @@ void NFInstanceIDDocumentApiImpl::update_nf_instance(
     const std::string &nfInstanceID, const std::vector<PatchItem> &patchItem,
     Pistache::Http::ResponseWriter &response) {
   Logger::nrf_sbi().info(
-      "Got a request to update an NF instance, Instance ID: %s",
+      "\nGot a request to update an NF instance, Instance ID: %s",
       nfInstanceID.c_str());
 
   int http_code = 0;

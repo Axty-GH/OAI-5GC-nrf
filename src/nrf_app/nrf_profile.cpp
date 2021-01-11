@@ -511,8 +511,9 @@ void nrf_profile::handle_heartbeart_timeout_nfregistration(uint64_t ms) {
   // Set status to SUSPENDED and unsubscribe to the HBT
   if (!is_updated) {
     set_nf_status("SUSPENDED");
-    set_status_updated(false);
   }
+
+  set_status_updated(false);
   unsubscribe_heartbeat_timeout_nfregistration();
 }
 
@@ -528,8 +529,8 @@ void nrf_profile::handle_heartbeart_timeout_nfupdate(uint64_t ms) {
       nf_instance_id.c_str(), ms, current_ms);
   if (!is_updated) {
     set_nf_status("SUSPENDED");
-    set_status_updated(false);
   }
+  set_status_updated(false);
 }
 
 //------------------------------------------------------------------------------
@@ -665,15 +666,14 @@ void smf_profile::get_smf_info(smf_info_t &infos) const { infos = smf_info; }
 //------------------------------------------------------------------------------
 void smf_profile::display() {
   nrf_profile::display();
-  Logger::nrf_app().debug("............SMF Info");
+  Logger::nrf_app().debug("\tSMF Info");
   for (auto s : smf_info.snssai_smf_info_list) {
     Logger::nrf_app().debug(
-        "....................SNSSAI SMF Info List, SNSSAI (SD: %s, SST: %d)",
+        "\t\tSNSSAI SMF Info List, SNSSAI (SD: %s, SST: %d)",
         s.snssai.sD.c_str(), s.snssai.sST);
     for (auto d : s.dnn_smf_info_list) {
-      Logger::nrf_app().debug(
-          "....................SNSSAI SMF Info List, DNN List: %s",
-          d.dnn.c_str());
+      Logger::nrf_app().debug("\t\tSNSSAI SMF Info List, DNN List: %s",
+                              d.dnn.c_str());
     }
   }
 }

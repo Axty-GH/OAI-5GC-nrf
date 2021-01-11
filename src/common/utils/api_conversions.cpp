@@ -55,7 +55,7 @@ using namespace oai::nrf;
 bool api_conv::profile_api_to_nrf_profile(
     const NFProfile &api_profile, std::shared_ptr<nrf_profile> &profile) {
   Logger::nrf_app().debug(
-      "Convert a json-type profile a NF profile (profile ID: %s)",
+      "Convert a json-type profile to a NF profile (profile ID: %s)",
       api_profile.getNfInstanceId().c_str());
 
   profile.get()->set_nf_instance_id(api_profile.getNfInstanceId());
