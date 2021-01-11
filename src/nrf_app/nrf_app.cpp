@@ -309,13 +309,14 @@ void nrf_app::handle_get_nf_instances(
   }
 
   for (auto profile : profiles) {
-    std::string instance_uri =
-        std::string(inet_ntoa(*((struct in_addr *)&nrf_cfg.sbi.addr4))) + ":" +
-        std::to_string(nrf_cfg.sbi.port) + NNRF_NFM_BASE +
-        nrf_cfg.sbi_api_version + NNRF_NFM_NF_INSTANCE +
-        profile.get()->get_nf_instance_id();
-
-    uris.push_back(instance_uri);
+    std::string instance_uri;
+    std::vector<struct in_addr> profile_addresses = {};
+    profile.get()->get_nf_ipv4_addresses(profile_addresses);
+    //use the first IP addr
+    if (profile_addresses.size() > 0) {
+    	instance_uri = std::string(inet_ntoa(*((struct in_addr *)&profile_addresses[0])));
+        uris.push_back(instance_uri);
+    }
     profile.get()->display();
   }
 }
