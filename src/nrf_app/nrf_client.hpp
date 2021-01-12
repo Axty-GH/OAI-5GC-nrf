@@ -64,8 +64,6 @@ class nrf_client {
   void notify_subscribed_event(const std::shared_ptr<nrf_profile> &profile,
                                const std::string &uri);
 
-
-
   /*
    * Send Notification for the associated event to the subscriber
    * @param [const std::shared_ptr<nrf_profile> &] profile: NF profile

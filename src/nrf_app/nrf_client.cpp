@@ -174,7 +174,7 @@ void nrf_client::curl_release_handles() {
         Logger::nrf_app().debug("CURL error code  %d!", curl_msg->data.result);
         continue;
       }
-      // Get HTTP status code
+      // Get HTTP code
       curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
       Logger::nrf_app().debug("Got response with HTTP code  %d!", http_code);
 
@@ -187,7 +187,6 @@ void nrf_client::curl_release_handles() {
       it = find(handles.begin(), handles.end(), curl);
       if (it != handles.end()) {
         handles.erase(it);
-        Logger::nrf_app().debug("Erase curl handle");
       }
 
     } else if (curl_msg) {
@@ -250,11 +249,11 @@ void nrf_client::notify_subscribed_event(
   for (auto uri : uris) {
     responses[uri] = "";
     std::unique_ptr<std::string> httpData(new std::string());
-    // curl_create_handle(uri, body, responses[uri]);
     send_curl_multi(uri, body, responses[uri]);
   }
 
-  perform_curl_multi(0);
+  perform_curl_multi(
+      0);  // TODO: current time as parameter if curl is performed per event
 }
 
 //------------------------------------------------------------------------------
