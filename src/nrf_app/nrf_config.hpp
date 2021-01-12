@@ -82,7 +82,7 @@ class nrf_config {
     sbi_http2_port = 8080;
     sbi_api_version = "v1";
   };
-  ~nrf_config();
+  virtual ~nrf_config();
   void lock() { m_rw_lock.lock(); };
   void unlock() { m_rw_lock.unlock(); };
   int load(const std::string &config_file);

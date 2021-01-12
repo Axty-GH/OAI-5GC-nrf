@@ -67,7 +67,7 @@ nrf_app::nrf_app(const std::string &config_file, nrf_event &ev)
   Logger::nrf_app().startup("Starting...");
 
   try {
-    nrf_client_inst = new nrf_client();
+    nrf_client_inst = new nrf_client(ev);
     nrf_jwt_inst = new nrf_jwt();
   } catch (std::exception &e) {
     Logger::nrf_app().error("Cannot create NRF_APP: %s", e.what());
@@ -312,10 +312,11 @@ void nrf_app::handle_get_nf_instances(
     std::string instance_uri;
     std::vector<struct in_addr> profile_addresses = {};
     profile.get()->get_nf_ipv4_addresses(profile_addresses);
-    //TODO: use the first IP addr
+    // TODO: use the first IP addr
     if (profile_addresses.size() > 0) {
-    	instance_uri = std::string(inet_ntoa(*((struct in_addr *)&profile_addresses[0])));
-        uris.push_back(instance_uri);
+      instance_uri =
+          std::string(inet_ntoa(*((struct in_addr *)&profile_addresses[0])));
+      uris.push_back(instance_uri);
     }
     profile.get()->display();
   }
