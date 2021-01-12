@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-#include "nrf_app.hpp"
+#include "logger.hpp"
 #include "nrf-api-server.h"
+#include "nrf_app.hpp"
+#include "nrf_client.hpp"
 #include "options.hpp"
 #include "pid_file.hpp"
-#include "logger.hpp"
-#include "nrf_client.hpp"
 
 #include "pistache/endpoint.h"
 #include "pistache/http.h"
 #include "pistache/router.h"
 
-#include <iostream>
-#include <thread>
 #include <signal.h>
 #include <stdint.h>
-#include <stdlib.h> // srand
-#include <unistd.h> // get_pid(), pause()
+#include <stdlib.h>  // srand
+#include <unistd.h>  // get_pid(), pause()
+#include <iostream>
+#include <thread>
 
 using namespace oai::nrf::app;
 using namespace util;
@@ -42,7 +42,6 @@ NRFApiServer *api_server = nullptr;
 
 //------------------------------------------------------------------------------
 void my_app_signal_handler(int s) {
-
   std::cout << "Caught signal " << s << std::endl;
   Logger::system().startup("exiting");
   std::cout << "Freeing Allocated memory..." << std::endl;
@@ -51,12 +50,14 @@ void my_app_signal_handler(int s) {
     delete api_server;
     api_server = nullptr;
   }
+  std::cout << "NRF API Server memory done" << std::endl;
 
-  std::cout << "NRF API Server memory done." << std::endl;
-  if (nrf_app_inst)
+  if (nrf_app_inst) {
     delete nrf_app_inst;
-  nrf_app_inst = nullptr;
-  std::cout << "NRF APP memory done." << std::endl;
+    nrf_app_inst = nullptr;
+  }
+
+  std::cout << "NRF APP memory done" << std::endl;
   std::cout << "Freeing allocated memory done" << std::endl;
 
   exit(0);
@@ -64,18 +65,17 @@ void my_app_signal_handler(int s) {
 
 //------------------------------------------------------------------------------
 int main(int argc, char **argv) {
-  srand (time(NULL));
+  srand(time(NULL));
 
   // Command line options
-if  ( !Options::parse( argc, argv ) )
-  {
+  if (!Options::parse(argc, argv)) {
     std::cout << "Options::parse() failed" << std::endl;
     return 1;
   }
 
   // Logger
-  Logger::init( "nrf" , Options::getlogStdout() , Options::getlogRotFilelog());
-  Logger::nrf_app().startup( "Options parsed" );
+  Logger::init("nrf", Options::getlogStdout(), Options::getlogRotFilelog());
+  Logger::nrf_app().startup("Options parsed");
 
   struct sigaction sigIntHandler;
   sigIntHandler.sa_handler = my_app_signal_handler;
@@ -87,26 +87,28 @@ if  ( !Options::parse( argc, argv ) )
   nrf_cfg.load(Options::getlibconfigConfig());
   nrf_cfg.display();
 
-  //Event subsystem
+  // Event subsystem
   nrf_event ev;
 
   // NRF application layer
   nrf_app_inst = new nrf_app(Options::getlibconfigConfig(), ev);
 
-  //Task Manager
+  // Task Manager
   task_manager tm(ev);
   std::thread task_manager_thread(&task_manager::run, &tm);
 
   // PID file
   // Currently hard-coded value. TODO: add as config option.
   string pid_file_name = get_exe_absolute_path("/var/run", nrf_cfg.instance);
-  if (! is_pid_file_lock_success(pid_file_name.c_str())) {
-    Logger::nrf_app().error( "Lock PID file %s failed\n", pid_file_name.c_str());
-    exit (-EDEADLK);
+  if (!is_pid_file_lock_success(pid_file_name.c_str())) {
+    Logger::nrf_app().error("Lock PID file %s failed\n", pid_file_name.c_str());
+    exit(-EDEADLK);
   }
 
-  //NRF Pistache API server (HTTP1)
-  Pistache::Address addr(std::string(inet_ntoa (*((struct in_addr *)&nrf_cfg.sbi.addr4))) , Pistache::Port(nrf_cfg.sbi.port));
+  // NRF Pistache API server (HTTP1)
+  Pistache::Address addr(
+      std::string(inet_ntoa(*((struct in_addr *)&nrf_cfg.sbi.addr4))),
+      Pistache::Port(nrf_cfg.sbi.port));
   api_server = new NRFApiServer(addr, nrf_app_inst);
   api_server->init(2);
   std::thread nrf_manager(&NRFApiServer::start, api_server);

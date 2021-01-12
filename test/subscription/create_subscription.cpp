@@ -42,6 +42,7 @@ static std::size_t callback(const char *in, std::size_t size, std::size_t num,
   out->append(in, totalBytes);
   return totalBytes;
 }
+
 //------------------------------------------------------------------------------
 bool send_curl(std::string url) {
   long httpCode = {0};
@@ -74,15 +75,12 @@ bool send_curl(std::string url) {
     curl_easy_setopt(curl, CURLOPT_TIMEOUT_MS, NF_CURL_TIMEOUT_MS);
 
     std::unique_ptr<std::string> httpData(new std::string());
-
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &callback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, httpData.get());
-
     curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, body.length());
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body.c_str());
 
     res = curl_easy_perform(curl);
-
     curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpCode);
 
     curl_easy_cleanup(curl);
@@ -90,6 +88,7 @@ bool send_curl(std::string url) {
   curl_global_cleanup();
 }
 
+//------------------------------------------------------------------------------
 void send_curl_multi(std::string url, uint32_t n) {
   int still_running = 0, numfds = 0, res = 0, msgs_left = 0;
   CURLMsg *curl_msg = nullptr;
@@ -199,6 +198,7 @@ void send_curl_multi(std::string url, uint32_t n) {
   curl_global_cleanup();
   curl_slist_free_all(headers);
 }
+
 //------------------------------------------------------------------------------
 int main(int argc, char *argv[]) {
   bool cont = false;
@@ -208,7 +208,7 @@ int main(int argc, char *argv[]) {
   std::string type = "Content-Type: application/json";
   std::string url = "http://192.168.1.23:8080/nnrf-nfm/v1/subscriptions";
   // send_curl(url);
-  uint32_t number_subscriptions = 200;
+  uint32_t number_subscriptions = 100;
   std::cout << "Number of subscriptions: " << number_subscriptions << std::endl;
   std::cout << "Sending..." << std::endl;
   send_curl_multi(url, number_subscriptions);
