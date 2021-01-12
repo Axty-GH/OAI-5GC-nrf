@@ -54,12 +54,7 @@ class nrf_app {
   nrf_app(nrf_app const &) = delete;
   void operator=(nrf_app const &) = delete;
 
-  virtual ~nrf_app() {
-    Logger::nrf_app().debug("Delete NRF_APP instance...");
-    for (auto i : connections) {
-      if (i.connected()) i.disconnect();
-    }
-  }
+  virtual ~nrf_app();
 
   /*
    * Generate a random UUID for NRF instance

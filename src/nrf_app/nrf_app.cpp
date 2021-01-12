@@ -80,6 +80,14 @@ nrf_app::nrf_app(const std::string &config_file, nrf_event &ev)
   Logger::nrf_app().startup("Started");
 }
 
+nrf_app::~nrf_app() {
+  Logger::nrf_app().debug("Delete NRF_APP instance...");
+  for (auto i : connections) {
+    if (i.connected()) i.disconnect();
+  }
+  if (nrf_client_inst) delete nrf_client_inst;
+}
+
 //------------------------------------------------------------------------------
 void nrf_app::generate_uuid() {
   nrf_instance_id = to_string(boost::uuids::random_generator()());

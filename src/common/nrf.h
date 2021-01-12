@@ -79,6 +79,8 @@ typedef uint32_t evsub_id_t;
 #define NNRF_NFM_BASE "/nnrf-nfm/"
 #define NNRF_NFM_NF_INSTANCE "/nf-instances/"
 
-#define MAX_WAIT_MSECS 1000 //1 second
+#define NF_CURL_TIMEOUT_MS 1000L
+
+#define MAX_WAIT_MSECS 20000 //1 second
 
 #endif
