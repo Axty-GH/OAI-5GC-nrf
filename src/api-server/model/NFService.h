@@ -56,23 +56,23 @@ class NFService {
   /// <summary>
   /// 
   /// </summary>
-  ServiceName getServiceName() const;
-  void setServiceName(ServiceName const &value);
+  std::string getServiceName() const;
+  void setServiceName(std::string const &value);
   /// <summary>
   /// 
   /// </summary>
-  std::vector<NFServiceVersion>& getVersions();
+  std::vector<NFServiceVersion> getVersions();
   void setVersions(std::vector<NFServiceVersion> const &value);
   /// <summary>
   /// 
   /// </summary>
-  UriScheme getScheme() const;
-  void setScheme(UriScheme const &value);
+  std::string getScheme() const;
+  void setScheme(std::string const &value);
   /// <summary>
   /// 
   /// </summary>
-  NFServiceStatus getNfServiceStatus() const;
-  void setNfServiceStatus(NFServiceStatus const &value);
+  std::string getNfServiceStatus() const;
+  void setNfServiceStatus(std::string const &value);
   /// <summary>
   /// 
   /// </summary>
@@ -186,13 +186,13 @@ class NFService {
  protected:
   std::string m_ServiceInstanceId;
 
-  ServiceName m_ServiceName;
+  std::string m_ServiceName;
 
   std::vector<NFServiceVersion> m_Versions;
 
-  UriScheme m_Scheme;
+  std::string m_Scheme;
 
-  NFServiceStatus m_NfServiceStatus;
+  std::string m_NfServiceStatus;
 
   std::string m_Fqdn;
   bool m_FqdnIsSet;

@@ -158,6 +158,21 @@ void nrf_profile::get_json_data(nlohmann::json &data) const {
 }
 
 //------------------------------------------------------------------------------
+void nrf_profile::set_nf_services(const std::vector<nf_service_t> &n) {
+  nf_services = n;
+}
+
+//------------------------------------------------------------------------------
+void nrf_profile::add_nf_service(const nf_service_t &n) {
+  nf_services.push_back(n);
+}
+
+//------------------------------------------------------------------------------
+void nrf_profile::get_nf_services(std::vector<nf_service_t> &n) const {
+  n = nf_services;
+}
+
+//------------------------------------------------------------------------------
 void nrf_profile::display() {
   Logger::nrf_app().debug("NF instance info");
   Logger::nrf_app().debug("\tInstance ID: %s", nf_instance_id.c_str());
@@ -180,6 +195,11 @@ void nrf_profile::display() {
 
   if (!json_data.empty()) {
     Logger::nrf_app().debug("\tJson Data: %s", json_data.dump().c_str());
+  }
+
+  // NF services
+  for (auto service : nf_services) {
+    Logger::nrf_app().debug("\tNF Service: %s", service.to_string().c_str());
   }
 }
 
@@ -241,6 +261,11 @@ bool nrf_profile::replace_profile_info(const std::string &path,
 
   if (path.compare("sNssais") == 0) {
     Logger::nrf_app().info("Does not support this operation for sNssais");
+    return false;
+  }
+
+  if (path.compare("nfServices") == 0) {
+    Logger::nrf_app().info("Does not support this operation for nfServices");
     return false;
   }
 
@@ -320,7 +345,12 @@ bool nrf_profile::add_profile_info(const std::string &path,
 
   // add an element to a list of json object
   if (path.compare("sNssais") == 0) {
-    Logger::nrf_app().info("Does not support this operation for snssais");
+    Logger::nrf_app().info("Does not support this operation for sNssais");
+    return false;
+  }
+
+  if (path.compare("nfServices") == 0) {
+    Logger::nrf_app().info("Does not support this operation for nfServices");
     return false;
   }
 
@@ -390,9 +420,15 @@ bool nrf_profile::remove_profile_info(const std::string &path) {
   }
 
   if (path.find("sNssais") != std::string::npos) {
-    Logger::nrf_app().info("Does not support this operation for snssais");
+    Logger::nrf_app().info("Does not support this operation for sNssais");
     return false;
   }
+
+  if (path.find("nfServices") != std::string::npos) {
+    Logger::nrf_app().info("Does not support this operation for nfServices");
+    return false;
+  }
+
 
   Logger::nrf_app().debug("Member (%s) not found!", path.c_str());
   return false;
@@ -422,6 +458,23 @@ void nrf_profile::to_json(nlohmann::json &data) const {
   }
   data["priority"] = priority;
   data["capacity"] = capacity;
+  // NF services
+  data["nfServices"] = nlohmann::json::array();
+  for (auto service : nf_services) {
+    nlohmann::json srv_tmp = {};
+    srv_tmp["serviceInstanceId"] = service.service_instance_id;
+    srv_tmp["serviceName"] = service.service_name;
+    srv_tmp["versions"] = nlohmann::json::array();
+    for (auto v : service.versions) {
+      nlohmann::json v_tmp = {};
+      v_tmp["apiVersionInUri"] = v.api_version_in_uri;
+      v_tmp["apiFullVersion"] = v.api_full_version;
+      srv_tmp["versions"].push_back(v_tmp);
+    }
+    srv_tmp["scheme"] = service.scheme;
+    srv_tmp["nfServiceStatus"] = service.nf_service_status;
+    data["nfServices"].push_back(srv_tmp);
+  }
   data["json_data"] = json_data;
 }
 
@@ -605,7 +658,8 @@ bool amf_profile::add_profile_info(const std::string &path,
       (path.compare("sNssais") != 0) and
       (path.compare("ipv4Addresses") != 0) and
       (path.compare("priority") != 0) and (path.compare("capacity") != 0) and
-      (path.compare("priority") != 0) and (path.compare("amfInfo") != 0)) {
+      (path.compare("priority") != 0) and (path.compare("nfServices") != 0) and
+      (path.compare("amfInfo") != 0)) {
     Logger::nrf_app().debug("Add new member: %s", path.c_str());
     // add new member
     json_data[path] = value;
@@ -632,7 +686,8 @@ bool amf_profile::remove_profile_info(const std::string &path) {
       (path.compare("sNssais") != 0) and
       (path.compare("ipv4Addresses") != 0) and
       (path.compare("priority") != 0) and (path.compare("capacity") != 0) and
-      (path.compare("priority") != 0) and (path.compare("amfInfo") != 0)) {
+      (path.compare("priority") != 0) and (path.compare("nfServices") != 0) and
+      (path.compare("amfInfo") != 0)) {
     Logger::nrf_app().debug("Member (%s) not found!", path.c_str());
     return false;
   }
@@ -697,7 +752,8 @@ bool smf_profile::add_profile_info(const std::string &path,
       (path.compare("sNssais") != 0) and
       (path.compare("ipv4Addresses") != 0) and
       (path.compare("priority") != 0) and (path.compare("capacity") != 0) and
-      (path.compare("priority") != 0) and (path.compare("smfInfo") != 0)) {
+      (path.compare("priority") != 0) and (path.compare("nfServices") != 0) and
+      (path.compare("smfInfo") != 0)) {
     Logger::nrf_app().debug("Add new member: %s", path.c_str());
     // add new member
     json_data[path] = value;
@@ -724,7 +780,8 @@ bool smf_profile::replace_profile_info(const std::string &path,
       (path.compare("sNssais") != 0) and
       (path.compare("ipv4Addresses") != 0) and
       (path.compare("priority") != 0) and (path.compare("capacity") != 0) and
-      (path.compare("priority") != 0) and (path.compare("amfInfo") != 0)) {
+      (path.compare("priority") != 0) and (path.compare("nfServices") != 0) and
+      (path.compare("amfInfo") != 0)) {
     Logger::nrf_app().debug("Member (%s) not found!", path.c_str());
     return false;
   }
@@ -749,7 +806,8 @@ bool smf_profile::remove_profile_info(const std::string &path) {
       (path.compare("sNssais") != 0) and
       (path.compare("ipv4Addresses") != 0) and
       (path.compare("priority") != 0) and (path.compare("capacity") != 0) and
-      (path.compare("priority") != 0) and (path.compare("smfInfo") != 0)) {
+      (path.compare("priority") != 0) and (path.compare("nfServices") != 0) and
+      (path.compare("smfInfo") != 0)) {
     Logger::nrf_app().debug("Member (%s) not found!", path.c_str());
     return false;
   }

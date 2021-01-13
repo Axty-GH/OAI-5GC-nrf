@@ -438,9 +438,7 @@ void NFProfile::unsetPlmnList() {
   m_PlmnListIsSet = false;
 }
 std::vector<Snssai> NFProfile::getSNssais() const {
-  std::vector<Snssai> s = m_SNssais;
   return m_SNssais;
-  //return s;
 }
 void NFProfile::setSNssais(std::vector<Snssai> const &value) {
   m_SNssais = value;
@@ -941,9 +939,11 @@ bool NFProfile::nfServicePersistenceIsSet() const {
 void NFProfile::unsetNfServicePersistence() {
   m_NfServicePersistenceIsSet = false;
 }
-std::vector<NFService>& NFProfile::getNfServices() {
+
+std::vector<NFService> NFProfile::getNfServices() const {
   return m_NfServices;
 }
+
 void NFProfile::setNfServices(std::vector<NFService> const &value) {
   m_NfServices = value;
   m_NfServicesIsSet = true;

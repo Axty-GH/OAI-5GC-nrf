@@ -175,28 +175,28 @@ std::string NFService::getServiceInstanceId() const {
 void NFService::setServiceInstanceId(std::string const &value) {
   m_ServiceInstanceId = value;
 }
-ServiceName NFService::getServiceName() const {
+std::string NFService::getServiceName() const {
   return m_ServiceName;
 }
-void NFService::setServiceName(ServiceName const &value) {
+void NFService::setServiceName(std::string const &value) {
   m_ServiceName = value;
 }
-std::vector<NFServiceVersion>& NFService::getVersions() {
+std::vector<NFServiceVersion> NFService::getVersions() {
   return m_Versions;
 }
 void NFService::setVersions(std::vector<NFServiceVersion> const &value) {
   m_Versions = value;
 }
-UriScheme NFService::getScheme() const {
+std::string NFService::getScheme() const {
   return m_Scheme;
 }
-void NFService::setScheme(UriScheme const &value) {
+void NFService::setScheme(std::string const &value) {
   m_Scheme = value;
 }
-NFServiceStatus NFService::getNfServiceStatus() const {
+std::string NFService::getNfServiceStatus() const {
   return m_NfServiceStatus;
 }
-void NFService::setNfServiceStatus(NFServiceStatus const &value) {
+void NFService::setNfServiceStatus(std::string const &value) {
   m_NfServiceStatus = value;
 }
 std::string NFService::getFqdn() const {

@@ -365,7 +365,7 @@ class NFProfile {
   /// <summary>
   /// 
   /// </summary>
-  std::vector<NFService>& getNfServices();
+  std::vector<NFService> getNfServices() const;
   void setNfServices(std::vector<NFService> const &value);
   bool nfServicesIsSet() const;
   void unsetNfServices();

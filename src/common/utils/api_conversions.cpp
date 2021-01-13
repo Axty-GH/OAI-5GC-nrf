@@ -70,11 +70,9 @@ bool api_conv::profile_api_to_nrf_profile(
   Logger::nrf_app().debug("\tHeartBeart timer: %d",
                           profile.get()->get_nf_heartBeat_timer());
   profile.get()->set_nf_priority(api_profile.getPriority());
-  Logger::nrf_app().debug("\tPriority: %d",
-                          profile.get()->get_nf_priority());
+  Logger::nrf_app().debug("\tPriority: %d", profile.get()->get_nf_priority());
   profile.get()->set_nf_capacity(api_profile.getCapacity());
-  Logger::nrf_app().debug("\tCapacity: %d",
-                          profile.get()->get_nf_capacity());
+  Logger::nrf_app().debug("\tCapacity: %d", profile.get()->get_nf_capacity());
   // SNSSAIs
   std::vector<Snssai> snssai = api_profile.getSNssais();
   for (auto s : snssai) {
@@ -124,9 +122,8 @@ bool api_conv::profile_api_to_nrf_profile(
         info.guami_list.push_back(guami);
         Logger::nrf_app().debug("\t\tAMF GUAMI, AMF_ID:  %s",
                                 guami.amf_id.c_str());
-        Logger::nrf_app().debug(
-            "\t\tAMF GUAMI, PLMN (MCC: %s, MNC: %s)",
-            guami.plmn.mcc.c_str(), guami.plmn.mnc.c_str());
+        Logger::nrf_app().debug("\t\tAMF GUAMI, PLMN (MCC: %s, MNC: %s)",
+                                guami.plmn.mcc.c_str(), guami.plmn.mnc.c_str());
       }
       (std::static_pointer_cast<amf_profile>(profile))
           .get()
@@ -148,8 +145,7 @@ bool api_conv::profile_api_to_nrf_profile(
           dnn_smf_info_item_t dnn = {};
           dnn.dnn = d.getDnn();
           snssai.dnn_smf_info_list.push_back(dnn);
-          Logger::nrf_app().debug("\t\tDNN: %s",
-                                  dnn.dnn.c_str());
+          Logger::nrf_app().debug("\t\tDNN: %s", dnn.dnn.c_str());
         }
         info.snssai_smf_info_list.push_back(snssai);
       }
@@ -162,6 +158,24 @@ bool api_conv::profile_api_to_nrf_profile(
     default: {}
   }
 
+  // nf_services
+  if (api_profile.nfServicesIsSet()) {
+    std::vector<NFService> nf_services = api_profile.getNfServices();
+    for (auto service : nf_services) {
+      nf_service_t ns = {};
+      ns.service_instance_id = service.getServiceInstanceId();
+      ns.service_name = service.getServiceName();
+      ns.scheme = service.getScheme();
+      for (auto v : service.getVersions()) {
+        nf_service_version_t version = {};
+        version.api_full_version = v.getApiFullVersion();
+        version.api_version_in_uri = v.getApiVersionInUri();
+        ns.versions.push_back(version);
+      }
+      ns.nf_service_status = service.getNfServiceStatus();
+      profile.get()->add_nf_service(ns);
+    }
+  }
   return true;
 }
 
@@ -286,7 +300,6 @@ bool api_conv::subscription_api_to_nrf_subscription(
     if (sub_condition.type != UNKNOWN_CONDITION) {
       sub.get()->set_sub_condition(sub_condition);
     }
-
   }
 
   // NotificationEventType
@@ -307,10 +320,10 @@ bool api_conv::subscription_api_to_nrf_subscription(
   }
 
   if (api_sub.validityTimeIsSet()) {
-	  std::string str = api_sub.getValidityTime();
-	  boost::posix_time::ptime p (boost::posix_time::from_iso_string(str));
-	  sub.get()->set_validity_time(p);
-      Logger::nrf_app().debug("Validity Time: %s", str.c_str());
+    std::string str = api_sub.getValidityTime();
+    boost::posix_time::ptime p(boost::posix_time::from_iso_string(str));
+    sub.get()->set_validity_time(p);
+    Logger::nrf_app().debug("Validity Time: %s", str.c_str());
   }
   // TODO:
   return true;

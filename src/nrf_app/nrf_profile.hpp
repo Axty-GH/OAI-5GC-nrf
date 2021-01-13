@@ -60,6 +60,7 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
         ipv4_addresses(),
         priority(0),
         capacity(0),
+        nf_services(),
         heartbeart_mutex() {
     nf_instance_name = "";
     nf_status = "";
@@ -75,6 +76,7 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
         ipv4_addresses(),
         priority(0),
         capacity(0),
+        nf_services(),
         heartbeart_mutex() {
     nf_instance_name = "";
     nf_status = "";
@@ -91,6 +93,7 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
         ipv4_addresses(),
         priority(0),
         capacity(0),
+        nf_services(),
         nf_type(NF_TYPE_UNKNOWN),
         heartbeart_mutex() {
     nf_instance_name = "";
@@ -305,6 +308,27 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
   void get_json_data(nlohmann::json &data) const;
 
   /*
+   * Set NF instance services
+   * @param [std::vector<nf_service_t> &] n: nf_service
+   * @return void
+   */
+  void set_nf_services(const std::vector<nf_service_t> &n);
+
+  /*
+   * Add nf service
+   * @param [snssai_t &] n: nf service
+   * @return void
+   */
+  void add_nf_service(const nf_service_t &n);
+
+  /*
+   * Get NF services
+   * @param [std::vector<snssai_t> &] n: store instance's nf services
+   * @return void:
+   */
+  void get_nf_services(std::vector<nf_service_t> &n) const;
+
+  /*
    * Print related-information for NF profile
    * @param void
    * @return void:
@@ -421,6 +445,7 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
   uint16_t priority;
   uint16_t capacity;
   nlohmann::json json_data;  // store extra json data
+  std::vector<nf_service_t> nf_services;
 
   /*
    std::vector<PlmnId> m_PlmnList;

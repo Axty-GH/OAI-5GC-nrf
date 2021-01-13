@@ -22,14 +22,13 @@
 #ifndef FILE_3GPP_29_510_NRF_SEEN
 #define FILE_3GPP_29_510_NRF_SEEN
 
-#include "3gpp_23.003.h"
 #include <vector>
+#include "3gpp_23.003.h"
 
 enum class nf_status_e { REGISTERED = 0, SUSPENDED = 1, UNDISCOVERABLE = 2 };
 
 static const std::vector<std::string> nf_status_e2str = {
     "REGISTERED", "SUSPENDED", "UNDISCOVERABLE"};
-
 
 typedef struct amf_info_s {
   std::string amf_set_id;
@@ -50,8 +49,6 @@ typedef struct snssai_smf_info_item_s {
 typedef struct smf_info_s {
   std::vector<snssai_smf_info_item_t> snssai_smf_info_list;
 } smf_info_t;
-
-
 
 enum subscr_condition_type_e {  // TODO: use enum class
   UNKNOWN_CONDITION = 0,
@@ -238,5 +235,50 @@ enum notification_event_type_t {
 
 static const std::vector<std::string> notification_event_type_e2str = {
     "UNKNOWN EVENT", "NF_REGISTERED", "NF_DEREGISTERED", "NF_PROFILE_CHANGED"};
+
+typedef struct nf_service_version_s {
+  std::string api_version_in_uri;  // apiVersionInUri
+  std::string api_full_version;    // apiFullVersion
+
+  nf_service_version_s &operator=(const nf_service_version_s &s) {
+    api_version_in_uri = s.api_version_in_uri;
+    api_full_version = s.api_full_version;
+  }
+
+  std::string to_string() const {
+    std::string s = {};
+    s.append(", Version (");
+    s.append("apiVersionInUri: ");
+    s.append(api_version_in_uri);
+    s.append(", apiFullVersion: ");
+    s.append(api_full_version);
+    s.append(" )");
+    return s;
+  }
+} nf_service_version_t;
+
+typedef struct nf_service_s {
+  std::string service_instance_id;
+  std::string service_name;
+  std::vector<nf_service_version_t> versions;
+  std::string scheme;
+  std::string nf_service_status;
+
+  std::string to_string() const {
+    std::string s = {};
+    s.append("Service Instance ID: ");
+    s.append(service_instance_id);
+    s.append(", Service name: ");
+    s.append(service_name);
+    for (auto v : versions) {
+      s.append(v.to_string());
+    }
+    s.append(", Scheme: ");
+    s.append(scheme);
+    s.append(", Service status: ");
+    s.append(nf_service_status);
+    return s;
+  }
+} nf_service_t;
 
 #endif
