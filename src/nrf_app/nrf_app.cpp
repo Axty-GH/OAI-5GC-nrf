@@ -243,9 +243,11 @@ void nrf_app::handle_update_nf_instance(
         problem_details.setCause(
             protocol_application_error_e2str[MANDATORY_IE_INCORRECT]);
       } else {
-        // update successful,
-        // Notify NF status change event
-        m_event_sub.nf_status_profile_changed(nf_instance_id);  // from nrf_app
+        if (!is_heartbeart_procedure)
+          // update successful,
+          // Notify NF status change event
+          m_event_sub.nf_status_profile_changed(
+              nf_instance_id);  // from nrf_app
       }
     }
 
