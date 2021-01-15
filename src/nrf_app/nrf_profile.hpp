@@ -52,7 +52,7 @@ using namespace std;
 
 class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
  public:
-  nrf_profile(nrf_event &ev)
+  nrf_profile(nrf_event& ev)
       : m_event_sub(ev),
         nf_type(NF_TYPE_UNKNOWN),
         heartBeat_timer(0),
@@ -63,12 +63,12 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
         nf_services(),
         heartbeart_mutex() {
     nf_instance_name = "";
-    nf_status = "";
-    json_data = {};
-    first_update = true;
-    is_updated = false;
+    nf_status        = "";
+    json_data        = {};
+    first_update     = true;
+    is_updated       = false;
   }
-  nrf_profile(nrf_event &ev, const nf_type_t type)
+  nrf_profile(nrf_event& ev, const nf_type_t type)
       : m_event_sub(ev),
         nf_type(type),
         heartBeat_timer(0),
@@ -79,13 +79,13 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
         nf_services(),
         heartbeart_mutex() {
     nf_instance_name = "";
-    nf_status = "";
-    json_data = {};
-    first_update = true;
-    is_updated = false;
+    nf_status        = "";
+    json_data        = {};
+    first_update     = true;
+    is_updated       = false;
   }
 
-  nrf_profile(nrf_event &ev, const std::string &id)
+  nrf_profile(nrf_event& ev, const std::string& id)
       : m_event_sub(ev),
         nf_instance_id(id),
         heartBeat_timer(0),
@@ -97,13 +97,13 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
         nf_type(NF_TYPE_UNKNOWN),
         heartbeart_mutex() {
     nf_instance_name = "";
-    nf_status = "";
-    json_data = {};
-    first_update = true;
-    is_updated = false;
+    nf_status        = "";
+    json_data        = {};
+    first_update     = true;
+    is_updated       = false;
   }
 
-  nrf_profile(nrf_profile &b) = delete;
+  nrf_profile(nrf_profile& b) = delete;
 
   virtual ~nrf_profile() {
     Logger::nrf_app().debug("Delete NRF Profile instance...");
@@ -116,14 +116,14 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
    * @param [const std::string &] instance_id: instance id
    * @return void
    */
-  void set_nf_instance_id(const std::string &instance_id);
+  void set_nf_instance_id(const std::string& instance_id);
 
   /*
    * Get NF instance ID
    * @param [std::string &] instance_id: store instance id
    * @return void:
    */
-  void get_nf_instance_id(std::string &instance_id) const;
+  void get_nf_instance_id(std::string& instance_id) const;
 
   /*
    * Get NF instance ID
@@ -137,14 +137,14 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
    * @param [const std::string &] instance_name: instance name
    * @return void
    */
-  void set_nf_instance_name(const std::string &instance_name);
+  void set_nf_instance_name(const std::string& instance_name);
 
   /*
    * Get NF instance ID
    * @param [std::string &] instance_name: store instance name
    * @return void:
    */
-  void get_nf_instance_name(std::string &instance_name) const;
+  void get_nf_instance_name(std::string& instance_name) const;
 
   /*
    * Get NF instance name
@@ -158,14 +158,14 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
    * @param [const std::string &] status: instance status
    * @return void
    */
-  void set_nf_status(const std::string &status);
+  void set_nf_status(const std::string& status);
 
   /*
    * Get NF instance status
    * @param [std::string &] status: store instance status
    * @return void:
    */
-  void get_nf_status(std::string &status) const;
+  void get_nf_status(std::string& status) const;
 
   /*
    * Get NF status
@@ -186,21 +186,21 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
    * @param [const nf_type_t &] type: nf type
    * @return void
    */
-  void set_nf_type(const nf_type_t &type);
+  void set_nf_type(const nf_type_t& type);
 
   /*
    * Set NF instance heartBeat_timer
    * @param [const std::string &] timer: heartBeat_timer
    * @return void
    */
-  void set_nf_heartBeat_timer(const int32_t &timer);
+  void set_nf_heartBeat_timer(const int32_t& timer);
 
   /*
    * Get NF instance heartBeat_timer
    * @param [std::string &] timer: store heartBeat_timer
    * @return void:
    */
-  void get_nf_heartBeat_timer(int32_t &timer) const;
+  void get_nf_heartBeat_timer(int32_t& timer) const;
 
   /*
    * Get NF heartBeat_timer
@@ -214,14 +214,14 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
    * @param [const uint16_t] p: instance priority
    * @return void
    */
-  void set_nf_priority(const uint16_t &p);
+  void set_nf_priority(const uint16_t& p);
 
   /*
    * Get NF instance priority
    * @param [uint16_t] p: store instance priority
    * @return void:
    */
-  void get_nf_priority(uint16_t &p) const;
+  void get_nf_priority(uint16_t& p) const;
 
   /*
    * Get NF instance priority
@@ -235,14 +235,14 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
    * @param [const uint16_t] c: instance capacity
    * @return void
    */
-  void set_nf_capacity(const uint16_t &c);
+  void set_nf_capacity(const uint16_t& c);
 
   /*
    * Get NF instance priority
    * @param [uint16_t ] c: store instance capacity
    * @return void:
    */
-  void get_nf_capacity(uint16_t &c) const;
+  void get_nf_capacity(uint16_t& c) const;
 
   /*
    * Get NF instance priority
@@ -256,77 +256,77 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
    * @param [std::vector<snssai_t> &] s: SNSSAIs
    * @return void
    */
-  void set_nf_snssais(const std::vector<snssai_t> &s);
+  void set_nf_snssais(const std::vector<snssai_t>& s);
 
   /*
    * Add SNSSAI
    * @param [snssai_t &] s: SNSSAI
    * @return void
    */
-  void add_snssai(const snssai_t &s);
+  void add_snssai(const snssai_t& s);
 
   /*
    * Get NF instance SNSSAIs
    * @param [std::vector<snssai_t> &] s: store instance's SNSSAIs
    * @return void:
    */
-  void get_nf_snssais(std::vector<snssai_t> &s) const;
+  void get_nf_snssais(std::vector<snssai_t>& s) const;
 
   /*
    * Set NF instance ipv4_addresses
    * @param [std::vector<struct in_addr> &] a: ipv4_addresses
    * @return void
    */
-  void set_nf_ipv4_addresses(const std::vector<struct in_addr> &a);
+  void set_nf_ipv4_addresses(const std::vector<struct in_addr>& a);
 
   /*
    * Add an IPv4 address to the list of addresses
    * @param [const struct in_addr &] a: ipv4_address
    * @return void
    */
-  void add_nf_ipv4_addresses(const struct in_addr &a);
+  void add_nf_ipv4_addresses(const struct in_addr& a);
 
   /*
    * Get NF instance ipv4_addresses
    * @param [std::vector<struct in_addr> &] a: store instance's ipv4_addresses
    * @return void:
    */
-  void get_nf_ipv4_addresses(std::vector<struct in_addr> &a) const;
+  void get_nf_ipv4_addresses(std::vector<struct in_addr>& a) const;
 
   /*
    * Set json data
    * @param [const nlohmann::json &] data: Json data to be set
    * @return void
    */
-  void set_json_data(const nlohmann::json &data);
+  void set_json_data(const nlohmann::json& data);
 
   /*
    * Get json data
    * @param [nlohmann::json &] data: Store json data
    * @return void
    */
-  void get_json_data(nlohmann::json &data) const;
+  void get_json_data(nlohmann::json& data) const;
 
   /*
    * Set NF instance services
    * @param [std::vector<nf_service_t> &] n: nf_service
    * @return void
    */
-  void set_nf_services(const std::vector<nf_service_t> &n);
+  void set_nf_services(const std::vector<nf_service_t>& n);
 
   /*
    * Add nf service
    * @param [snssai_t &] n: nf service
    * @return void
    */
-  void add_nf_service(const nf_service_t &n);
+  void add_nf_service(const nf_service_t& n);
 
   /*
    * Get NF services
    * @param [std::vector<snssai_t> &] n: store instance's nf services
    * @return void:
    */
-  void get_nf_services(std::vector<nf_service_t> &n) const;
+  void get_nf_services(std::vector<nf_service_t>& n) const;
 
   /*
    * Print related-information for NF profile
@@ -341,8 +341,8 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
    * @param [const std::string &] value: new value
    * @return true if success, otherwise false
    */
-  virtual bool replace_profile_info(const std::string &path,
-                                    const std::string &value);
+  virtual bool replace_profile_info(
+      const std::string& path, const std::string& value);
 
   /*
    * Add a new value for a member of NF profile
@@ -350,8 +350,8 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
    * @param [const std::string &] value: new value
    * @return true if success, otherwise false
    */
-  virtual bool add_profile_info(const std::string &path,
-                                const std::string &value);
+  virtual bool add_profile_info(
+      const std::string& path, const std::string& value);
 
   /*
    * Remove value of a member of NF profile
@@ -359,14 +359,14 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
    * @param [const std::string &] value: new value
    * @return true if success, otherwise false
    */
-  virtual bool remove_profile_info(const std::string &path);
+  virtual bool remove_profile_info(const std::string& path);
 
   /*
    * Represent NF profile as json object
    * @param [nlohmann::json &] data: Json data
    * @return void
    */
-  virtual void to_json(nlohmann::json &data) const;
+  virtual void to_json(nlohmann::json& data) const;
 
   /*
    * Subscribe to the HBT timeout event (after receiving NF Update)
@@ -425,7 +425,7 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
   void set_status_updated(bool status);
 
  protected:
-  nrf_event &m_event_sub;
+  nrf_event& m_event_sub;
   bs2::connection
       task_connection;  // connection for the HBT timeout (after NF Update)
   bs2::connection first_hb_connection;  // connection for first HBT timeout
@@ -516,14 +516,14 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
 
 class amf_profile : public nrf_profile {
  public:
-  amf_profile(nrf_event &ev) : nrf_profile(ev, NF_TYPE_AMF) { amf_info = {}; }
+  amf_profile(nrf_event& ev) : nrf_profile(ev, NF_TYPE_AMF) { amf_info = {}; }
 
-  amf_profile(nrf_event &ev, const std::string &id) : nrf_profile(ev, id) {
-    nf_type = NF_TYPE_AMF;
+  amf_profile(nrf_event& ev, const std::string& id) : nrf_profile(ev, id) {
+    nf_type  = NF_TYPE_AMF;
     amf_info = {};
   }
 
-  amf_profile(amf_profile &b) = delete;
+  amf_profile(amf_profile& b) = delete;
 
   ~amf_profile() {}
 
@@ -532,14 +532,14 @@ class amf_profile : public nrf_profile {
    * @param [const amf_info_t &] info: AMF info
    * @return void
    */
-  void add_amf_info(const amf_info_t &info);
+  void add_amf_info(const amf_info_t& info);
 
   /*
    * Get list of AMF infos an AMF info
    * @param [const amf_info_t &] info: AMF info
    * @return void
    */
-  void get_amf_info(amf_info_t &info) const;
+  void get_amf_info(amf_info_t& info) const;
 
   /*
    * Print related-information for an AMF profile
@@ -554,7 +554,7 @@ class amf_profile : public nrf_profile {
    * @param [const std::string &] value: new value
    * @return void
    */
-  bool replace_profile_info(const std::string &path, const std::string &value);
+  bool replace_profile_info(const std::string& path, const std::string& value);
 
   /*
    * Add a new value for a member of NF profile
@@ -562,7 +562,7 @@ class amf_profile : public nrf_profile {
    * @param [const std::string &] value: new value
    * @return true if success, otherwise false
    */
-  bool add_profile_info(const std::string &path, const std::string &value);
+  bool add_profile_info(const std::string& path, const std::string& value);
 
   /*
    * Remove value of a member of NF profile
@@ -570,14 +570,14 @@ class amf_profile : public nrf_profile {
    * @param [const std::string &] value: new value
    * @return true if success, otherwise false
    */
-  bool remove_profile_info(const std::string &path);
+  bool remove_profile_info(const std::string& path);
 
   /*
    * Represent NF profile as json object
    * @param [nlohmann::json &] data: Json data
    * @return void
    */
-  void to_json(nlohmann::json &data) const;
+  void to_json(nlohmann::json& data) const;
 
  private:
   amf_info_t amf_info;
@@ -585,28 +585,28 @@ class amf_profile : public nrf_profile {
 
 class smf_profile : public nrf_profile {
  public:
-  smf_profile(nrf_event &ev) : nrf_profile(ev, NF_TYPE_SMF) { smf_info = {}; }
+  smf_profile(nrf_event& ev) : nrf_profile(ev, NF_TYPE_SMF) { smf_info = {}; }
 
-  smf_profile(nrf_event &ev, const std::string &id) : nrf_profile(ev, id) {
-    nf_type = NF_TYPE_SMF;
+  smf_profile(nrf_event& ev, const std::string& id) : nrf_profile(ev, id) {
+    nf_type  = NF_TYPE_SMF;
     smf_info = {};
   }
 
-  smf_profile(smf_profile &b) = delete;
+  smf_profile(smf_profile& b) = delete;
 
   /*
    * Add a SMF info
    * @param [const smf_info_t &] info: SMF info
    * @return void
    */
-  void add_smf_info(const smf_info_t &info);
+  void add_smf_info(const smf_info_t& info);
 
   /*
    * Get list of SMF infos a SMF info
    * @param [const smf_info_t &] info: SMF info
    * @return void
    */
-  void get_smf_info(smf_info_t &infos) const;
+  void get_smf_info(smf_info_t& infos) const;
 
   /*
    * Print related-information for a SMF profile
@@ -621,7 +621,7 @@ class smf_profile : public nrf_profile {
    * @param [const std::string &] value: new value
    * @return void
    */
-  bool replace_profile_info(const std::string &path, const std::string &value);
+  bool replace_profile_info(const std::string& path, const std::string& value);
 
   /*
    * Add a new value for a member of NF profile
@@ -629,7 +629,7 @@ class smf_profile : public nrf_profile {
    * @param [const std::string &] value: new value
    * @return true if success, otherwise false
    */
-  bool add_profile_info(const std::string &path, const std::string &value);
+  bool add_profile_info(const std::string& path, const std::string& value);
 
   /*
    * Remove value of a member of NF profile
@@ -637,44 +637,43 @@ class smf_profile : public nrf_profile {
    * @param [const std::string &] value: new value
    * @return true if success, otherwise false
    */
-  bool remove_profile_info(const std::string &path);
+  bool remove_profile_info(const std::string& path);
 
   /*
    * Represent NF profile as json object
    * @param [nlohmann::json &] data: Json data
    * @return void
    */
-  void to_json(nlohmann::json &data) const;
+  void to_json(nlohmann::json& data) const;
 
  private:
   smf_info_t smf_info;
 };
 
-
 class upf_profile : public nrf_profile {
  public:
-  upf_profile(nrf_event &ev) : nrf_profile(ev, NF_TYPE_UPF) { upf_info = {}; }
+  upf_profile(nrf_event& ev) : nrf_profile(ev, NF_TYPE_UPF) { upf_info = {}; }
 
-  upf_profile(nrf_event &ev, const std::string &id) : nrf_profile(ev, id) {
-    nf_type = NF_TYPE_UPF;
+  upf_profile(nrf_event& ev, const std::string& id) : nrf_profile(ev, id) {
+    nf_type  = NF_TYPE_UPF;
     upf_info = {};
   }
 
-  upf_profile(upf_profile &b) = delete;
+  upf_profile(upf_profile& b) = delete;
 
   /*
    * Add a UPF info
    * @param [const upf_info_t &] info: UPF info
    * @return void
    */
-  void add_upf_info(const upf_info_t &info);
+  void add_upf_info(const upf_info_t& info);
 
   /*
    * Get list of UPF infos a UPF info
    * @param [const upf_info_t &] info: UPF info
    * @return void
    */
-  void get_upf_info(upf_info_t &infos) const;
+  void get_upf_info(upf_info_t& infos) const;
 
   /*
    * Print related-information for a UPF profile
@@ -689,7 +688,7 @@ class upf_profile : public nrf_profile {
    * @param [const std::string &] value: new value
    * @return void
    */
-  bool replace_profile_info(const std::string &path, const std::string &value);
+  bool replace_profile_info(const std::string& path, const std::string& value);
 
   /*
    * Add a new value for a member of NF profile
@@ -697,7 +696,7 @@ class upf_profile : public nrf_profile {
    * @param [const std::string &] value: new value
    * @return true if success, otherwise false
    */
-  bool add_profile_info(const std::string &path, const std::string &value);
+  bool add_profile_info(const std::string& path, const std::string& value);
 
   /*
    * Remove value of a member of NF profile
@@ -705,14 +704,14 @@ class upf_profile : public nrf_profile {
    * @param [const std::string &] value: new value
    * @return true if success, otherwise false
    */
-  bool remove_profile_info(const std::string &path);
+  bool remove_profile_info(const std::string& path);
 
   /*
    * Represent NF profile as json object
    * @param [nlohmann::json &] data: Json data
    * @return void
    */
-  void to_json(nlohmann::json &data) const;
+  void to_json(nlohmann::json& data) const;
 
  private:
   upf_info_t upf_info;

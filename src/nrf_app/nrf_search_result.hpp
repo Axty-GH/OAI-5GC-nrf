@@ -44,27 +44,27 @@ class nrf_search_result {
   nrf_search_result() {
     limit_nf_instances = 10;  // default value, TODO: to be removed
   };
-  nrf_search_result(nrf_search_result const &) = delete;
+  nrf_search_result(nrf_search_result const&) = delete;
 
   virtual ~nrf_search_result() {
     Logger::nrf_app().debug("Delete NRF Subscription instance...");
   }
 
-  void operator=(nrf_search_result const &) = delete;
+  void operator=(nrf_search_result const&) = delete;
 
   /*
    * Set the search id
    * @param [const std::string &]: id: Search id
    * @return void
    */
-  void set_search_id(const std::string &id);
+  void set_search_id(const std::string& id);
 
   /*
    * Get the search id
    * @param [std::string &]: id: search id
    * @return void
    */
-  void get_search_id(std::string &id) const;
+  void get_search_id(std::string& id) const;
 
   /*
    * Get the search id
@@ -80,7 +80,7 @@ class nrf_search_result {
    * @return void
    */
   void set_nf_instances(
-      const std::vector<std::shared_ptr<nrf_profile>> &instances);
+      const std::vector<std::shared_ptr<nrf_profile>>& instances);
 
   /*
    * Add an nf instance to the list of nrf profile instances
@@ -88,7 +88,7 @@ class nrf_search_result {
    * instance
    * @return void
    */
-  void add_nf_instance(const std::shared_ptr<nrf_profile> &instance);
+  void add_nf_instance(const std::shared_ptr<nrf_profile>& instance);
 
   /*
    * Get the nf instances
@@ -97,7 +97,7 @@ class nrf_search_result {
    * @return void
    */
   void get_nf_instances(
-      std::vector<std::shared_ptr<nrf_profile>> &instances) const;
+      std::vector<std::shared_ptr<nrf_profile>>& instances) const;
 
   /*
    * Get the nf instances
@@ -112,14 +112,14 @@ class nrf_search_result {
    * @param [const uint64_t &] p: validity period
    * @return
    */
-  void set_validity_period(const uint64_t &v);
+  void set_validity_period(const uint64_t& v);
 
   /*
    * Get the validity period
    * @param [uint64_t &]p:  validity period
    * @return
    */
-  void get_validity_period(uint64_t &p) const;
+  void get_validity_period(uint64_t& p) const;
 
   /*
    * Get the validity period
@@ -133,14 +133,14 @@ class nrf_search_result {
    * @param [const uint32_t &] n: the total number of NF Instances found by NRF
    * @return void
    */
-  void set_num_nf_inst_complete(const uint32_t &n);
+  void set_num_nf_inst_complete(const uint32_t& n);
 
   /*
    * Get the the total number of NF Instances found by NRF
    * @param [uint32_t &] n: the total number of NF Instances found by NRF
    * @return void
    */
-  void get_num_nf_inst_complete(uint32_t &n) const;
+  void get_num_nf_inst_complete(uint32_t& n) const;
 
   /*
    * Set the maximum number of NFProfiles to be returned in the response
@@ -148,7 +148,7 @@ class nrf_search_result {
    * returned in the response
    * @return void
    */
-  void set_limit_nf_instances(const uint32_t &l);
+  void set_limit_nf_instances(const uint32_t& l);
 
   /*
    * Get the maximum number of NFProfiles to be returned in the response
@@ -156,7 +156,7 @@ class nrf_search_result {
    * the response
    * @return void
    */
-  void get_limit_nf_instances(uint32_t &l) const;
+  void get_limit_nf_instances(uint32_t& l) const;
 
   /*
    * Get the maximum number of NFProfiles to be returned in the response
@@ -179,7 +179,7 @@ class nrf_search_result {
    * json data 0, means without any restriction
    * @return void
    */
-  void to_json(nlohmann::json &data, const uint32_t &limit_nfs) const;
+  void to_json(nlohmann::json& data, const uint32_t& limit_nfs) const;
 
  private:
   std::vector<std::shared_ptr<nrf_profile>> nf_instances;

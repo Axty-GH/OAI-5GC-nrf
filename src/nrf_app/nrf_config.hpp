@@ -63,7 +63,7 @@ typedef struct interface_cfg_s {
 
 class nrf_config {
  private:
-  int load_interface(const libconfig::Setting &if_cfg, interface_cfg_t &cfg);
+  int load_interface(const libconfig::Setting& if_cfg, interface_cfg_t& cfg);
 
  public:
   /* Reader/writer lock for this configuration */
@@ -78,14 +78,14 @@ class nrf_config {
   bool local_configuration;
 
   nrf_config() : m_rw_lock(), pid_dir(), instance(0), sbi() {
-    sbi.port = 80;
-    sbi_http2_port = 8080;
+    sbi.port        = 80;
+    sbi_http2_port  = 8080;
     sbi_api_version = "v1";
   };
   virtual ~nrf_config();
   void lock() { m_rw_lock.lock(); };
   void unlock() { m_rw_lock.unlock(); };
-  int load(const std::string &config_file);
+  int load(const std::string& config_file);
   void display();
 };
 

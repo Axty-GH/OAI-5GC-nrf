@@ -50,9 +50,9 @@ using namespace oai::nrf::model;
 class nrf_config;
 class nrf_app {
  public:
-  explicit nrf_app(const std::string &config_file, nrf_event &ev);
-  nrf_app(nrf_app const &) = delete;
-  void operator=(nrf_app const &) = delete;
+  explicit nrf_app(const std::string& config_file, nrf_event& ev);
+  nrf_app(nrf_app const&) = delete;
+  void operator=(nrf_app const&) = delete;
 
   virtual ~nrf_app();
 
@@ -72,10 +72,10 @@ class nrf_app {
    * @param [ProblemDetails &] problem_details: Store details of the error
    * @return void
    */
-  void handle_register_nf_instance(const std::string &nf_instance_id,
-                                   const NFProfile &nf_profile, int &http_code,
-                                   const uint8_t http_version,
-                                   ProblemDetails &problem_details);
+  void handle_register_nf_instance(
+      const std::string& nf_instance_id, const NFProfile& nf_profile,
+      int& http_code, const uint8_t http_version,
+      ProblemDetails& problem_details);
 
   /*
    * Handle a Get NF Instance Information
@@ -90,9 +90,9 @@ class nrf_app {
    * @return void
    */
   void handle_get_nf_instances(
-      const std::string &nf_type, std::vector<std::string> &uris,
-      const uint32_t &limit_item, int &http_code, const uint8_t http_version,
-      oai::nrf::model::ProblemDetails &problem_details);
+      const std::string& nf_type, std::vector<std::string>& uris,
+      const uint32_t& limit_item, int& http_code, const uint8_t http_version,
+      oai::nrf::model::ProblemDetails& problem_details);
 
   /*
    * Handle a Update NF Instance request
@@ -104,10 +104,10 @@ class nrf_app {
    * @param [ProblemDetails &] problem_details: Store details of the error
    * @return void
    */
-  void handle_update_nf_instance(const std::string &nf_instance_id,
-                                 const std::vector<PatchItem> &patchItem,
-                                 int &http_code, const uint8_t http_version,
-                                 ProblemDetails &problem_details);
+  void handle_update_nf_instance(
+      const std::string& nf_instance_id,
+      const std::vector<PatchItem>& patchItem, int& http_code,
+      const uint8_t http_version, ProblemDetails& problem_details);
 
   /*
    * Handle a Get NF Instance request
@@ -118,10 +118,10 @@ class nrf_app {
    * @param [ProblemDetails &] problem_details: Store details of the error
    * @return void
    */
-  void handle_get_nf_instance(const std::string &nf_instance_id,
-                              std::shared_ptr<nrf_profile> &profile,
-                              int &http_code, const uint8_t http_version,
-                              ProblemDetails &problem_details);
+  void handle_get_nf_instance(
+      const std::string& nf_instance_id, std::shared_ptr<nrf_profile>& profile,
+      int& http_code, const uint8_t http_version,
+      ProblemDetails& problem_details);
 
   /*
    * Handle De-register a given NF Instance
@@ -131,9 +131,9 @@ class nrf_app {
    * @param [ProblemDetails &] problem_details: Store details of the error
    * @return void
    */
-  void handle_deregister_nf_instance(const std::string &nf_instance_id,
-                                     int &http_code, const uint8_t http_version,
-                                     ProblemDetails &problem_details);
+  void handle_deregister_nf_instance(
+      const std::string& nf_instance_id, int& http_code,
+      const uint8_t http_version, ProblemDetails& problem_details);
 
   /*
    * Handle a Register NF Instance request
@@ -144,10 +144,10 @@ class nrf_app {
    * @param [ProblemDetails &] problem_details: Store details of the error
    * @return void
    */
-  void handle_create_subscription(const SubscriptionData &subscription_data,
-                                  std::string &sub_id, int &http_code,
-                                  const uint8_t http_version,
-                                  ProblemDetails &problem_details);
+  void handle_create_subscription(
+      const SubscriptionData& subscription_data, std::string& sub_id,
+      int& http_code, const uint8_t http_version,
+      ProblemDetails& problem_details);
 
   /*
    * Handle a NFStatusUnSubscribe request (removes an existing subscription)
@@ -157,9 +157,9 @@ class nrf_app {
    * @param [ProblemDetails &] problem_details: Store details of the error
    * @return void
    */
-  void handle_remove_subscription(const std::string &sub_id, int &http_code,
-                                  const uint8_t http_version,
-                                  ProblemDetails &problem_details);
+  void handle_remove_subscription(
+      const std::string& sub_id, int& http_code, const uint8_t http_version,
+      ProblemDetails& problem_details);
 
   /*
    * Handle a Update of Subscription to NF Instances
@@ -171,10 +171,10 @@ class nrf_app {
    * @param [ProblemDetails &] problem_details: Store details of the error
    * @return void
    */
-  void handle_update_subscription(const std::string &sub_id,
-                                  const std::vector<PatchItem> &patchItem,
-                                  int &http_code, const uint8_t http_version,
-                                  ProblemDetails &problem_details);
+  void handle_update_subscription(
+      const std::string& sub_id, const std::vector<PatchItem>& patchItem,
+      int& http_code, const uint8_t http_version,
+      ProblemDetails& problem_details);
 
   /*
    * Handle NFDiscover to discover the set of NF Instances
@@ -190,12 +190,11 @@ class nrf_app {
    * @param [ProblemDetails &] problem_details: Store details of the error
    * @return void
    */
-  void handle_search_nf_instances(const std::string &target_nf_type,
-                                  const std::string &requester_nf_type,
-                                  const std::string &requester_nf_instance_id,
-                                  uint32_t &limit_nfs, std::string &search_id,
-                                  int &http_code, const uint8_t http_version,
-                                  ProblemDetails &problem_details);
+  void handle_search_nf_instances(
+      const std::string& target_nf_type, const std::string& requester_nf_type,
+      const std::string& requester_nf_instance_id, uint32_t& limit_nfs,
+      std::string& search_id, int& http_code, const uint8_t http_version,
+      ProblemDetails& problem_details);
 
   /*
    * Handle a Register NF Instance request
@@ -206,10 +205,10 @@ class nrf_app {
    * @param [ProblemDetails &] problem_details: Store details of the error
    * @return void
    */
-  void handle_access_token_request(const std::string &request_body,
-                                   AccessTokenRsp &access_token_rsp,
-                                   int &http_code, const uint8_t http_version,
-                                   ProblemDetails &problem_details);
+  void handle_access_token_request(
+      const std::string& request_body, AccessTokenRsp& access_token_rsp,
+      int& http_code, const uint8_t http_version,
+      ProblemDetails& problem_details);
 
   /*
    * Insert a nrf profile
@@ -217,8 +216,8 @@ class nrf_app {
    * @param [std::shared_ptr<nrf_profile> &] p: profile to be added
    * @return true if successful, otherwise, return false
    */
-  bool add_nf_profile(const std::string &profile_id,
-                      const std::shared_ptr<nrf_profile> &p);
+  bool add_nf_profile(
+      const std::string& profile_id, const std::shared_ptr<nrf_profile>& p);
 
   /*
    * Update a nrf profile
@@ -226,8 +225,8 @@ class nrf_app {
    * @param [std::shared_ptr<nrf_profile> &] p: profile to be added
    * @return true if successful, otherwise, return false
    */
-  bool update_nf_profile(const std::string &profile_id,
-                         const std::shared_ptr<nrf_profile> &p);
+  bool update_nf_profile(
+      const std::string& profile_id, const std::shared_ptr<nrf_profile>& p);
 
   /*
    * Find a nf profile with its ID
@@ -235,15 +234,15 @@ class nrf_app {
    * @return shared pointer to the profile if found
    */
   std::shared_ptr<nrf_profile> find_nf_profile(
-      const std::string &profile_id) const;
+      const std::string& profile_id) const;
 
   /*
    * Find a nf profile with its ID
    * @param [const std::string &] profile_id: Profile ID
    * @return shared pointer to the profile if found
    */
-  bool find_nf_profile(const std::string &profile_id,
-                       std::shared_ptr<nrf_profile> &p) const;
+  bool find_nf_profile(
+      const std::string& profile_id, std::shared_ptr<nrf_profile>& p) const;
 
   /*
    * Find a list of nf profiles with a type
@@ -253,29 +252,29 @@ class nrf_app {
    * @return shared pointer to the profile if found
    */
   void find_nf_profiles(
-      const nf_type_t &nf_type,
-      std::vector<std::shared_ptr<nrf_profile>> &profiles) const;
+      const nf_type_t& nf_type,
+      std::vector<std::shared_ptr<nrf_profile>>& profiles) const;
 
   /*
    * Check if a profile with an ID exist
    * @param [const std::string &] profile_id: Profile ID
    * @return true if profile exist, otherwise, return false
    */
-  bool is_profile_exist(const std::string &profile_id) const;
+  bool is_profile_exist(const std::string& profile_id) const;
 
   /*
    * Remove a nf profile from the list
    * @param [std::shared_ptr<nrf_profile> &] snp: profile to be removed
    * @return true if successful, otherwise, return false
    */
-  bool remove_nf_profile(const std::shared_ptr<nrf_profile> &snp);
+  bool remove_nf_profile(const std::shared_ptr<nrf_profile>& snp);
 
   /*
    * Remove a nf profile from the list
    * @param [std::string &] profile_id: ID of the profile to be removed
    * @return true if successful, otherwise, return false
    */
-  bool remove_nf_profile(const std::string &profile_id);
+  bool remove_nf_profile(const std::string& profile_id);
 
   /*
    * Add a subscription
@@ -284,15 +283,15 @@ class nrf_app {
    * subscription to be added
    * @return true if successful, otherwise, return false
    */
-  bool add_subscription(const std::string &sub_id,
-                        const std::shared_ptr<nrf_subscription> &s);
+  bool add_subscription(
+      const std::string& sub_id, const std::shared_ptr<nrf_subscription>& s);
 
   /*
    * Remove a subscription from the list
    * @param [std::string &] sub_id: ID of the subscription to be removed
    * @return true if successful, otherwise, return false
    */
-  bool remove_subscription(const std::string &sub_id);
+  bool remove_subscription(const std::string& sub_id);
 
   /*
    * Find a subscription with its ID
@@ -300,7 +299,7 @@ class nrf_app {
    * @return shared pointer to the subscription if found, otherwise nullptr
    */
   std::shared_ptr<nrf_subscription> find_subscription(
-      const std::string &sub_id) const;
+      const std::string& sub_id) const;
 
   /*
    * Subscribe to the task tick event
@@ -322,14 +321,14 @@ class nrf_app {
    * subscription
    * @return true if this sub is authorized, otherwise, return false
    */
-  bool authorize_subscription(const std::shared_ptr<nrf_subscription> &s) const;
+  bool authorize_subscription(const std::shared_ptr<nrf_subscription>& s) const;
 
   /*
    * Generate an unique ID for the new subscription
    * @param [const std::string &] sub_id: the generated ID
    * @return void
    */
-  void generate_ev_subscription_id(std::string &sub_id);
+  void generate_ev_subscription_id(std::string& sub_id);
 
   /*
    * Generate an unique ID for the new subscription
@@ -357,7 +356,7 @@ class nrf_app {
    * @param [const std::string &] profile_id: Profile ID of the registered NF
    * @return void
    */
-  void handle_nf_status_registered(const std::string &profile_id);
+  void handle_nf_status_registered(const std::string& profile_id);
 
   /*
    * Subscribe to the event when a NF de-registers from the NRF
@@ -368,10 +367,11 @@ class nrf_app {
 
   /*
    * Handle NF status deregistered event
-   * @param [const std::shared_ptr<nrf_profile> &] profile: pointer to the deregistered NF
+   * @param [const std::shared_ptr<nrf_profile> &] profile: pointer to the
+   * deregistered NF
    * @return void
    */
-  void handle_nf_status_deregistered(const std::shared_ptr<nrf_profile> &p);
+  void handle_nf_status_deregistered(const std::shared_ptr<nrf_profile>& p);
 
   /*
    * Subscribe to the event when a registered NF changes its profile
@@ -385,7 +385,7 @@ class nrf_app {
    * @param [const std::string &] profile_id: Profile ID of the NF
    * @return void
    */
-  void handle_nf_status_profile_changed(const std::string &profile_id);
+  void handle_nf_status_profile_changed(const std::string& profile_id);
 
   /*
    * Get the list of subscriptions to the profile with notification type
@@ -395,9 +395,9 @@ class nrf_app {
    * subscribed NFs
    * @return void
    */
-  void get_subscription_list(const std::string &profile_id,
-                             const uint8_t &notification_type,
-                             std::vector<std::string> &uris) const;
+  void get_subscription_list(
+      const std::string& profile_id, const uint8_t& notification_type,
+      std::vector<std::string>& uris) const;
 
   /*
    * Verify whether the requester is allowed to discover the NF services
@@ -405,15 +405,16 @@ class nrf_app {
    * @param [const std::string &] requester_nf_type: Requester nf type
    * @return void
    */
-  bool is_service_discover_allowed(const std::string &requester_instance_id,
-                                   const std::string &requester_nf_type);
+  bool is_service_discover_allowed(
+      const std::string& requester_instance_id,
+      const std::string& requester_nf_type);
 
   /*
    * Generate an unique ID for the search result
    * @param [const std::string &] search_id: the generated search ID
    * @return void
    */
-  void generate_search_id(std::string &search_id);
+  void generate_search_id(std::string& search_id);
 
   /*
    * Add a search result to the DB
@@ -422,8 +423,8 @@ class nrf_app {
    * search result
    * @return void
    */
-  bool add_search_result(const std::string &id,
-                         const std::shared_ptr<nrf_search_result> &s);
+  bool add_search_result(
+      const std::string& id, const std::shared_ptr<nrf_search_result>& s);
 
   /*
    * Find a search result with its ID
@@ -432,8 +433,9 @@ class nrf_app {
    * result
    * @return true if found, otherwise false
    */
-  bool find_search_result(const std::string &search_id,
-                          std::shared_ptr<nrf_search_result> &p) const;
+  bool find_search_result(
+      const std::string& search_id,
+      std::shared_ptr<nrf_search_result>& p) const;
 
  private:
   std::string nrf_instance_id;  // NRF instance id
@@ -443,7 +445,7 @@ class nrf_app {
   std::map<std::string, std::shared_ptr<nrf_subscription>>
       subscrition_id2nrf_subscription;
   mutable std::shared_mutex m_subscription_id2nrf_subscription;
-  nrf_event &m_event_sub;
+  nrf_event& m_event_sub;
   util::uint_generator<uint32_t> evsub_id_generator;
   std::vector<bs2::connection> connections;
 

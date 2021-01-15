@@ -41,19 +41,19 @@ namespace app {
 
 class nrf_client {
  private:
-  CURLM *curl_multi;
-  std::vector<CURL *> handles;
-  struct curl_slist *headers;
-  nrf_event &m_event_sub;
+  CURLM* curl_multi;
+  std::vector<CURL*> handles;
+  struct curl_slist* headers;
+  nrf_event& m_event_sub;
   bs2::connection
       task_connection;  // connection for performing curl_multi every 1ms
 
  public:
-  nrf_client(nrf_event &ev);
+  nrf_client(nrf_event& ev);
   virtual ~nrf_client();
 
-  nrf_client(nrf_client const &) = delete;
-  void operator=(nrf_client const &) = delete;
+  nrf_client(nrf_client const&) = delete;
+  void operator=(nrf_client const&) = delete;
 
   /*
    * Send Notification for the associated event to the subscriber
@@ -61,8 +61,8 @@ class nrf_client {
    * @param [const std::string &] uri: URI of the subscribed NF
    * @return void
    */
-  void notify_subscribed_event(const std::shared_ptr<nrf_profile> &profile,
-                               const std::string &uri);
+  void notify_subscribed_event(
+      const std::shared_ptr<nrf_profile>& profile, const std::string& uri);
 
   /*
    * Send Notification for the associated event to the subscriber
@@ -71,8 +71,8 @@ class nrf_client {
    * @return void
    */
   void notify_subscribed_event_multi(
-      const std::shared_ptr<nrf_profile> &profile, const uint8_t &event_type,
-      const std::vector<std::string> &uris);
+      const std::shared_ptr<nrf_profile>& profile, const uint8_t& event_type,
+      const std::vector<std::string>& uris);
 
   /*
    * Send Notification for the associated event to the subscribers
@@ -81,9 +81,9 @@ class nrf_client {
    * @param [const std::vector<std::string> &] uris: list of subscribed NFs' URI
    * @return void
    */
-  void notify_subscribed_event(const std::shared_ptr<nrf_profile> &profile,
-                               const uint8_t &event_type,
-                               const std::vector<std::string> &uris);
+  void notify_subscribed_event(
+      const std::shared_ptr<nrf_profile>& profile, const uint8_t& event_type,
+      const std::vector<std::string>& uris);
 
   /*
    * Create Curl handle for multi curl
@@ -92,8 +92,9 @@ class nrf_client {
    * @param [std::string &] response_data: response data
    * @return pointer to the created curl
    */
-  CURL *curl_create_handle(const std::string &uri, const std::string &data,
-		  std::string &response_data);
+  CURL* curl_create_handle(
+      const std::string& uri, const std::string& data,
+      std::string& response_data);
 
   /*
    * Prepare to send a request using curl multi
@@ -102,8 +103,9 @@ class nrf_client {
    * @param [std::string &] response_data: response data
    * @return void
    */
-  void send_curl_multi(const std::string &uri, const std::string &data,
-		  std::string &response_data);
+  void send_curl_multi(
+      const std::string& uri, const std::string& data,
+      std::string& response_data);
 
   /*
    * Perform curl multi to actually process the available data

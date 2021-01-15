@@ -45,23 +45,23 @@ using namespace Pistache::Http::Mime;
 using namespace oai::nrf::app;
 using json = nlohmann::json;
 
-extern nrf_client *nrf_client_inst;
+extern nrf_client* nrf_client_inst;
 extern nrf_config nrf_cfg;
 
 //------------------------------------------------------------------------------
 // To read content of the response from NF
-static std::size_t callback(const char *in, std::size_t size, std::size_t num,
-                            std::string *out) {
+static std::size_t callback(
+    const char* in, std::size_t size, std::size_t num, std::string* out) {
   const std::size_t totalBytes(size * num);
   out->append(in, totalBytes);
   return totalBytes;
 }
 
 //------------------------------------------------------------------------------
-nrf_client::nrf_client(nrf_event &ev) : m_event_sub(ev) {
+nrf_client::nrf_client(nrf_event& ev) : m_event_sub(ev) {
   curl_global_init(CURL_GLOBAL_DEFAULT);
   curl_multi = curl_multi_init();
-  handles = {};
+  handles    = {};
   subscribe_task_curl();
   headers = NULL;
   headers = curl_slist_append(headers, "Accept: application/json");
@@ -87,11 +87,11 @@ nrf_client::~nrf_client() {
 }
 
 //------------------------------------------------------------------------------
-CURL *nrf_client::curl_create_handle(const std::string &uri,
-                                     const std::string &data,
-                                     std::string &response_data) {
+CURL* nrf_client::curl_create_handle(
+    const std::string& uri, const std::string& data,
+    std::string& response_data) {
   // create handle for a curl request
-  CURL *curl = curl_easy_init();
+  CURL* curl = curl_easy_init();
 
   if (curl) {
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
@@ -111,12 +111,12 @@ CURL *nrf_client::curl_create_handle(const std::string &uri,
 }
 
 //------------------------------------------------------------------------------
-void nrf_client::send_curl_multi(const std::string &uri,
-                                 const std::string &data,
-                                 std::string &response_data) {
+void nrf_client::send_curl_multi(
+    const std::string& uri, const std::string& data,
+    std::string& response_data) {
   // create a new handle and add to the multi handle
   // the curl will actually be sent in perform_curl_multi
-  CURL *tmp = curl_create_handle(uri, data, response_data);
+  CURL* tmp = curl_create_handle(uri, data, response_data);
   curl_multi_add_handle(curl_multi, tmp);
   handles.push_back(tmp);
 }
@@ -159,11 +159,11 @@ void nrf_client::wait_curl_end() {
 
 //------------------------------------------------------------------------------
 void nrf_client::curl_release_handles() {
-  CURLMsg *curl_msg = nullptr;
-  CURL *curl = nullptr;
-  CURLcode code = {};
-  int http_code = 0;
-  int msgs_left = 0;
+  CURLMsg* curl_msg = nullptr;
+  CURL* curl        = nullptr;
+  CURLcode code     = {};
+  int http_code     = 0;
+  int msgs_left     = 0;
 
   while ((curl_msg = curl_multi_info_read(curl_multi, &msgs_left))) {
     if (curl_msg && curl_msg->msg == CURLMSG_DONE) {
@@ -183,7 +183,7 @@ void nrf_client::curl_release_handles() {
       curl_multi_remove_handle(curl_multi, curl);
       curl_easy_cleanup(curl);
 
-      std::vector<CURL *>::iterator it;
+      std::vector<CURL*>::iterator it;
       it = find(handles.begin(), handles.end(), curl);
       if (it != handles.end()) {
         handles.erase(it);
@@ -195,7 +195,7 @@ void nrf_client::curl_release_handles() {
       curl_multi_remove_handle(curl_multi, curl);
       curl_easy_cleanup(curl);
 
-      std::vector<CURL *>::iterator it;
+      std::vector<CURL*>::iterator it;
       it = find(handles.begin(), handles.end(), curl);
       if (it != handles.end()) {
         handles.erase(it);
@@ -208,82 +208,21 @@ void nrf_client::curl_release_handles() {
 
 //------------------------------------------------------------------------------
 void nrf_client::notify_subscribed_event(
-    const std::shared_ptr<nrf_profile> &profile, const uint8_t &event_type,
-    const std::vector<std::string> &uris) {
+    const std::shared_ptr<nrf_profile>& profile, const uint8_t& event_type,
+    const std::vector<std::string>& uris) {
   Logger::nrf_app().debug(
       "Send notification for the subscribed event to the subscriptions");
 
   std::map<std::string, std::string> responses = {};
   // Fill the json part
   nlohmann::json json_data = {};
-  json_data["event"] = notification_event_type_e2str[event_type];
+  json_data["event"]       = notification_event_type_e2str[event_type];
 
   std::vector<struct in_addr> instance_addrs = {};
   profile.get()->get_nf_ipv4_addresses(instance_addrs);
   // TODO: use the first IPv4 addr for now
   std::string instance_uri =
-      std::string(inet_ntoa(*((struct in_addr *)&(instance_addrs[0]))));
-  Logger::nrf_app().debug("NF instance URI: %s", instance_uri.c_str());
-  json_data["nfInstanceUri"] = instance_uri;
-
-  // NF profile
-  if ((event_type == NOTIFICATION_TYPE_NF_REGISTERED) or
-      (event_type == NOTIFICATION_TYPE_NF_PROFILE_CHANGED)) {
-    nlohmann::json json_profile = {};
-    switch (profile.get()->get_nf_type()) {
-      case NF_TYPE_AMF: {
-        std::static_pointer_cast<amf_profile>(profile).get()->to_json(
-            json_profile);
-      } break;
-      case NF_TYPE_SMF: {
-        std::static_pointer_cast<smf_profile>(profile).get()->to_json(
-            json_profile);
-      } break;
-      case NF_TYPE_UPF: {
-              std::static_pointer_cast<upf_profile>(profile).get()->to_json(
-                  json_profile);
-            } break;
-      default: { profile.get()->to_json(json_profile); }
-    }
-    json_data["nfProfile"] = json_profile;
-  }
-
-  std::string body = json_data.dump();
-
-  for (auto uri : uris) {
-    responses[uri] = "";
-    std::unique_ptr<std::string> httpData(new std::string());
-    send_curl_multi(uri, body, responses[uri]);
-  }
-
-  perform_curl_multi(
-      0);  // TODO: current time as parameter if curl is performed per event
-}
-
-//------------------------------------------------------------------------------
-void nrf_client::notify_subscribed_event_multi(
-    const std::shared_ptr<nrf_profile> &profile, const uint8_t &event_type,
-    const std::vector<std::string> &uris) {
-  Logger::nrf_app().debug(
-      "Send notification for the subscribed event to the subscriptions");
-
-  int still_running = 0, numfds = 0, res = 0, msgs_left = 0;
-  CURLMsg *curl_msg = nullptr;
-  CURL *curl = nullptr;
-  CURLcode return_code = {};
-  int http_status_code = 0;
-  int index = 0;
-  char *curl_url = nullptr;
-  std::unique_ptr<std::string> httpData(new std::string());
-  // Fill the json part
-  nlohmann::json json_data = {};
-  json_data["event"] = notification_event_type_e2str[event_type];
-
-  std::vector<struct in_addr> instance_addrs = {};
-  profile.get()->get_nf_ipv4_addresses(instance_addrs);
-  // TODO: use the first IPv4 addr for now
-  std::string instance_uri =
-      std::string(inet_ntoa(*((struct in_addr *)&(instance_addrs[0]))));
+      std::string(inet_ntoa(*((struct in_addr*) &(instance_addrs[0]))));
   Logger::nrf_app().debug("NF instance URI: %s", instance_uri.c_str());
   json_data["nfInstanceUri"] = instance_uri;
 
@@ -304,7 +243,72 @@ void nrf_client::notify_subscribed_event_multi(
         std::static_pointer_cast<upf_profile>(profile).get()->to_json(
             json_profile);
       } break;
-      default: { profile.get()->to_json(json_profile); }
+      default: {
+        profile.get()->to_json(json_profile);
+      }
+    }
+    json_data["nfProfile"] = json_profile;
+  }
+
+  std::string body = json_data.dump();
+
+  for (auto uri : uris) {
+    responses[uri] = "";
+    std::unique_ptr<std::string> httpData(new std::string());
+    send_curl_multi(uri, body, responses[uri]);
+  }
+
+  perform_curl_multi(
+      0);  // TODO: current time as parameter if curl is performed per event
+}
+
+//------------------------------------------------------------------------------
+void nrf_client::notify_subscribed_event_multi(
+    const std::shared_ptr<nrf_profile>& profile, const uint8_t& event_type,
+    const std::vector<std::string>& uris) {
+  Logger::nrf_app().debug(
+      "Send notification for the subscribed event to the subscriptions");
+
+  int still_running = 0, numfds = 0, res = 0, msgs_left = 0;
+  CURLMsg* curl_msg    = nullptr;
+  CURL* curl           = nullptr;
+  CURLcode return_code = {};
+  int http_status_code = 0;
+  int index            = 0;
+  char* curl_url       = nullptr;
+  std::unique_ptr<std::string> httpData(new std::string());
+  // Fill the json part
+  nlohmann::json json_data = {};
+  json_data["event"]       = notification_event_type_e2str[event_type];
+
+  std::vector<struct in_addr> instance_addrs = {};
+  profile.get()->get_nf_ipv4_addresses(instance_addrs);
+  // TODO: use the first IPv4 addr for now
+  std::string instance_uri =
+      std::string(inet_ntoa(*((struct in_addr*) &(instance_addrs[0]))));
+  Logger::nrf_app().debug("NF instance URI: %s", instance_uri.c_str());
+  json_data["nfInstanceUri"] = instance_uri;
+
+  // NF profile
+  if ((event_type == NOTIFICATION_TYPE_NF_REGISTERED) or
+      (event_type == NOTIFICATION_TYPE_NF_PROFILE_CHANGED)) {
+    nlohmann::json json_profile = {};
+    switch (profile.get()->get_nf_type()) {
+      case NF_TYPE_AMF: {
+        std::static_pointer_cast<amf_profile>(profile).get()->to_json(
+            json_profile);
+      } break;
+      case NF_TYPE_SMF: {
+        std::static_pointer_cast<smf_profile>(profile).get()->to_json(
+            json_profile);
+      } break;
+      case NF_TYPE_UPF: {
+        std::static_pointer_cast<upf_profile>(profile).get()->to_json(
+            json_profile);
+      } break;
+      default: {
+        profile.get()->to_json(json_profile);
+      }
     }
     json_data["nfProfile"] = json_profile;
   }
@@ -315,8 +319,8 @@ void nrf_client::notify_subscribed_event_multi(
   for (auto uri : uris) {
     curl = curl_easy_init();
     if (curl) {
-      Logger::nrf_app().debug("Send notification to NF with URI: %s",
-                              uri.c_str());
+      Logger::nrf_app().debug(
+          "Send notification to NF with URI: %s", uri.c_str());
       curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
       curl_easy_setopt(curl, CURLOPT_URL, uri.c_str());
       curl_easy_setopt(curl, CURLOPT_HTTPPOST, 1);
@@ -349,9 +353,9 @@ void nrf_client::notify_subscribed_event_multi(
   while ((curl_msg = curl_multi_info_read(curl_multi, &msgs_left))) {
     Logger::nrf_app().debug("Process message for multiple curl");
     if (curl_msg->msg == CURLMSG_DONE) {
-      curl = curl_msg->easy_handle;
+      curl        = curl_msg->easy_handle;
       return_code = curl_msg->data.result;
-      res = curl_easy_getinfo(curl, CURLINFO_EFFECTIVE_URL, &curl_url);
+      res         = curl_easy_getinfo(curl, CURLINFO_EFFECTIVE_URL, &curl_url);
 
       if (return_code != CURLE_OK) {
         Logger::nrf_app().debug("CURL error code  %d!", curl_msg->data.result);
@@ -366,7 +370,7 @@ void nrf_client::notify_subscribed_event_multi(
       curl_multi_remove_handle(curl_multi, curl);
       curl_easy_cleanup(curl);
 
-      std::vector<CURL *>::iterator it;
+      std::vector<CURL*>::iterator it;
       it = find(handles.begin(), handles.end(), curl);
       if (it != handles.end()) {
         handles.erase(it);
@@ -375,8 +379,8 @@ void nrf_client::notify_subscribed_event_multi(
       }
 
     } else {
-      Logger::nrf_app().debug("Error after curl_multi_info_read(), CURLMsg %s",
-                              curl_msg->msg);
+      Logger::nrf_app().debug(
+          "Error after curl_multi_info_read(), CURLMsg %s", curl_msg->msg);
     }
   }
 
@@ -392,26 +396,26 @@ void nrf_client::notify_subscribed_event_multi(
 
 //------------------------------------------------------------------------------
 void nrf_client::notify_subscribed_event(
-    const std::shared_ptr<nrf_profile> &profile, const std::string &uri) {
-  Logger::nrf_app().debug("Send notification to the subscribed NF (URI %s)",
-                          uri.c_str());
+    const std::shared_ptr<nrf_profile>& profile, const std::string& uri) {
+  Logger::nrf_app().debug(
+      "Send notification to the subscribed NF (URI %s)", uri.c_str());
 
   // Fill the json part
   nlohmann::json json_data = {};
-  json_data["event"] = "NF_REGISTERED";
+  json_data["event"]       = "NF_REGISTERED";
 
   std::vector<struct in_addr> instance_addrs = {};
   profile.get()->get_nf_ipv4_addresses(instance_addrs);
   // TODO: use the first IPv4 addr for now
   std::string instance_uri =
-      std::string(inet_ntoa(*((struct in_addr *)&(instance_addrs[0]))));
+      std::string(inet_ntoa(*((struct in_addr*) &(instance_addrs[0]))));
   Logger::nrf_app().debug("NF instance URI: %s", instance_uri.c_str());
   json_data["nfInstanceUri"] = instance_uri;
-  std::string body = json_data.dump();
+  std::string body           = json_data.dump();
 
   curl_global_init(CURL_GLOBAL_ALL);
-  CURL *curl = curl = curl_easy_init();
-  struct curl_slist *headers = nullptr;
+  CURL* curl = curl          = curl_easy_init();
+  struct curl_slist* headers = nullptr;
 
   if (curl) {
     CURLcode res = {};
@@ -440,7 +444,7 @@ void nrf_client::notify_subscribed_event(
       json response_data = {};
       try {
         response_data = json::parse(*httpData.get());
-      } catch (json::exception &e) {
+      } catch (json::exception& e) {
         Logger::nrf_app().warn("Could not get the cause from the response");
       }
 
@@ -458,7 +462,7 @@ void nrf_client::notify_subscribed_event(
 //------------------------------------------------------------------------------
 void nrf_client::subscribe_task_curl() {
   struct itimerspec its;
-  its.it_value.tv_sec = 100;                // TODO: to be updated 100 seconds
+  its.it_value.tv_sec  = 100;               // TODO: to be updated 100 seconds
   its.it_value.tv_nsec = 10 * 1000 * 1000;  // 10ms
   const uint64_t interval =
       its.it_value.tv_sec * 1000 +

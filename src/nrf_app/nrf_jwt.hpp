@@ -53,11 +53,10 @@ class nrf_jwt {
    * @param [std::string &] signature: generated signature
    * @return void
    */
-  bool generate_signature(const std::string &nf_consumer_id,
-                          const std::string &scope, const std::string &nf_type,
-                          const std::string &target_nf_type,
-                          const std::string &nrf_instance_id,
-                          std::string &signature) const;
+  bool generate_signature(
+      const std::string& nf_consumer_id, const std::string& scope,
+      const std::string& nf_type, const std::string& target_nf_type,
+      const std::string& nrf_instance_id, std::string& signature) const;
 
   /*
    * Generate signature for the requested consumer
@@ -70,11 +69,10 @@ class nrf_jwt {
    * @param [std::string &] signature: generated signature
    * @return void
    */
-  bool generate_signature(const std::string &nf_consumer_id,
-                          const std::string &scope,
-                          const std::string &target_nf_instance_Id,
-                          const std::string &nrf_instance_id,
-                          std::string &signature) const;
+  bool generate_signature(
+      const std::string& nf_consumer_id, const std::string& scope,
+      const std::string& target_nf_instance_Id,
+      const std::string& nrf_instance_id, std::string& signature) const;
 
   /*
    * Get the secret key
@@ -85,9 +83,9 @@ class nrf_jwt {
    * @param [std::string &] key: secret key
    * @return void
    */
-  bool get_secret_key(const std::string &scope, const std::string &nf_type,
-                      const std::string &target_nf_type,
-                      std::string &key) const;
+  bool get_secret_key(
+      const std::string& scope, const std::string& nf_type,
+      const std::string& target_nf_type, std::string& key) const;
 
   /*
    * Get the secret key
@@ -98,9 +96,9 @@ class nrf_jwt {
    * @param [std::string &] key: secret key
    * @return void
    */
-  bool get_secret_key(const std::string &scope,
-                      const std::string &target_nf_instance_Id,
-                      std::string &key) const;
+  bool get_secret_key(
+      const std::string& scope, const std::string& target_nf_instance_Id,
+      std::string& key) const;
 };
 
 }  // namespace app

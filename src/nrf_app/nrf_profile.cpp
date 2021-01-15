@@ -41,25 +41,27 @@ using namespace std;
 using namespace oai::nrf::app;
 
 //------------------------------------------------------------------------------
-void nrf_profile::set_nf_instance_id(const std::string &instance_id) {
+void nrf_profile::set_nf_instance_id(const std::string& instance_id) {
   nf_instance_id = instance_id;
 }
 
 //------------------------------------------------------------------------------
-void nrf_profile::get_nf_instance_id(std::string &instance_id) const {
+void nrf_profile::get_nf_instance_id(std::string& instance_id) const {
   instance_id = nf_instance_id;
 }
 
 //------------------------------------------------------------------------------
-std::string nrf_profile::get_nf_instance_id() const { return nf_instance_id; }
+std::string nrf_profile::get_nf_instance_id() const {
+  return nf_instance_id;
+}
 
 //------------------------------------------------------------------------------
-void nrf_profile::set_nf_instance_name(const std::string &instance_name) {
+void nrf_profile::set_nf_instance_name(const std::string& instance_name) {
   nf_instance_name = instance_name;
 }
 
 //------------------------------------------------------------------------------
-void nrf_profile::get_nf_instance_name(std::string &instance_name) const {
+void nrf_profile::get_nf_instance_name(std::string& instance_name) const {
   instance_name = nf_instance_name;
 }
 
@@ -69,106 +71,128 @@ std::string nrf_profile::get_nf_instance_name() const {
 }
 
 //------------------------------------------------------------------------------
-void nrf_profile::set_nf_type(const nf_type_t &type) { nf_type = type; }
+void nrf_profile::set_nf_type(const nf_type_t& type) {
+  nf_type = type;
+}
 
 //------------------------------------------------------------------------------
-nf_type_t nrf_profile::get_nf_type() const { return nf_type; }
+nf_type_t nrf_profile::get_nf_type() const {
+  return nf_type;
+}
 
 //------------------------------------------------------------------------------
-void nrf_profile::set_nf_status(const std::string &status) {
+void nrf_profile::set_nf_status(const std::string& status) {
   Logger::nrf_app().debug("Set NF status to %s", status.c_str());
   std::unique_lock lock(heartbeart_mutex);
   nf_status = status;
 }
 
 //------------------------------------------------------------------------------
-void nrf_profile::get_nf_status(std::string &status) const {
+void nrf_profile::get_nf_status(std::string& status) const {
   status = nf_status;
 }
 
 //------------------------------------------------------------------------------
-std::string nrf_profile::get_nf_status() const { return nf_status; }
+std::string nrf_profile::get_nf_status() const {
+  return nf_status;
+}
 
 //------------------------------------------------------------------------------
-void nrf_profile::set_nf_heartBeat_timer(const int32_t &timer) {
+void nrf_profile::set_nf_heartBeat_timer(const int32_t& timer) {
   heartBeat_timer = timer;
 }
 
 //------------------------------------------------------------------------------
-void nrf_profile::get_nf_heartBeat_timer(int32_t &timer) const {
+void nrf_profile::get_nf_heartBeat_timer(int32_t& timer) const {
   timer = heartBeat_timer;
 }
 
 //------------------------------------------------------------------------------
-int32_t nrf_profile::get_nf_heartBeat_timer() const { return heartBeat_timer; }
+int32_t nrf_profile::get_nf_heartBeat_timer() const {
+  return heartBeat_timer;
+}
 
 //------------------------------------------------------------------------------
-void nrf_profile::set_nf_priority(const uint16_t &p) { priority = p; }
+void nrf_profile::set_nf_priority(const uint16_t& p) {
+  priority = p;
+}
 
 //------------------------------------------------------------------------------
-void nrf_profile::get_nf_priority(uint16_t &p) const { p = priority; }
+void nrf_profile::get_nf_priority(uint16_t& p) const {
+  p = priority;
+}
 
 //------------------------------------------------------------------------------
-uint16_t nrf_profile::get_nf_priority() const { return priority; }
+uint16_t nrf_profile::get_nf_priority() const {
+  return priority;
+}
 
 //------------------------------------------------------------------------------
-void nrf_profile::set_nf_capacity(const uint16_t &c) { capacity = c; }
+void nrf_profile::set_nf_capacity(const uint16_t& c) {
+  capacity = c;
+}
 
 //------------------------------------------------------------------------------
-void nrf_profile::get_nf_capacity(uint16_t &c) const { c = capacity; }
+void nrf_profile::get_nf_capacity(uint16_t& c) const {
+  c = capacity;
+}
 
 //------------------------------------------------------------------------------
-uint16_t nrf_profile::get_nf_capacity() const { return capacity; }
+uint16_t nrf_profile::get_nf_capacity() const {
+  return capacity;
+}
 
 //------------------------------------------------------------------------------
-void nrf_profile::set_nf_snssais(const std::vector<snssai_t> &s) {
+void nrf_profile::set_nf_snssais(const std::vector<snssai_t>& s) {
   snssais = s;
 }
 
 //------------------------------------------------------------------------------
-void nrf_profile::get_nf_snssais(std::vector<snssai_t> &s) const {
+void nrf_profile::get_nf_snssais(std::vector<snssai_t>& s) const {
   s = snssais;
 }
 
 //------------------------------------------------------------------------------
-void nrf_profile::add_snssai(const snssai_t &s) { snssais.push_back(s); }
+void nrf_profile::add_snssai(const snssai_t& s) {
+  snssais.push_back(s);
+}
 
 //------------------------------------------------------------------------------
-void nrf_profile::set_nf_ipv4_addresses(const std::vector<struct in_addr> &a) {
+void nrf_profile::set_nf_ipv4_addresses(const std::vector<struct in_addr>& a) {
   ipv4_addresses = a;
 }
 
 //------------------------------------------------------------------------------
-void nrf_profile::add_nf_ipv4_addresses(const struct in_addr &a) {
+void nrf_profile::add_nf_ipv4_addresses(const struct in_addr& a) {
   ipv4_addresses.push_back(a);
 }
 //------------------------------------------------------------------------------
-void nrf_profile::get_nf_ipv4_addresses(std::vector<struct in_addr> &a) const {
+void nrf_profile::get_nf_ipv4_addresses(std::vector<struct in_addr>& a) const {
   a = ipv4_addresses;
 }
 
 //------------------------------------------------------------------------------
-void nrf_profile::set_json_data(const nlohmann::json &data) {
+void nrf_profile::set_json_data(const nlohmann::json& data) {
   json_data = data;
 }
 
 //------------------------------------------------------------------------------
-void nrf_profile::get_json_data(nlohmann::json &data) const {
+void nrf_profile::get_json_data(nlohmann::json& data) const {
   data = json_data;
 }
 
 //------------------------------------------------------------------------------
-void nrf_profile::set_nf_services(const std::vector<nf_service_t> &n) {
+void nrf_profile::set_nf_services(const std::vector<nf_service_t>& n) {
   nf_services = n;
 }
 
 //------------------------------------------------------------------------------
-void nrf_profile::add_nf_service(const nf_service_t &n) {
+void nrf_profile::add_nf_service(const nf_service_t& n) {
   nf_services.push_back(n);
 }
 
 //------------------------------------------------------------------------------
-void nrf_profile::get_nf_services(std::vector<nf_service_t> &n) const {
+void nrf_profile::get_nf_services(std::vector<nf_service_t>& n) const {
   n = nf_services;
 }
 
@@ -177,8 +201,8 @@ void nrf_profile::display() {
   Logger::nrf_app().debug("NF instance info");
   Logger::nrf_app().debug("\tInstance ID: %s", nf_instance_id.c_str());
   Logger::nrf_app().debug("\tInstance name: %s", nf_instance_name.c_str());
-  Logger::nrf_app().debug("\tInstance type: %s",
-                          nf_type_e2str[nf_type].c_str());
+  Logger::nrf_app().debug(
+      "\tInstance type: %s", nf_type_e2str[nf_type].c_str());
   Logger::nrf_app().debug("\tStatus: %s", nf_status.c_str());
   Logger::nrf_app().debug("\tHeartBeat timer: %d", heartBeat_timer);
   Logger::nrf_app().debug("\tPriority: %d", priority);
@@ -204,10 +228,10 @@ void nrf_profile::display() {
 }
 
 //------------------------------------------------------------------------------
-bool nrf_profile::replace_profile_info(const std::string &path,
-                                       const std::string &value) {
-  Logger::nrf_app().debug("Replace member %s with new value %s", path.c_str(),
-                          value.c_str());
+bool nrf_profile::replace_profile_info(
+    const std::string& path, const std::string& value) {
+  Logger::nrf_app().debug(
+      "Replace member %s with new value %s", path.c_str(), value.c_str());
   if (path.compare("nfInstanceName") == 0) {
     nf_instance_name = value;
     return true;
@@ -227,7 +251,7 @@ bool nrf_profile::replace_profile_info(const std::string &path,
     try {
       heartBeat_timer = std::stoi(value);
       return true;
-    } catch (const std::exception &err) {
+    } catch (const std::exception& err) {
       Logger::nrf_app().debug("Bad value!");
       return false;
     }
@@ -235,9 +259,9 @@ bool nrf_profile::replace_profile_info(const std::string &path,
 
   if (path.compare("priority") == 0) {
     try {
-      priority = (uint16_t)std::stoi(value);
+      priority = (uint16_t) std::stoi(value);
       return true;
-    } catch (const std::exception &err) {
+    } catch (const std::exception& err) {
       Logger::nrf_app().debug("Bad value!");
       return false;
     }
@@ -245,9 +269,9 @@ bool nrf_profile::replace_profile_info(const std::string &path,
 
   if (path.compare("capacity") == 0) {
     try {
-      capacity = (uint16_t)std::stoi(value);
+      capacity = (uint16_t) std::stoi(value);
       return true;
-    } catch (const std::exception &err) {
+    } catch (const std::exception& err) {
       Logger::nrf_app().debug("Bad value!");
       return false;
     }
@@ -273,8 +297,8 @@ bool nrf_profile::replace_profile_info(const std::string &path,
 }
 
 //------------------------------------------------------------------------------
-bool nrf_profile::add_profile_info(const std::string &path,
-                                   const std::string &value) {
+bool nrf_profile::add_profile_info(
+    const std::string& path, const std::string& value) {
   Logger::nrf_app().debug(
       "Add an array element (value, array member), or a new member (value, "
       "member):  %s, %s",
@@ -300,7 +324,7 @@ bool nrf_profile::add_profile_info(const std::string &path,
     try {
       heartBeat_timer = std::stoi(value);
       return true;
-    } catch (const std::exception &err) {
+    } catch (const std::exception& err) {
       Logger::nrf_app().debug("Bad value!");
       return false;
     }
@@ -308,9 +332,9 @@ bool nrf_profile::add_profile_info(const std::string &path,
 
   if (path.compare("priority") == 0) {
     try {
-      priority = (uint16_t)std::stoi(value);
+      priority = (uint16_t) std::stoi(value);
       return true;
-    } catch (const std::exception &err) {
+    } catch (const std::exception& err) {
       Logger::nrf_app().debug("Bad value!");
       return false;
     }
@@ -318,9 +342,9 @@ bool nrf_profile::add_profile_info(const std::string &path,
 
   if (path.compare("capacity") == 0) {
     try {
-      capacity = (uint16_t)std::stoi(value);
+      capacity = (uint16_t) std::stoi(value);
       return true;
-    } catch (const std::exception &err) {
+    } catch (const std::exception& err) {
       Logger::nrf_app().debug("Bad value!");
       return false;
     }
@@ -328,14 +352,14 @@ bool nrf_profile::add_profile_info(const std::string &path,
 
   // add an element to a list
   if (path.compare("ipv4Addresses") == 0) {
-    std::string address = value;
+    std::string address  = value;
     struct in_addr addr4 = {};
     unsigned char buf_in_addr[sizeof(struct in_addr)];
     if (inet_pton(AF_INET, util::trim(address).c_str(), buf_in_addr) == 1) {
       memcpy(&addr4, buf_in_addr, sizeof(struct in_addr));
     } else {
-      Logger::nrf_app().warn("Address conversion: Bad value %s",
-                             util::trim(address).c_str());
+      Logger::nrf_app().warn(
+          "Address conversion: Bad value %s", util::trim(address).c_str());
       return false;
     }
     Logger::nrf_app().debug("Added IPv4 Addr: %s", address.c_str());
@@ -358,9 +382,9 @@ bool nrf_profile::add_profile_info(const std::string &path,
 }
 
 //------------------------------------------------------------------------------
-bool nrf_profile::remove_profile_info(const std::string &path) {
-  Logger::nrf_app().debug("Remove an array element or a member: %s",
-                          path.c_str());
+bool nrf_profile::remove_profile_info(const std::string& path) {
+  Logger::nrf_app().debug(
+      "Remove an array element or a member: %s", path.c_str());
   if (path.compare("nfInstanceName") == 0) {
     nf_instance_name = "";
     return true;
@@ -403,7 +427,7 @@ bool nrf_profile::remove_profile_info(const std::string &path) {
     uint32_t index = 0;
     try {
       index = std::stoi(parts.at(1));
-    } catch (const std::exception &err) {
+    } catch (const std::exception& err) {
       Logger::nrf_app().warn("Bad value for path: %s ", path.c_str());
       return false;
     }
@@ -412,8 +436,8 @@ bool nrf_profile::remove_profile_info(const std::string &path) {
       Logger::nrf_app().warn("Bad value for path: %s ", path.c_str());
       return false;
     } else {
-      Logger::nrf_app().debug("Removed IPv4 Addr: %s",
-                              inet_ntoa(ipv4_addresses[index]));
+      Logger::nrf_app().debug(
+          "Removed IPv4 Addr: %s", inet_ntoa(ipv4_addresses[index]));
       ipv4_addresses.erase(ipv4_addresses.begin() + index);
       return true;
     }
@@ -429,24 +453,23 @@ bool nrf_profile::remove_profile_info(const std::string &path) {
     return false;
   }
 
-
   Logger::nrf_app().debug("Member (%s) not found!", path.c_str());
   return false;
 }
 
 //------------------------------------------------------------------------------
-void nrf_profile::to_json(nlohmann::json &data) const {
-  data["nfInstanceId"] = nf_instance_id;
+void nrf_profile::to_json(nlohmann::json& data) const {
+  data["nfInstanceId"]   = nf_instance_id;
   data["nfInstanceName"] = nf_instance_name;
-  data["nfType"] = nf_type_e2str[nf_type];
-  data["nfStatus"] = nf_status;
+  data["nfType"]         = nf_type_e2str[nf_type];
+  data["nfStatus"]       = nf_status;
   data["heartBeatTimer"] = heartBeat_timer;
   // SNSSAIs
   data["sNssais"] = nlohmann::json::array();
   for (auto s : snssais) {
     nlohmann::json tmp = {};
-    tmp["sst"] = s.sST;
-    tmp["sd"] = s.sD;
+    tmp["sst"]         = s.sST;
+    tmp["sd"]          = s.sD;
     ;
     data["sNssais"].push_back(tmp);
   }
@@ -461,17 +484,17 @@ void nrf_profile::to_json(nlohmann::json &data) const {
   // NF services
   data["nfServices"] = nlohmann::json::array();
   for (auto service : nf_services) {
-    nlohmann::json srv_tmp = {};
+    nlohmann::json srv_tmp       = {};
     srv_tmp["serviceInstanceId"] = service.service_instance_id;
-    srv_tmp["serviceName"] = service.service_name;
-    srv_tmp["versions"] = nlohmann::json::array();
+    srv_tmp["serviceName"]       = service.service_name;
+    srv_tmp["versions"]          = nlohmann::json::array();
     for (auto v : service.versions) {
-      nlohmann::json v_tmp = {};
+      nlohmann::json v_tmp     = {};
       v_tmp["apiVersionInUri"] = v.api_version_in_uri;
-      v_tmp["apiFullVersion"] = v.api_full_version;
+      v_tmp["apiFullVersion"]  = v.api_full_version;
       srv_tmp["versions"].push_back(v_tmp);
     }
-    srv_tmp["scheme"] = service.scheme;
+    srv_tmp["scheme"]          = service.scheme;
     srv_tmp["nfServiceStatus"] = service.nf_service_status;
     data["nfServices"].push_back(srv_tmp);
   }
@@ -482,8 +505,8 @@ void nrf_profile::to_json(nlohmann::json &data) const {
 void nrf_profile::subscribe_heartbeat_timeout_nfregistration(uint64_t ms) {
   // For the first timeout, we use 2*HEART_BEAT_TIMER as interval
   struct itimerspec its;
-  its.it_value.tv_sec = 2 * HEART_BEAT_TIMER;  // seconds
-  its.it_value.tv_nsec = 0;                    // 100 * 1000 * 1000; //100ms
+  its.it_value.tv_sec  = 2 * HEART_BEAT_TIMER;  // seconds
+  its.it_value.tv_nsec = 0;                     // 100 * 1000 * 1000; //100ms
   const uint64_t interval =
       its.it_value.tv_sec * 1000 +
       its.it_value.tv_nsec / 1000000;  // convert sec, nsec to msec
@@ -493,16 +516,16 @@ void nrf_profile::subscribe_heartbeat_timeout_nfregistration(uint64_t ms) {
       "registration): interval %d, current time %ld",
       2 * HEART_BEAT_TIMER, ms);
   first_hb_connection = m_event_sub.subscribe_task_tick(
-      boost::bind(&nrf_profile::handle_heartbeart_timeout_nfregistration, this,
-                  _1),
+      boost::bind(
+          &nrf_profile::handle_heartbeart_timeout_nfregistration, this, _1),
       interval, ms + interval);
 }
 
 //------------------------------------------------------------------------------
 void nrf_profile::subscribe_heartbeat_timeout_nfupdate(uint64_t ms) {
   struct itimerspec its;
-  its.it_value.tv_sec = HEART_BEAT_TIMER;  // Second
-  its.it_value.tv_nsec = 0;                // 100 * 1000 * 1000; //100ms
+  its.it_value.tv_sec  = HEART_BEAT_TIMER;  // Second
+  its.it_value.tv_nsec = 0;                 // 100 * 1000 * 1000; //100ms
   const uint64_t interval =
       its.it_value.tv_sec * 1000 +
       its.it_value.tv_nsec / 1000000;  // convert sec, nsec to msec
@@ -593,29 +616,34 @@ void nrf_profile::set_status_updated(bool status) {
 }
 
 //------------------------------------------------------------------------------
-void amf_profile::add_amf_info(const amf_info_t &info) { amf_info = info; }
+void amf_profile::add_amf_info(const amf_info_t& info) {
+  amf_info = info;
+}
 
 //------------------------------------------------------------------------------
-void amf_profile::get_amf_info(amf_info_t &info) const { info = amf_info; }
+void amf_profile::get_amf_info(amf_info_t& info) const {
+  info = amf_info;
+}
 
 //------------------------------------------------------------------------------
 void amf_profile::display() {
   nrf_profile::display();
   Logger::nrf_app().debug("\tAMF Info");
-  Logger::nrf_app().debug("\t\tAMF Set ID: %s, AMF Region ID: %s",
-                          amf_info.amf_set_id.c_str(),
-                          amf_info.amf_region_id.c_str());
+  Logger::nrf_app().debug(
+      "\t\tAMF Set ID: %s, AMF Region ID: %s", amf_info.amf_set_id.c_str(),
+      amf_info.amf_region_id.c_str());
 
   for (auto g : amf_info.guami_list) {
     Logger::nrf_app().debug("\t\tAMF GUAMI List, AMF_ID: %s", g.amf_id.c_str());
-    Logger::nrf_app().debug("\t\tAMF GUAMI List, PLMN (MCC: %s, MNC: %s)",
-                            g.plmn.mcc.c_str(), g.plmn.mnc.c_str());
+    Logger::nrf_app().debug(
+        "\t\tAMF GUAMI List, PLMN (MCC: %s, MNC: %s)", g.plmn.mcc.c_str(),
+        g.plmn.mnc.c_str());
   }
 }
 
 //------------------------------------------------------------------------------
-bool amf_profile::replace_profile_info(const std::string &path,
-                                       const std::string &value) {
+bool amf_profile::replace_profile_info(
+    const std::string& path, const std::string& value) {
   bool result = nrf_profile::replace_profile_info(path, value);
   if (result) return true;
   // for AMF info
@@ -640,8 +668,8 @@ bool amf_profile::replace_profile_info(const std::string &path,
 }
 
 //------------------------------------------------------------------------------
-bool amf_profile::add_profile_info(const std::string &path,
-                                   const std::string &value) {
+bool amf_profile::add_profile_info(
+    const std::string& path, const std::string& value) {
   bool result = nrf_profile::add_profile_info(path, value);
   if (result) return true;
 
@@ -670,7 +698,7 @@ bool amf_profile::add_profile_info(const std::string &path,
 }
 
 //------------------------------------------------------------------------------
-bool amf_profile::remove_profile_info(const std::string &path) {
+bool amf_profile::remove_profile_info(const std::string& path) {
   bool result = nrf_profile::remove_profile_info(path);
   if (result) return true;
   // for AMF info
@@ -696,16 +724,16 @@ bool amf_profile::remove_profile_info(const std::string &path) {
 }
 
 //------------------------------------------------------------------------------
-void amf_profile::to_json(nlohmann::json &data) const {
+void amf_profile::to_json(nlohmann::json& data) const {
   nrf_profile::to_json(data);
   // AMF Info
-  data["amfInfo"]["amfSetId"] = amf_info.amf_set_id;
+  data["amfInfo"]["amfSetId"]    = amf_info.amf_set_id;
   data["amfInfo"]["amfRegionId"] = amf_info.amf_region_id;
   // guamiList
   data["amfInfo"]["guamiList"] = nlohmann::json::array();
   for (auto guami : amf_info.guami_list) {
-    nlohmann::json tmp = {};
-    tmp["amfId"] = guami.amf_id;
+    nlohmann::json tmp   = {};
+    tmp["amfId"]         = guami.amf_id;
     tmp["plmnId"]["mnc"] = guami.plmn.mnc;
     tmp["plmnId"]["mcc"] = guami.plmn.mcc;
     data["amfInfo"]["guamiList"].push_back(tmp);
@@ -713,10 +741,14 @@ void amf_profile::to_json(nlohmann::json &data) const {
 }
 
 //------------------------------------------------------------------------------
-void smf_profile::add_smf_info(const smf_info_t &info) { smf_info = info; }
+void smf_profile::add_smf_info(const smf_info_t& info) {
+  smf_info = info;
+}
 
 //------------------------------------------------------------------------------
-void smf_profile::get_smf_info(smf_info_t &infos) const { infos = smf_info; }
+void smf_profile::get_smf_info(smf_info_t& infos) const {
+  infos = smf_info;
+}
 
 //------------------------------------------------------------------------------
 void smf_profile::display() {
@@ -727,15 +759,15 @@ void smf_profile::display() {
         "\t\tSNSSAI SMF Info List, SNSSAI (SD: %s, SST: %d)",
         s.snssai.sD.c_str(), s.snssai.sST);
     for (auto d : s.dnn_smf_info_list) {
-      Logger::nrf_app().debug("\t\tSNSSAI SMF Info List, DNN List: %s",
-                              d.dnn.c_str());
+      Logger::nrf_app().debug(
+          "\t\tSNSSAI SMF Info List, DNN List: %s", d.dnn.c_str());
     }
   }
 }
 
 //------------------------------------------------------------------------------
-bool smf_profile::add_profile_info(const std::string &path,
-                                   const std::string &value) {
+bool smf_profile::add_profile_info(
+    const std::string& path, const std::string& value) {
   bool result = nrf_profile::add_profile_info(path, value);
   if (result) return true;
 
@@ -763,8 +795,8 @@ bool smf_profile::add_profile_info(const std::string &path,
 }
 
 //------------------------------------------------------------------------------
-bool smf_profile::replace_profile_info(const std::string &path,
-                                       const std::string &value) {
+bool smf_profile::replace_profile_info(
+    const std::string& path, const std::string& value) {
   bool result = nrf_profile::replace_profile_info(path, value);
   if (result) return true;
   // for SMF info
@@ -790,7 +822,7 @@ bool smf_profile::replace_profile_info(const std::string &path,
 }
 
 //------------------------------------------------------------------------------
-bool smf_profile::remove_profile_info(const std::string &path) {
+bool smf_profile::remove_profile_info(const std::string& path) {
   bool result = nrf_profile::remove_profile_info(path);
   if (result) return true;
   // for SMF info
@@ -816,18 +848,18 @@ bool smf_profile::remove_profile_info(const std::string &path) {
 }
 
 //------------------------------------------------------------------------------
-void smf_profile::to_json(nlohmann::json &data) const {
+void smf_profile::to_json(nlohmann::json& data) const {
   nrf_profile::to_json(data);
   // SMF Info
   data["smfInfo"]["sNssaiSmfInfoList"] = nlohmann::json::array();
   for (auto snssai : smf_info.snssai_smf_info_list) {
-    nlohmann::json tmp = {};
-    tmp["sNssai"]["sst"] = snssai.snssai.sST;
-    tmp["sNssai"]["sd"] = snssai.snssai.sD;
+    nlohmann::json tmp    = {};
+    tmp["sNssai"]["sst"]  = snssai.snssai.sST;
+    tmp["sNssai"]["sd"]   = snssai.snssai.sD;
     tmp["dnnSmfInfoList"] = nlohmann::json::array();
     for (auto d : snssai.dnn_smf_info_list) {
       nlohmann::json tmp_dnn = {};
-      tmp_dnn["dnn"] = d.dnn;
+      tmp_dnn["dnn"]         = d.dnn;
       tmp["dnnSmfInfoList"].push_back(tmp_dnn);
     }
     data["smfInfo"]["sNssaiSmfInfoList"].push_back(tmp);
@@ -835,10 +867,14 @@ void smf_profile::to_json(nlohmann::json &data) const {
 }
 
 //------------------------------------------------------------------------------
-void upf_profile::add_upf_info(const upf_info_t &info) { upf_info = info; }
+void upf_profile::add_upf_info(const upf_info_t& info) {
+  upf_info = info;
+}
 
 //------------------------------------------------------------------------------
-void upf_profile::get_upf_info(upf_info_t &infos) const { infos = upf_info; }
+void upf_profile::get_upf_info(upf_info_t& infos) const {
+  infos = upf_info;
+}
 
 //------------------------------------------------------------------------------
 void upf_profile::display() {
@@ -849,15 +885,15 @@ void upf_profile::display() {
         "\t\tSNSSAI UPF Info List, SNSSAI (SD: %s, SST: %d)",
         s.snssai.sD.c_str(), s.snssai.sST);
     for (auto d : s.dnn_upf_info_list) {
-      Logger::nrf_app().debug("\t\tSNSSAI UPF Info List, DNN List: %s",
-                              d.dnn.c_str());
+      Logger::nrf_app().debug(
+          "\t\tSNSSAI UPF Info List, DNN List: %s", d.dnn.c_str());
     }
   }
 }
 
 //------------------------------------------------------------------------------
-bool upf_profile::add_profile_info(const std::string &path,
-                                   const std::string &value) {
+bool upf_profile::add_profile_info(
+    const std::string& path, const std::string& value) {
   bool result = nrf_profile::add_profile_info(path, value);
   if (result) return true;
 
@@ -885,8 +921,8 @@ bool upf_profile::add_profile_info(const std::string &path,
 }
 
 //------------------------------------------------------------------------------
-bool upf_profile::replace_profile_info(const std::string &path,
-                                       const std::string &value) {
+bool upf_profile::replace_profile_info(
+    const std::string& path, const std::string& value) {
   bool result = nrf_profile::replace_profile_info(path, value);
   if (result) return true;
   // for UPF info
@@ -912,7 +948,7 @@ bool upf_profile::replace_profile_info(const std::string &path,
 }
 
 //------------------------------------------------------------------------------
-bool upf_profile::remove_profile_info(const std::string &path) {
+bool upf_profile::remove_profile_info(const std::string& path) {
   bool result = nrf_profile::remove_profile_info(path);
   if (result) return true;
   // for UPF info
@@ -938,18 +974,18 @@ bool upf_profile::remove_profile_info(const std::string &path) {
 }
 
 //------------------------------------------------------------------------------
-void upf_profile::to_json(nlohmann::json &data) const {
+void upf_profile::to_json(nlohmann::json& data) const {
   nrf_profile::to_json(data);
   // UPF Info
   data["upfInfo"]["sNssaiSmfInfoList"] = nlohmann::json::array();
   for (auto snssai : upf_info.snssai_upf_info_list) {
-    nlohmann::json tmp = {};
-    tmp["sNssai"]["sst"] = snssai.snssai.sST;
-    tmp["sNssai"]["sd"] = snssai.snssai.sD;
+    nlohmann::json tmp    = {};
+    tmp["sNssai"]["sst"]  = snssai.snssai.sST;
+    tmp["sNssai"]["sd"]   = snssai.snssai.sD;
     tmp["dnnSmfInfoList"] = nlohmann::json::array();
     for (auto d : snssai.dnn_upf_info_list) {
       nlohmann::json tmp_dnn = {};
-      tmp_dnn["dnn"] = d.dnn;
+      tmp_dnn["dnn"]         = d.dnn;
       tmp["dnnSmfInfoList"].push_back(tmp_dnn);
     }
     data["upfInfo"]["sNssaiSmfInfoList"].push_back(tmp);
