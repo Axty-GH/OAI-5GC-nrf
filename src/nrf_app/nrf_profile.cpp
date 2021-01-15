@@ -977,17 +977,17 @@ bool upf_profile::remove_profile_info(const std::string& path) {
 void upf_profile::to_json(nlohmann::json& data) const {
   nrf_profile::to_json(data);
   // UPF Info
-  data["upfInfo"]["sNssaiSmfInfoList"] = nlohmann::json::array();
+  data["upfInfo"]["sNssaiUpfInfoList"] = nlohmann::json::array();
   for (auto snssai : upf_info.snssai_upf_info_list) {
     nlohmann::json tmp    = {};
     tmp["sNssai"]["sst"]  = snssai.snssai.sST;
     tmp["sNssai"]["sd"]   = snssai.snssai.sD;
-    tmp["dnnSmfInfoList"] = nlohmann::json::array();
+    tmp["dnnUpfInfoList"] = nlohmann::json::array();
     for (auto d : snssai.dnn_upf_info_list) {
       nlohmann::json tmp_dnn = {};
       tmp_dnn["dnn"]         = d.dnn;
-      tmp["dnnSmfInfoList"].push_back(tmp_dnn);
+      tmp["dnnUpfInfoList"].push_back(tmp_dnn);
     }
-    data["upfInfo"]["sNssaiSmfInfoList"].push_back(tmp);
+    data["upfInfo"]["sNssaiUpfInfoList"].push_back(tmp);
   }
 }
