@@ -833,3 +833,125 @@ void smf_profile::to_json(nlohmann::json &data) const {
     data["smfInfo"]["sNssaiSmfInfoList"].push_back(tmp);
   }
 }
+
+//------------------------------------------------------------------------------
+void upf_profile::add_upf_info(const upf_info_t &info) { upf_info = info; }
+
+//------------------------------------------------------------------------------
+void upf_profile::get_upf_info(upf_info_t &infos) const { infos = upf_info; }
+
+//------------------------------------------------------------------------------
+void upf_profile::display() {
+  nrf_profile::display();
+  Logger::nrf_app().debug("\tUPF Info");
+  for (auto s : upf_info.snssai_upf_info_list) {
+    Logger::nrf_app().debug(
+        "\t\tSNSSAI UPF Info List, SNSSAI (SD: %s, SST: %d)",
+        s.snssai.sD.c_str(), s.snssai.sST);
+    for (auto d : s.dnn_upf_info_list) {
+      Logger::nrf_app().debug("\t\tSNSSAI UPF Info List, DNN List: %s",
+                              d.dnn.c_str());
+    }
+  }
+}
+
+//------------------------------------------------------------------------------
+bool upf_profile::add_profile_info(const std::string &path,
+                                   const std::string &value) {
+  bool result = nrf_profile::add_profile_info(path, value);
+  if (result) return true;
+
+  // add an element to a list of json object
+  if (path.compare("upfInfo") == 0) {
+    Logger::nrf_app().info("Does not support this operation for upfInfo");
+    return false;
+  }
+
+  if ((path.compare("nfInstanceId") != 0) and
+      (path.compare("nfInstanceName") != 0) and
+      (path.compare("nfType") != 0) and (path.compare("nfStatus") != 0) and
+      (path.compare("heartBeatTimer") != 0) and
+      (path.compare("sNssais") != 0) and
+      (path.compare("ipv4Addresses") != 0) and
+      (path.compare("priority") != 0) and (path.compare("capacity") != 0) and
+      (path.compare("priority") != 0) and (path.compare("nfServices") != 0) and
+      (path.compare("upfInfo") != 0)) {
+    Logger::nrf_app().debug("Add new member: %s", path.c_str());
+    // add new member
+    json_data[path] = value;
+    return true;
+  }
+  return false;
+}
+
+//------------------------------------------------------------------------------
+bool upf_profile::replace_profile_info(const std::string &path,
+                                       const std::string &value) {
+  bool result = nrf_profile::replace_profile_info(path, value);
+  if (result) return true;
+  // for UPF info
+  if (path.compare("upfInfo") == 0) {
+    Logger::nrf_app().debug("Does not support this operation for amfInfo");
+    return false;
+  }
+
+  if ((path.compare("nfInstanceId") != 0) and
+      (path.compare("nfInstanceName") != 0) and
+      (path.compare("nfType") != 0) and (path.compare("nfStatus") != 0) and
+      (path.compare("heartBeatTimer") != 0) and
+      (path.compare("sNssais") != 0) and
+      (path.compare("ipv4Addresses") != 0) and
+      (path.compare("priority") != 0) and (path.compare("capacity") != 0) and
+      (path.compare("priority") != 0) and (path.compare("nfServices") != 0) and
+      (path.compare("amfInfo") != 0)) {
+    Logger::nrf_app().debug("Member (%s) not found!", path.c_str());
+    return false;
+  }
+
+  return false;
+}
+
+//------------------------------------------------------------------------------
+bool upf_profile::remove_profile_info(const std::string &path) {
+  bool result = nrf_profile::remove_profile_info(path);
+  if (result) return true;
+  // for UPF info
+  if (path.compare("upfInfo") == 0) {
+    Logger::nrf_app().debug("Do not support this operation for upfInfo");
+    return false;
+  }
+
+  if ((path.compare("nfInstanceId") != 0) and
+      (path.compare("nfInstanceName") != 0) and
+      (path.compare("nfType") != 0) and (path.compare("nfStatus") != 0) and
+      (path.compare("heartBeatTimer") != 0) and
+      (path.compare("sNssais") != 0) and
+      (path.compare("ipv4Addresses") != 0) and
+      (path.compare("priority") != 0) and (path.compare("capacity") != 0) and
+      (path.compare("priority") != 0) and (path.compare("nfServices") != 0) and
+      (path.compare("upfInfo") != 0)) {
+    Logger::nrf_app().debug("Member (%s) not found!", path.c_str());
+    return false;
+  }
+
+  return false;
+}
+
+//------------------------------------------------------------------------------
+void upf_profile::to_json(nlohmann::json &data) const {
+  nrf_profile::to_json(data);
+  // UPF Info
+  data["upfInfo"]["sNssaiSmfInfoList"] = nlohmann::json::array();
+  for (auto snssai : upf_info.snssai_upf_info_list) {
+    nlohmann::json tmp = {};
+    tmp["sNssai"]["sst"] = snssai.snssai.sST;
+    tmp["sNssai"]["sd"] = snssai.snssai.sD;
+    tmp["dnnSmfInfoList"] = nlohmann::json::array();
+    for (auto d : snssai.dnn_upf_info_list) {
+      nlohmann::json tmp_dnn = {};
+      tmp_dnn["dnn"] = d.dnn;
+      tmp["dnnSmfInfoList"].push_back(tmp_dnn);
+    }
+    data["upfInfo"]["sNssaiSmfInfoList"].push_back(tmp);
+  }
+}

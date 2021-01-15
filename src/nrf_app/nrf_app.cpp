@@ -129,6 +129,10 @@ void nrf_app::handle_register_nf_instance(
       sn = std::make_shared<smf_profile>(m_event_sub);
     } break;
 
+    case NF_TYPE_UPF: {
+      sn = std::make_shared<upf_profile>(m_event_sub);
+    } break;
+
     default: { sn = std::make_shared<nrf_profile>(m_event_sub); }
   }
 

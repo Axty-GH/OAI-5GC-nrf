@@ -50,15 +50,30 @@ typedef struct smf_info_s {
   std::vector<snssai_smf_info_item_t> snssai_smf_info_list;
 } smf_info_t;
 
+typedef struct dnn_upf_info_item_s {
+  std::string dnn;
+  // std::vector<std::string> dnai_list
+  // std::vector<std::string> pdu_session_types
+} dnn_upf_info_item_t;
+
+typedef struct snssai_upf_info_item_s {
+  snssai_t snssai;
+  std::vector<dnn_upf_info_item_t> dnn_upf_info_list;
+} snssai_upf_info_item_t;
+
+typedef struct upf_info_s {
+  std::vector<snssai_upf_info_item_t> snssai_upf_info_list;
+} upf_info_t;
+
 enum subscr_condition_type_e {  // TODO: use enum class
-  UNKNOWN_CONDITION = 0,
+  UNKNOWN_CONDITION   = 0,
   NF_INSTANCE_ID_COND = 1,
-  NF_TYPE_COND = 2,
-  SERVICE_NAME_COND = 3,
-  AMF_COND = 4,
-  GUAMI_LIST_COND = 5,
-  NETWOTK_SLICE_COND = 6,
-  NF_GROUP_COND = 7
+  NF_TYPE_COND        = 2,
+  SERVICE_NAME_COND   = 3,
+  AMF_COND            = 4,
+  GUAMI_LIST_COND     = 5,
+  NETWOTK_SLICE_COND  = 6,
+  NF_GROUP_COND       = 7
 };
 
 static const std::vector<std::string> subscription_condition_type_e2str = {
@@ -99,7 +114,7 @@ typedef struct subscription_condition_s {
 
   subscription_condition_s(uint8_t t) : type(t) {}
 
-  subscription_condition_s(const subscription_condition_s &s)
+  subscription_condition_s(const subscription_condition_s& s)
       : subscription_condition_s() {
     type = s.type;
     switch (s.type) {
@@ -114,7 +129,7 @@ typedef struct subscription_condition_s {
         service_name = s.service_name;
       } break;
       case AMF_COND: {
-        amf_info.amf_set_id = s.amf_info.amf_set_id;
+        amf_info.amf_set_id    = s.amf_info.amf_set_id;
         amf_info.amf_region_id = s.amf_info.amf_region_id;
       } break;
 
@@ -136,13 +151,13 @@ typedef struct subscription_condition_s {
     }
     // TODO:
   }
-  bool operator==(const struct subscription_condition_s &s) const {
+  bool operator==(const struct subscription_condition_s& s) const {
     return (s.type == type);
   }
 
-  bool operator==(const uint8_t &t) const { return (t == type); }
+  bool operator==(const uint8_t& t) const { return (t == type); }
 
-  subscription_condition_s &operator=(const subscription_condition_s &s) {
+  subscription_condition_s& operator=(const subscription_condition_s& s) {
     type = s.type;
     switch (s.type) {
       case NF_INSTANCE_ID_COND: {
@@ -156,7 +171,7 @@ typedef struct subscription_condition_s {
         service_name = s.service_name;
       } break;
       case AMF_COND: {
-        amf_info.amf_set_id = s.amf_info.amf_set_id;
+        amf_info.amf_set_id    = s.amf_info.amf_set_id;
         amf_info.amf_region_id = s.amf_info.amf_region_id;
       } break;
 
@@ -227,9 +242,9 @@ typedef struct subscription_condition_s {
 } subscription_condition_t;
 
 enum notification_event_type_t {
-  NOTIFICATION_TYPE_UNKNOWN_EVENT = 0,
-  NOTIFICATION_TYPE_NF_REGISTERED = 1,
-  NOTIFICATION_TYPE_NF_DEREGISTERED = 2,
+  NOTIFICATION_TYPE_UNKNOWN_EVENT      = 0,
+  NOTIFICATION_TYPE_NF_REGISTERED      = 1,
+  NOTIFICATION_TYPE_NF_DEREGISTERED    = 2,
   NOTIFICATION_TYPE_NF_PROFILE_CHANGED = 3
 };
 
@@ -240,9 +255,9 @@ typedef struct nf_service_version_s {
   std::string api_version_in_uri;  // apiVersionInUri
   std::string api_full_version;    // apiFullVersion
 
-  nf_service_version_s &operator=(const nf_service_version_s &s) {
+  nf_service_version_s& operator=(const nf_service_version_s& s) {
     api_version_in_uri = s.api_version_in_uri;
-    api_full_version = s.api_full_version;
+    api_full_version   = s.api_full_version;
   }
 
   std::string to_string() const {

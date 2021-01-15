@@ -239,6 +239,10 @@ void nrf_client::notify_subscribed_event(
         std::static_pointer_cast<smf_profile>(profile).get()->to_json(
             json_profile);
       } break;
+      case NF_TYPE_UPF: {
+              std::static_pointer_cast<upf_profile>(profile).get()->to_json(
+                  json_profile);
+            } break;
       default: { profile.get()->to_json(json_profile); }
     }
     json_data["nfProfile"] = json_profile;
@@ -294,6 +298,10 @@ void nrf_client::notify_subscribed_event_multi(
       } break;
       case NF_TYPE_SMF: {
         std::static_pointer_cast<smf_profile>(profile).get()->to_json(
+            json_profile);
+      } break;
+      case NF_TYPE_UPF: {
+        std::static_pointer_cast<upf_profile>(profile).get()->to_json(
             json_profile);
       } break;
       default: { profile.get()->to_json(json_profile); }

@@ -649,6 +649,74 @@ class smf_profile : public nrf_profile {
  private:
   smf_info_t smf_info;
 };
+
+
+class upf_profile : public nrf_profile {
+ public:
+  upf_profile(nrf_event &ev) : nrf_profile(ev, NF_TYPE_UPF) { upf_info = {}; }
+
+  upf_profile(nrf_event &ev, const std::string &id) : nrf_profile(ev, id) {
+    nf_type = NF_TYPE_UPF;
+    upf_info = {};
+  }
+
+  upf_profile(upf_profile &b) = delete;
+
+  /*
+   * Add a UPF info
+   * @param [const upf_info_t &] info: UPF info
+   * @return void
+   */
+  void add_upf_info(const upf_info_t &info);
+
+  /*
+   * Get list of UPF infos a UPF info
+   * @param [const upf_info_t &] info: UPF info
+   * @return void
+   */
+  void get_upf_info(upf_info_t &infos) const;
+
+  /*
+   * Print related-information for a UPF profile
+   * @param void
+   * @return void:
+   */
+  void display();
+
+  /*
+   * Update a new value for a member of UPF profile
+   * @param [const std::string &] path: member name
+   * @param [const std::string &] value: new value
+   * @return void
+   */
+  bool replace_profile_info(const std::string &path, const std::string &value);
+
+  /*
+   * Add a new value for a member of NF profile
+   * @param [const std::string &] path: member name
+   * @param [const std::string &] value: new value
+   * @return true if success, otherwise false
+   */
+  bool add_profile_info(const std::string &path, const std::string &value);
+
+  /*
+   * Remove value of a member of NF profile
+   * @param [const std::string &] path: member name
+   * @param [const std::string &] value: new value
+   * @return true if success, otherwise false
+   */
+  bool remove_profile_info(const std::string &path);
+
+  /*
+   * Represent NF profile as json object
+   * @param [nlohmann::json &] data: Json data
+   * @return void
+   */
+  void to_json(nlohmann::json &data) const;
+
+ private:
+  upf_info_t upf_info;
+};
 }  // namespace app
 }  // namespace nrf
 }  // namespace oai
