@@ -22,23 +22,23 @@ using namespace oai::nrf::model;
 using namespace oai::nrf::app;
 
 SubscriptionIDDocumentApiImpl::SubscriptionIDDocumentApiImpl(
-    std::shared_ptr<Pistache::Rest::Router> rtr, nrf_app *nrf_app_inst,
+    std::shared_ptr<Pistache::Rest::Router> rtr, nrf_app* nrf_app_inst,
     std::string address)
     : SubscriptionIDDocumentApi(rtr),
       m_nrf_app(nrf_app_inst),
       m_address(address) {}
 
 void SubscriptionIDDocumentApiImpl::remove_subscription(
-    const std::string &subscriptionID,
-    Pistache::Http::ResponseWriter &response) {
+    const std::string& subscriptionID,
+    Pistache::Http::ResponseWriter& response) {
   Logger::nrf_sbi().info(
       "Got a request to remove an existing subscription, subscription ID %s",
       subscriptionID.c_str());
 
-  int http_code = 0;
+  int http_code                  = 0;
   ProblemDetails problem_details = {};
-  m_nrf_app->handle_remove_subscription(subscriptionID, http_code, 1,
-                                        problem_details);
+  m_nrf_app->handle_remove_subscription(
+      subscriptionID, http_code, 1, problem_details);
 
   nlohmann::json json_data = {};
   std::string content_type = "application/json";
@@ -58,17 +58,17 @@ void SubscriptionIDDocumentApiImpl::remove_subscription(
   }
 }
 void SubscriptionIDDocumentApiImpl::update_subscription(
-    const std::string &subscriptionID, const std::vector<PatchItem> &patchItem,
-    Pistache::Http::ResponseWriter &response) {
+    const std::string& subscriptionID, const std::vector<PatchItem>& patchItem,
+    Pistache::Http::ResponseWriter& response) {
   Logger::nrf_sbi().info(
       "Got a request to update of subscription to NF instances, subscription "
       "ID %s",
       subscriptionID.c_str());
 
-  int http_code = 0;
+  int http_code                  = 0;
   ProblemDetails problem_details = {};
-  m_nrf_app->handle_update_subscription(subscriptionID, patchItem, http_code, 1,
-                                        problem_details);
+  m_nrf_app->handle_update_subscription(
+      subscriptionID, patchItem, http_code, 1, problem_details);
 
   // TODO: (section 5.2.2.5.6, Update of Subscription to NF Instances,
   // 3GPP TS 29.510 V16.0.0 (2019-06)) if the NRF accepts the extension

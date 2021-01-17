@@ -30,7 +30,7 @@ using namespace oai::nrf::app;
 using namespace oai::nrf;
 
 NFInstanceIDDocumentApiImpl::NFInstanceIDDocumentApiImpl(
-    std::shared_ptr<Pistache::Rest::Router> rtr, nrf_app *nrf_app_inst,
+    std::shared_ptr<Pistache::Rest::Router> rtr, nrf_app* nrf_app_inst,
     std::string address)
     : NFInstanceIDDocumentApi(rtr),
       m_nrf_app(nrf_app_inst),
@@ -38,15 +38,15 @@ NFInstanceIDDocumentApiImpl::NFInstanceIDDocumentApiImpl(
 
 //------------------------------------------------------------------------------
 void NFInstanceIDDocumentApiImpl::deregister_nf_instance(
-    const std::string &nfInstanceID, Pistache::Http::ResponseWriter &response) {
+    const std::string& nfInstanceID, Pistache::Http::ResponseWriter& response) {
   Logger::nrf_sbi().info(
       "Got a request to de-register a given NF Instance, Instance ID: %s",
       nfInstanceID.c_str());
 
-  int http_code = 0;
+  int http_code                  = 0;
   ProblemDetails problem_details = {};
-  m_nrf_app->handle_deregister_nf_instance(nfInstanceID, http_code, 1,
-                                           problem_details);
+  m_nrf_app->handle_deregister_nf_instance(
+      nfInstanceID, http_code, 1, problem_details);
 
   nlohmann::json json_data = {};
   std::string content_type = "application/json";
@@ -68,17 +68,17 @@ void NFInstanceIDDocumentApiImpl::deregister_nf_instance(
 
 //------------------------------------------------------------------------------
 void NFInstanceIDDocumentApiImpl::get_nf_instance(
-    const std::string &nfInstanceID, Pistache::Http::ResponseWriter &response) {
+    const std::string& nfInstanceID, Pistache::Http::ResponseWriter& response) {
   Logger::nrf_sbi().info(
       "Got a request to retrieve the profile of a given NF Instance, Instance "
       "ID: %s",
       nfInstanceID.c_str());
 
-  int http_code = 0;
+  int http_code                        = 0;
   std::shared_ptr<nrf_profile> profile = {};
-  ProblemDetails problem_details = {};
-  m_nrf_app->handle_get_nf_instance(nfInstanceID, profile, http_code, 1,
-                                    problem_details);
+  ProblemDetails problem_details       = {};
+  m_nrf_app->handle_get_nf_instance(
+      nfInstanceID, profile, http_code, 1, problem_details);
 
   nlohmann::json json_data = {};
   std::string content_type = "application/json";
@@ -98,18 +98,18 @@ void NFInstanceIDDocumentApiImpl::get_nf_instance(
 
 //------------------------------------------------------------------------------
 void NFInstanceIDDocumentApiImpl::register_nf_instance(
-    const std::string &nfInstanceID, const NFProfile &nFProfile,
-    const Pistache::Optional<Pistache::Http::Header::Raw> &contentEncoding,
-    Pistache::Http::ResponseWriter &response) {
+    const std::string& nfInstanceID, const NFProfile& nFProfile,
+    const Pistache::Optional<Pistache::Http::Header::Raw>& contentEncoding,
+    Pistache::Http::ResponseWriter& response) {
   Logger::nrf_sbi().info(
       "Got a request to register an NF instance/Update an NF instance, "
       "Instance ID: %s",
       nfInstanceID.c_str());
 
-  int http_code = 0;
+  int http_code                  = 0;
   ProblemDetails problem_details = {};
-  m_nrf_app->handle_register_nf_instance(nfInstanceID, nFProfile, http_code, 1,
-                                         problem_details);
+  m_nrf_app->handle_register_nf_instance(
+      nfInstanceID, nFProfile, http_code, 1, problem_details);
 
   nlohmann::json json_data = {};
   std::string content_type = "application/json";
@@ -120,11 +120,11 @@ void NFInstanceIDDocumentApiImpl::register_nf_instance(
     to_json(json_data, problem_details);
     content_type = "application/problem+json";
   } else {
-	std::shared_ptr<nrf_profile> profile =
-	      m_nrf_app->find_nf_profile(nfInstanceID);
-    if (profile.get()!=nullptr) {
-    	profile.get()->to_json(json_data);
-        //to_json(json_data, nFProfile);
+    std::shared_ptr<nrf_profile> profile =
+        m_nrf_app->find_nf_profile(nfInstanceID);
+    if (profile.get() != nullptr) {
+      profile.get()->to_json(json_data);
+      // to_json(json_data, nFProfile);
     }
 
     // Location header
@@ -141,17 +141,17 @@ void NFInstanceIDDocumentApiImpl::register_nf_instance(
 
 //------------------------------------------------------------------------------
 void NFInstanceIDDocumentApiImpl::update_nf_instance(
-    const std::string &nfInstanceID, const std::vector<PatchItem> &patchItem,
-    Pistache::Http::ResponseWriter &response) {
+    const std::string& nfInstanceID, const std::vector<PatchItem>& patchItem,
+    Pistache::Http::ResponseWriter& response) {
   Logger::nrf_sbi().info("");
   Logger::nrf_sbi().info(
       "Got a request to update an NF instance, Instance ID: %s",
       nfInstanceID.c_str());
 
-  int http_code = 0;
+  int http_code                  = 0;
   ProblemDetails problem_details = {};
-  m_nrf_app->handle_update_nf_instance(nfInstanceID, patchItem, http_code, 1,
-                                       problem_details);
+  m_nrf_app->handle_update_nf_instance(
+      nfInstanceID, patchItem, http_code, 1, problem_details);
 
   nlohmann::json json_data = {};
   std::string content_type = "application/json";

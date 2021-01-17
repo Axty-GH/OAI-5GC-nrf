@@ -28,26 +28,26 @@ using namespace oai::nrf::model;
 using namespace oai::nrf::app;
 
 SubscriptionsCollectionApiImpl::SubscriptionsCollectionApiImpl(
-    std::shared_ptr<Pistache::Rest::Router> rtr, nrf_app *nrf_app_inst,
+    std::shared_ptr<Pistache::Rest::Router> rtr, nrf_app* nrf_app_inst,
     std::string address)
     : SubscriptionsCollectionApi(rtr),
       m_nrf_app(nrf_app_inst),
       m_address(address) {}
 
 void SubscriptionsCollectionApiImpl::create_subscription(
-    const SubscriptionData &subscriptionData,
-    Pistache::Http::ResponseWriter &response) {
+    const SubscriptionData& subscriptionData,
+    Pistache::Http::ResponseWriter& response) {
   Logger::nrf_sbi().info("Got a request to create a new subscription");
 
-  int http_code = 0;
+  int http_code                  = 0;
   ProblemDetails problem_details = {};
   std::string sub_id;
   nlohmann::json json_sub = {};
   to_json(json_sub, subscriptionData);
   Logger::nrf_sbi().debug("Subscription data %s", json_sub.dump().c_str());
 
-  m_nrf_app->handle_create_subscription(subscriptionData, sub_id, http_code, 1,
-                                        problem_details);
+  m_nrf_app->handle_create_subscription(
+      subscriptionData, sub_id, http_code, 1, problem_details);
 
   nlohmann::json json_data = {};
   std::string content_type = "application/json";

@@ -23,13 +23,13 @@ using namespace oai::nrf::model;
 using namespace oai::nrf::app;
 
 NFInstancesStoreApiImpl::NFInstancesStoreApiImpl(
-    std::shared_ptr<Pistache::Rest::Router> rtr, nrf_app *nrf_app_inst,
+    std::shared_ptr<Pistache::Rest::Router> rtr, nrf_app* nrf_app_inst,
     std::string address)
     : NFInstancesStoreApi(rtr), m_nrf_app(nrf_app_inst), m_address(address) {}
 void NFInstancesStoreApiImpl::get_nf_instances(
-    const Pistache::Optional<std::string> &nfType,
-    const Pistache::Optional<int32_t> &limit,
-    Pistache::Http::ResponseWriter &response) {
+    const Pistache::Optional<std::string>& nfType,
+    const Pistache::Optional<int32_t>& limit,
+    Pistache::Http::ResponseWriter& response) {
   Logger::nrf_sbi().info(
       "Got a request to retrieve  a collection of NF Instances");
 
@@ -45,11 +45,11 @@ void NFInstancesStoreApiImpl::get_nf_instances(
     Logger::nrf_sbi().debug("\tLimit number of items: %d", limit_item);
   }
 
-  int http_code = 0;
-  std::vector<std::string> uris = {};
+  int http_code                  = 0;
+  std::vector<std::string> uris  = {};
   ProblemDetails problem_details = {};
-  m_nrf_app->handle_get_nf_instances(nf_type, uris, limit_item, http_code, 1,
-                                     problem_details);
+  m_nrf_app->handle_get_nf_instances(
+      nf_type, uris, limit_item, http_code, 1, problem_details);
 
   nlohmann::json json_data = {};
   // TODO: std::string content_type = "application/3gppHal+json";
@@ -64,7 +64,7 @@ void NFInstancesStoreApiImpl::get_nf_instances(
     json_data["_links"]["self"] = "";
     for (auto u : uris) {
       nlohmann::json json_item = {};
-      json_item["href"] = u;
+      json_item["href"]        = u;
       json_data["_links"]["item"].push_back(json_item);
     }
   }
@@ -77,7 +77,7 @@ void NFInstancesStoreApiImpl::get_nf_instances(
   response.send(Pistache::Http::Code(http_code), json_data.dump().c_str());
 }
 void NFInstancesStoreApiImpl::options_nf_instances(
-    Pistache::Http::ResponseWriter &response) {
+    Pistache::Http::ResponseWriter& response) {
   response.send(Pistache::Http::Code::Ok, "Do some magic\n");
 }
 

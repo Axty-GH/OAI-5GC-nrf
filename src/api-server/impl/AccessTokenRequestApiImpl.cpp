@@ -11,6 +11,28 @@
  * the class manually.
  */
 
+/*
+ * Licensed to the OpenAirInterface (OAI) Software Alliance under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The OpenAirInterface Software Alliance licenses this file to You under
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this file
+ * except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.openairinterface.org/?page_id=698
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *-------------------------------------------------------------------------------
+ * For more information about the OpenAirInterface (OAI) Software Alliance:
+ *      contact@openairinterface.org
+ */
+
+
 #include "AccessTokenRequestApiImpl.h"
 #include "3gpp_29.500.h"
 #include "AccessTokenRsp.h"
@@ -26,24 +48,24 @@ using namespace oai::nrf::app;
 using namespace oai::nrf::helpers;
 
 AccessTokenRequestApiImpl::AccessTokenRequestApiImpl(
-    std::shared_ptr<Pistache::Rest::Router> rtr, nrf_app *nrf_app_inst,
+    std::shared_ptr<Pistache::Rest::Router> rtr, nrf_app* nrf_app_inst,
     std::string address)
     : AccessTokenRequestApi(rtr), m_nrf_app(nrf_app_inst), m_address(address) {}
 
 void AccessTokenRequestApiImpl::access_token_request(
-    const Pistache::Rest::Request &request,
-    Pistache::Http::ResponseWriter &response) {
+    const Pistache::Rest::Request& request,
+    Pistache::Http::ResponseWriter& response) {
   Logger::nrf_sbi().info(
       "Got a request to request an OAuth2 access token from the authorization "
       "server (NRF)");
 
   Logger::nrf_sbi().info("request body %s", request.body().c_str());
 
-  int http_code = 0;
-  ProblemDetails problem_details = {};
+  int http_code                   = 0;
+  ProblemDetails problem_details  = {};
   AccessTokenRsp access_token_rsp = {};
-  m_nrf_app->handle_access_token_request(request.body(), access_token_rsp,
-                                         http_code, 1, problem_details);
+  m_nrf_app->handle_access_token_request(
+      request.body(), access_token_rsp, http_code, 1, problem_details);
 
   nlohmann::json json_data = {};
   std::string content_type = "application/json";
