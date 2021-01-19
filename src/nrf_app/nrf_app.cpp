@@ -269,7 +269,7 @@ void nrf_app::handle_update_nf_instance(
       // timer
       if (sn.get()->unsubscribe_heartbeat_timeout_nfregistration()) {
         // Sleep 10ms to avoid Boost connection related issue
-        unsigned int microsecond = 10000;  // 10ms
+        unsigned int microsecond = 50000;  // 50ms
         usleep(microsecond);
         ms = std::chrono::duration_cast<std::chrono::milliseconds>(
                  std::chrono::system_clock::now().time_since_epoch())
