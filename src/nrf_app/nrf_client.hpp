@@ -56,25 +56,6 @@ class nrf_client {
   void operator=(nrf_client const&) = delete;
 
   /*
-   * Send Notification for the associated event to the subscriber
-   * @param [const std::shared_ptr<nrf_profile> &] profile: NF profile
-   * @param [const std::string &] uri: URI of the subscribed NF
-   * @return void
-   */
-  void notify_subscribed_event(
-      const std::shared_ptr<nrf_profile>& profile, const std::string& uri);
-
-  /*
-   * Send Notification for the associated event to the subscriber
-   * @param [const std::shared_ptr<nrf_profile> &] profile: NF profile
-   * @param [const std::string &] uri: URI of the subscribed NF
-   * @return void
-   */
-  void notify_subscribed_event_multi(
-      const std::shared_ptr<nrf_profile>& profile, const uint8_t& event_type,
-      const std::vector<std::string>& uris);
-
-  /*
    * Send Notification for the associated event to the subscribers
    * @param [const std::shared_ptr<nrf_profile> &] profile: NF profile
    * @param [const uint8_t &] event_type: notification type
