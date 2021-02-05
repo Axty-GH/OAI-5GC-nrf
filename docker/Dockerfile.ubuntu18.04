@@ -2,6 +2,7 @@
 #
 # Dockerfile for the Open-Air-Interface NRF service
 #   Valid for Ubuntu-18.04 (bionic)
+# The port exposed by container are 8080/tcp , 9090/tcp change it according to your setup
 #
 #---------------------------------------------------------------------
 
@@ -26,7 +27,7 @@ RUN git config --global https.postBuffer 123289600
 RUN git config --global http.sslverify false
 
 # Copying source code
-COPY . /openair-nrf
+COPY /oai-cn5g-nrf /openair-nrf
 WORKDIR /openair-nrf
 
 # Installing and Building NRF
@@ -70,4 +71,10 @@ COPY --from=oai-nrf-builder /openair-nrf/docker/entrypoint.sh /openair-nrf/
 
 WORKDIR /openair-nrf
 
-#ENTRYPOINT ["/openair-nrf/entrypoint.sh"]
+EXPOSE 8080/tcp 9090/tcp
+
+RUN chmod +x entrypoint.sh
+
+CMD ["/openair-nrf/bin/oai_nrf", "-c", "/openair-nrf/etc/nrf.conf", "-o"]
+
+ENTRYPOINT ["/bin/bash","entrypoint.sh"]

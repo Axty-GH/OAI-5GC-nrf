@@ -6,27 +6,32 @@
 #---------------------------------------------------------------------
 #!/bin/bash
 
-INSTANCE=1
-PREFIX='/usr/local/etc/oai'
-mkdir -m 0777 -p $PREFIX
-cp /openair-nrf/etc/nrf.conf  $PREFIX
+set -euo pipefail
 
-declare -A NRF_CONF
+CONFIG_DIR="/openair-nrf/etc"
+PUSH_PROTOCOL_OPTION=${PUSH_PROTOCOL_OPTION:-no}
 
-NRF_CONF[@INSTANCE@]=$INSTANCE
-NRF_CONF[@PREFIX@]=$PREFIX
-NRF_CONF[@PID_DIRECTORY@]='/var/run'
+for c in ${CONFIG_DIR}/*.conf; do
+    # grep variable names (format: ${VAR}) from template to be rendered
+    VARS=$(grep -oP '@[a-zA-Z0-9_]+@' ${c} | sort | uniq | xargs)
 
-NRF_CONF[@NRF_INTERFACE_NAME_FOR_SBI@]=$NRF_INTERFACE_NAME_FOR_SBI
+    # create sed expressions for substituting each occurrence of ${VAR}
+    # with the value of the environment variable "VAR"
+    EXPRESSIONS=""
+    for v in ${VARS}; do
+	NEW_VAR=`echo $v | sed -e "s#@##g"`
+        if [[ "${!NEW_VAR}x" == "x" ]]; then
+            echo "Error: Environment variable '${NEW_VAR}' is not set." \
+                "Config file '$(basename $c)' requires all of $VARS."
+            exit 1
+        fi
+        EXPRESSIONS="${EXPRESSIONS};s|${v}|${!NEW_VAR}|g"
+    done
+    EXPRESSIONS="${EXPRESSIONS#';'}"
 
-NRF_CONF[@NRF_INTERFACE_PORT_FOR_SBI@]=$NRF_INTERFACE_PORT_FOR_SBI
-NRF_CONF[@NRF_INTERFACE_HTTP2_PORT_FOR_SBI@]=$NRF_INTERFACE_HTTP2_PORT_FOR_SBI
-NRF_CONF[@NRF_API_VERSION@]=$NRF_API_VERSION
-
-
-for K in "${!NRF_CONF[@]}"; do 
-  egrep -lRZ "$K" $PREFIX | xargs -0 -l sed -i -e "s|$K|${NRF_CONF[$K]}|g"
-  ret=$?;[[ ret -ne 0 ]] && echo "Tried to replace $K with ${NRF_CONF[$K]}"
+    # render template and inline replace config file
+    sed -i "${EXPRESSIONS}" ${c}
 done
 
-cd /openair-nrf/bin/ && ./oai_nrf -c /usr/local/etc/oai/nrf.conf -o
+exec "$@"
+

@@ -2,7 +2,7 @@ version: '3'
 services:
     oai_nrf:
         container_name: "oai_nrf"
-        image: oainrf:1.0
+        image: oai-nrf:1.0
         ports:
             - 8080:8080
             - 9092:9092
@@ -11,6 +11,8 @@ services:
             - NRF_INTERFACE_PORT_FOR_SBI=8080
             - NRF_INTERFACE_HTTP2_PORT_FOR_SBI=9090
             - NRF_API_VERSION=v1
+            - INSTANCE=0
+            - PID_DIRECTORY=/var/run
 networks:
   default:
     driver: bridge
