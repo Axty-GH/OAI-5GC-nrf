@@ -27,7 +27,7 @@ RUN git config --global https.postBuffer 123289600
 RUN git config --global http.sslverify false
 
 # Copying source code
-COPY /oai-cn5g-nrf /openair-nrf
+COPY . /openair-nrf
 WORKDIR /openair-nrf
 
 # Installing and Building NRF
