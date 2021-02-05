@@ -1,0 +1,19 @@
+version: '3'
+services:
+    oai_nrf:
+        container_name: "oai_nrf"
+        image: oainrf:1.0
+        ports:
+            - 8080:8080
+            - 9092:9092
+        environment:
+            - NRF_INTERFACE_NAME_FOR_SBI=eth0
+            - NRF_INTERFACE_PORT_FOR_SBI=8080
+            - NRF_INTERFACE_HTTP2_PORT_FOR_SBI=9090
+            - NRF_API_VERSION=v1
+networks:
+  default:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.18.59.0/24
