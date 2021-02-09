@@ -684,7 +684,7 @@ class HtmlReport():
 		cwd = os.getcwd()
 		if os.path.isfile(cwd + '/archives/' + logFileName):
 			section_start_pattern = 'FROM ubuntu:bionic as oai-nrf$'
-			section_end_pattern = 'WORKDIR /openair-nrf/etc'
+			section_end_pattern = 'COPY --from=oai-nrf-builder /openair-nrf/docker/entrypoint.sh entrypoint.sh'
 			section_status = False
 			status = False
 			with open(cwd + '/archives/' + logFileName, 'r') as logfile:
