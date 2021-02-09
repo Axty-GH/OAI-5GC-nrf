@@ -67,6 +67,7 @@ COPY --from=oai-nrf-builder /openair-nrf/docker/entrypoint.sh entrypoint.sh
 RUN ldconfig
 
 # Copying template configuration files
+WORKDIR /openair-nrf/etc
 COPY --from=oai-nrf-builder /openair-nrf/etc/nrf.conf /openair-nrf/etc/
 
 WORKDIR /openair-nrf
