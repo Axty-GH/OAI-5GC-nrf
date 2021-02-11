@@ -59,11 +59,11 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get upgrade --yes && DE
 # Copying executable and generated libraries
 WORKDIR /openair-nrf/bin
 COPY --from=oai-nrf-builder /openair-nrf/build/nrf/build/nrf oai_nrf
+COPY --from=oai-nrf-builder /openair-nrf/scripts/entrypoint.sh entrypoint.sh
 COPY --from=oai-nrf-builder /usr/local/lib/libpistache.so /usr/local/lib/
 COPY --from=oai-nrf-builder /usr/local/lib/libnghttp2_asio.so.1 /usr/local/lib/
 COPY --from=oai-nrf-builder /usr/lib/x86_64-linux-gnu/libboost_system.so.1.65.1 /usr/lib/x86_64-linux-gnu/
 COPY --from=oai-nrf-builder /usr/lib/x86_64-linux-gnu/libboost_thread.so.1.65.1 /usr/lib/x86_64-linux-gnu/
-COPY --from=oai-nrf-builder /openair-nrf/docker/entrypoint.sh entrypoint.sh
 RUN ldconfig
 
 # Copying template configuration files
@@ -71,11 +71,9 @@ COPY --from=oai-nrf-builder /openair-nrf/etc/nrf.conf /openair-nrf/etc/
 
 WORKDIR /openair-nrf
 
-EXPOSE 8080/tcp 9090/tcp
-
-# Temporary can be removed but in some-scenarioes it is safe to keep it. 
-RUN chmod +x /openair-nrf/bin/entrypoint.sh
-
-CMD ["/openair-nrf/bin/oai_nrf", "-c", "/openair-nrf/etc/nrf.conf", "-o"]
+# expose ports
+EXPOSE 80/tcp 9090/tcp
 
 ENTRYPOINT ["/bin/bash","/openair-nrf/bin/entrypoint.sh"]
+
+CMD ["/openair-nrf/bin/oai_nrf", "-c", "/openair-nrf/etc/nrf.conf", "-o"]
