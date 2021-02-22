@@ -28,12 +28,17 @@
 #---------------------------------------------------------------------
 # BUILDER IMAGE
 #---------------------------------------------------------------------
+
 FROM registry.access.redhat.com/ubi8/ubi:latest AS oai-nrf-builder
 
-ARG NEEDED_GIT_PROXY
+#Build inside cluster
+COPY ./etc-pki-entitlement /etc/pki/entitlement
+COPY ./rhsm-conf /etc/rhsm
+COPY ./rhsm-ca /etc/rhsm/ca
 
-COPY tmp/ca/redhat-uep.pem /etc/rhsm/ca
-COPY tmp/entitlement/*.pem /etc/pki/entitlement
+# Build outside cluster
+#COPY tmp/ca/redhat-uep.pem /etc/rhsm/ca
+#COPY tmp/entitlement/*.pem /etc/pki/entitlement
 
 RUN rm -f /etc/rhsm-host && \
     yum repolist --disablerepo=* && \
@@ -43,6 +48,7 @@ RUN rm -f /etc/rhsm-host && \
     	psmisc \
     	git \
 	diffutils \
+        libasan\
 	file && \
   	rm -rf /var/lib/apt/lists/* 
 
@@ -71,6 +77,7 @@ RUN yum update -y && \
     yum install -y --enablerepo="ubi-8-codeready-builder" \
     psmisc \
     net-tools \
+    procps-ng\
     libevent && \
     rm -rf /var/lib/apt/lists/*
 
@@ -85,9 +92,15 @@ COPY --from=oai-nrf-builder /usr/lib64/libdouble-conversion.so.1 /usr/lib64/
 COPY --from=oai-nrf-builder /usr/lib64/libconfig++.so.9 /usr/lib64/
 COPY --from=oai-nrf-builder /usr/lib64/libboost_system.so.1.66.0 /usr/lib64/
 COPY --from=oai-nrf-builder /usr/lib64/libboost_thread.so.1.66.0 /usr/lib64/
-COPY --from=oai-nrf-builder /openair-nrf/build/nrf/build/nas/libNAS.so /usr/lib64/
+COPY --from=oai-nrf-builder /usr/lib64/libboost_filesystem.so.1.66.0 /usr/lib64/
+COPY --from=oai-nrf-builder /usr/lib64/libboost_chrono.so.1.66.0 /usr/lib64/
+COPY --from=oai-nrf-builder /usr/lib64/libboost_atomic.so.1.66.0 /usr/lib64/
+COPY --from=oai-nrf-builder /usr/lib64/libboost_date_time.so.1.66.0 /usr/lib64/
+COPY --from=oai-nrf-builder /usr/lib64/libboost_regex.so.1.66.0 /usr/lib64/
 
 COPY --from=oai-nrf-builder /openair-nrf/scripts/entrypoint.sh entrypoint.sh
+
+RUN ldconfig
 
 # Copying template configuration files
 # The configuration folder will be flat
@@ -99,6 +112,6 @@ WORKDIR /openair-nrf
 # expose ports
 EXPOSE 80/tcp 9090/tcp
 
-CMD ["/openair-nrf/bin/oai_nrf", "-c", "/openair-nrf/etc/nrf.conf", "-o"]
-
 ENTRYPOINT ["/openair-nrf/bin/entrypoint.sh"]
+
+CMD ["/openair-nrf/bin/oai_nrf", "-c", "/openair-nrf/etc/nrf.conf", "-o"]
