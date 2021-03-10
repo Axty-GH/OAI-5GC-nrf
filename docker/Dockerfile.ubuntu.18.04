@@ -14,8 +14,6 @@ FROM ubuntu:bionic as oai-nrf-builder
 ARG NEEDED_GIT_PROXY
 
 ENV DEBIAN_FRONTEND=noninteractive
-ENV TZ=Europe
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get upgrade --yes && DEBIAN_FRONTEND=noninteractive apt-get install --yes \
     psmisc \
     git \
@@ -40,14 +38,15 @@ RUN ./build_nrf --clean --Verbose --build-type Release --jobs
 #---------------------------------------------------------------------
 FROM ubuntu:bionic as oai-nrf
 ENV DEBIAN_FRONTEND=noninteractive
-ENV TZ=Europe
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+ENV TZ=Europe/Paris
+
 # We install some debug tools for the moment in addition of mandatory libraries
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get upgrade --yes && DEBIAN_FRONTEND=noninteractive apt-get install --yes \
     psmisc \
     net-tools \
     iputils-ping \
     bc \
+    tzdata \
     tshark \
     libasan4 \
     libgoogle-glog0v5 \
