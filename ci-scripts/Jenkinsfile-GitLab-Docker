@@ -241,8 +241,8 @@ pipeline {
           gitlabCommitStatus(name: "Test with DsTester") {
             localStatus = build job: params.CN5G_FED_PipelineName,
               parameters: [
-                string(name: 'NRF_TAG', value: String.valueOf(amf_tag)),
-                string(name: 'NRF_BRANCH', value: String.valueOf(amf_branch))
+                string(name: 'NRF_TAG', value: String.valueOf(nrf_tag)),
+                string(name: 'NRF_BRANCH', value: String.valueOf(nrf_branch))
               ], propagate: false
             localResult = localStatus.getResult()
 
