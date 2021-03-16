@@ -52,7 +52,8 @@ pipeline {
     gitlabBuilds(builds: [
       "Build NRF Image",
       "Static Code Analysis",
-      "Code Formatting Checker"
+      "Code Formatting Checker",
+      "Test with DsTester"
     ])
 
   }
@@ -230,6 +231,36 @@ pipeline {
                 myShCmd('docker rm -f ci-cn-clang-formatter', new_host_flag, new_host_user, new_host)
               }
             }
+          }
+        }
+      }
+    }
+    stage ('Testing in CN-5G-FED environment') {
+      steps {
+        script {
+          gitlabCommitStatus(name: "Test with DsTester") {
+            localStatus = build job: params.CN5G_FED_PipelineName,
+              parameters: [
+                string(name: 'NRF_TAG', value: String.valueOf(amf_tag)),
+                string(name: 'NRF_BRANCH', value: String.valueOf(amf_branch))
+              ], propagate: false
+            localResult = localStatus.getResult()
+
+            if (localStatus.resultIsBetterOrEqualTo('SUCCESS')) {
+              echo "Federation Test Job is OK"
+            } else {
+              echo "Federation Test Job is KO"
+              sh "ci-scripts/fail.sh"
+            }
+          }
+        }
+      }
+      post {
+        always {
+          script {
+            copyArtifacts(projectName: params.CN5G_FED_PipelineName,
+                          filter: '*_results_oai_cn5g.html',
+                          selector: lastCompleted())
           }
         }
       }
