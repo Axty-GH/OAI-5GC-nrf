@@ -684,7 +684,7 @@ class HtmlReport():
 		cwd = os.getcwd()
 		if os.path.isfile(cwd + '/archives/' + logFileName):
 			section_start_pattern = 'FROM ubuntu:bionic as oai-nrf$'
-			section_end_pattern = 'COPY --from=oai-nrf-builder /openair-nrf/docker/entrypoint.sh entrypoint.sh'
+			section_end_pattern = 'COPY --from=oai-nrf-builder /openair-nrf/scripts/entrypoint.sh entrypoint.sh'
 			section_status = False
 			status = False
 			with open(cwd + '/archives/' + logFileName, 'r') as logfile:
@@ -790,7 +790,7 @@ class HtmlReport():
 					if section_status:
 						if nfType == 'NRF':
 							if self.git_pull_request:
-								result = re.search('oai-nrf *ci-temp', line)
+								result = re.search('oai-nrf *ci-tmp', line)
 							else:
 								result = re.search('oai-nrf *develop', line)
 						if result is not None:
