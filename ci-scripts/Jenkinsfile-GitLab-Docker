@@ -47,9 +47,6 @@ def nrf_branch = "develop"
 // This base image is potentially subject to changes over time.
 def NRF_BASE_IMAGE_TAG = params.NrfBaseImageTag
 
-// Merge Request Link
-def gitlabMergeRequestLink
-
 //-------------------------------------------------------------------------------
 // Pipeline start
 pipeline {
