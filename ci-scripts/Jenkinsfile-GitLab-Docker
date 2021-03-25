@@ -47,6 +47,9 @@ def nrf_branch = "develop"
 // This base image is potentially subject to changes over time.
 def NRF_BASE_IMAGE_TAG = params.NrfBaseImageTag
 
+// Merge Request Link
+def gitlabMergeRequestLink
+
 //-------------------------------------------------------------------------------
 // Pipeline start
 pipeline {
@@ -215,7 +218,7 @@ pipeline {
           steps {
             lock (rem_rhel8_resource) {
               script {
-			    gitlabCommitStatus(name: "Build RHEL8 NRF Image") {
+                gitlabCommitStatus(name: "Build RHEL8 NRF Image") {
                   if ("PUSH".equals(env.gitlabActionType)) {
                     // Currently this pipeline only runs for pushes to `develop` branch
                     // First clean image registry
@@ -418,6 +421,7 @@ pipeline {
             echo "We failed to prune all unneeded intermediate images"
           }
         }
+
         // Zipping all archived log files
         sh "zip -r -qq docker_logs.zip archives"
         if (fileExists('docker_logs.zip')) {
@@ -427,7 +431,6 @@ pipeline {
         // Generating the HTML report
         if ("MERGE".equals(env.gitlabActionType)) {
           sh "python3 ci-scripts/generateHtmlReport.py --job_name=${JOB_NAME} --job_id=${BUILD_ID} --job_url=${BUILD_URL} --git_url=${GIT_URL} --git_src_branch=${env.gitlabSourceBranch} --git_src_commit=${env.gitlabMergeRequestLastCommit} --git_pull_request=True --git_target_branch=${env.gitlabTargetBranch} --git_target_commit=${GIT_COMMIT}"
-
           if (fileExists('test_results_oai_nrf.html')) {
             sh "sed -i -e 's#TEMPLATE_MERGE_REQUEST_LINK#${gitlabMergeRequestLink}#g' test_results_oai_nrf.html"
             sh "sed -i -e 's#TEMPLATE_MERGE_REQUEST_TEMPLATE#${env.gitlabMergeRequestTitle}#' test_results_oai_nrf.html"
@@ -454,6 +457,8 @@ pipeline {
           if (params.sendToCommitterEmail) {
             emailext attachmentsPattern: '*results*.html',
               body: '''Hi,
+
+
 Here are attached HTML report files for $PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS!
 
 Regards,
