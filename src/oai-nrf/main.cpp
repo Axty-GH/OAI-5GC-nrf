@@ -36,9 +36,9 @@ using namespace oai::nrf::app;
 using namespace util;
 using namespace std;
 
-nrf_app *nrf_app_inst = nullptr;
+nrf_app* nrf_app_inst = nullptr;
 nrf_config nrf_cfg;
-NRFApiServer *api_server = nullptr;
+NRFApiServer* api_server = nullptr;
 
 //------------------------------------------------------------------------------
 void my_app_signal_handler(int s) {
@@ -64,7 +64,7 @@ void my_app_signal_handler(int s) {
 }
 
 //------------------------------------------------------------------------------
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
   srand(time(NULL));
 
   // Command line options
@@ -107,16 +107,16 @@ int main(int argc, char **argv) {
 
   // NRF Pistache API server (HTTP1)
   Pistache::Address addr(
-      std::string(inet_ntoa(*((struct in_addr *)&nrf_cfg.sbi.addr4))),
+      std::string(inet_ntoa(*((struct in_addr*) &nrf_cfg.sbi.addr4))),
       Pistache::Port(nrf_cfg.sbi.port));
   api_server = new NRFApiServer(addr, nrf_app_inst);
   api_server->init(2);
   std::thread nrf_manager(&NRFApiServer::start, api_server);
   nrf_manager.join();
 
-  FILE *fp = NULL;
+  FILE* fp             = NULL;
   std::string filename = fmt::format("/tmp/nrf_{}.status", getpid());
-  fp = fopen(filename.c_str(), "w+");
+  fp                   = fopen(filename.c_str(), "w+");
   fprintf(fp, "STARTED\n");
   fflush(fp);
   fclose(fp);

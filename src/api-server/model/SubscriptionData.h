@@ -58,38 +58,38 @@ typedef struct subscription_condition_api_s {
     // TODO
   }
 
-  subscription_condition_api_s(subscription_condition_api_s const &s) {
+  subscription_condition_api_s(subscription_condition_api_s const& s) {
     nfInstanceIdCond = s.nfInstanceIdCond;
-    nfTypeCond = s.nfTypeCond;
-    serviceNameCond = s.serviceNameCond;
-    amfCond = s.amfCond;
-    guamiListCond = s.guamiListCond;
+    nfTypeCond       = s.nfTypeCond;
+    serviceNameCond  = s.serviceNameCond;
+    amfCond          = s.amfCond;
+    guamiListCond    = s.guamiListCond;
     networkSliceCond = s.networkSliceCond;
-    nfGroupCond = s.nfGroupCond;
+    nfGroupCond      = s.nfGroupCond;
   }
 
   subscription_condition_api_s(uint8_t t) : type(t) {
     nfInstanceIdCond = {};
-    nfTypeCond = {};
-    serviceNameCond = {};
-    amfCond = {};
-    guamiListCond = {};
+    nfTypeCond       = {};
+    serviceNameCond  = {};
+    amfCond          = {};
+    guamiListCond    = {};
     networkSliceCond = {};
-    nfGroupCond = {};
+    nfGroupCond      = {};
   }
 
-  bool operator==(const struct subscription_condition_api_s &s) const {
+  bool operator==(const struct subscription_condition_api_s& s) const {
     return (s.type == type);
   }
 
-  bool operator==(const uint8_t &t) const { return (t == type); }
+  bool operator==(const uint8_t& t) const { return (t == type); }
 
-  subscription_condition_api_s &operator=(subscription_condition_api_s &s) {
+  subscription_condition_api_s& operator=(subscription_condition_api_s& s) {
     // TODO:
   }
 
-  friend void to_json(nlohmann::json &j,
-                      const subscription_condition_api_s &o) {
+  friend void to_json(
+      nlohmann::json& j, const subscription_condition_api_s& o) {
     switch (o.type) {
       case 1:
         j["NfInstanceIdCond"] = o.nfInstanceIdCond;
@@ -115,12 +115,13 @@ typedef struct subscription_condition_api_s {
       case 7:
         j["NfGroupCond"] = o.nfGroupCond;
         break;
-      default: {}
+      default: {
+      }
     }
   }
 
-  friend void from_json(const nlohmann::json &j,
-                        subscription_condition_api_s &o) {
+  friend void from_json(
+      const nlohmann::json& j, subscription_condition_api_s& o) {
     if (j.find("NfInstanceIdCond") != j.end()) {
       j.at("NfInstanceIdCond").get_to(o.nfInstanceIdCond);
       o.type = 1;
@@ -176,12 +177,12 @@ class SubscriptionData {
   ///
   /// </summary>
   std::string getNfStatusNotificationUri() const;
-  void setNfStatusNotificationUri(std::string const &value);
+  void setNfStatusNotificationUri(std::string const& value);
   /// <summary>
   ///
   /// </summary>
   std::string getReqNfInstanceId() const;
-  void setReqNfInstanceId(std::string const &value);
+  void setReqNfInstanceId(std::string const& value);
   bool reqNfInstanceIdIsSet() const;
   void unsetReqNfInstanceId();
   /// <summary>
@@ -190,69 +191,69 @@ class SubscriptionData {
 
   // OneOfNfInstanceIdCondNfTypeCondServiceNameCondAmfCondGuamiListCondNetworkSliceCondNfGroupCond
   // getSubscrCond() const;
-  void getSubscrCond(nlohmann::json &s) const;
+  void getSubscrCond(nlohmann::json& s) const;
 
-  void setSubscrCond(nlohmann::json const &value);
+  void setSubscrCond(nlohmann::json const& value);
   bool subscrCondIsSet() const;
   void unsetSubscrCond();
   /// <summary>
   ///
   /// </summary>
   std::string getSubscriptionId() const;
-  void setSubscriptionId(std::string const &value);
+  void setSubscriptionId(std::string const& value);
   /// <summary>
   ///
   /// </summary>
   std::string getValidityTime() const;
-  void setValidityTime(std::string const &value);
+  void setValidityTime(std::string const& value);
   bool validityTimeIsSet() const;
   void unsetValidityTime();
   /// <summary>
   ///
   /// </summary>
   std::vector<std::string> getReqNotifEvents() const;
-  void  getReqNotifEvents(std::vector<std::string> &value) const;
-  void setReqNotifEvents(std::vector<std::string> const &value);
+  void getReqNotifEvents(std::vector<std::string>& value) const;
+  void setReqNotifEvents(std::vector<std::string> const& value);
   bool reqNotifEventsIsSet() const;
   void unsetReqNotifEvents();
   /// <summary>
   ///
   /// </summary>
   PlmnId getPlmnId() const;
-  void setPlmnId(PlmnId const &value);
+  void setPlmnId(PlmnId const& value);
   bool plmnIdIsSet() const;
   void unsetPlmnId();
   /// <summary>
   ///
   /// </summary>
   NotifCondition getNotifCondition() const;
-  void setNotifCondition(NotifCondition const &value);
+  void setNotifCondition(NotifCondition const& value);
   bool notifConditionIsSet() const;
   void unsetNotifCondition();
   /// <summary>
   ///
   /// </summary>
   std::string getReqNfType() const;
-  void setReqNfType(std::string const &value);
+  void setReqNfType(std::string const& value);
   bool reqNfTypeIsSet() const;
   void unsetReqNfType();
   /// <summary>
   ///
   /// </summary>
   std::string getReqNfFqdn() const;
-  void setReqNfFqdn(std::string const &value);
+  void setReqNfFqdn(std::string const& value);
   bool reqNfFqdnIsSet() const;
   void unsetReqNfFqdn();
   /// <summary>
   ///
   /// </summary>
-  std::vector<Snssai> &getReqSnssais();
-  void setReqSnssais(std::vector<Snssai> const &value);
+  std::vector<Snssai>& getReqSnssais();
+  void setReqSnssais(std::vector<Snssai> const& value);
   bool reqSnssaisIsSet() const;
   void unsetReqSnssais();
 
-  friend void to_json(nlohmann::json &j, const SubscriptionData &o);
-  friend void from_json(const nlohmann::json &j, SubscriptionData &o);
+  friend void to_json(nlohmann::json& j, const SubscriptionData& o);
+  friend void from_json(const nlohmann::json& j, SubscriptionData& o);
 
  protected:
   std::string m_NfStatusNotificationUri;

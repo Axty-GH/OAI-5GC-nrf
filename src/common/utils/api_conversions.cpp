@@ -400,6 +400,7 @@ patch_op_type_t api_conv::string_to_patch_operation(const std::string& str) {
 bool api_conv::validate_uuid(const std::string& str) {
   // should be verified with Capital letter
   static const std::regex e(
-      "[a-f0-9]{8}-[a-f0-9]{4}-[0-5][a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{12}");
+      "[a-f0-9]{8}-[a-f0-9]{4}-[0-5][a-f0-9]{3}-[89aAbB][a-f0-9]{3}-[a-f0-9]{"
+      "12}");
   return regex_match(str, e);
 }
