@@ -75,7 +75,7 @@ class nrf_config {
   unsigned int sbi_http2_port;
   std::string sbi_api_version;
   // Local configuration
-  bool local_configuration;
+  bool local_configuration = false;
 
   nrf_config() : m_rw_lock(), pid_dir(), instance(0), sbi() {
     sbi.port        = 80;
