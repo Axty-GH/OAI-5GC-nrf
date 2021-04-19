@@ -3,9 +3,9 @@
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The OpenAirInterface Software Alliance licenses this file to You under
- * the OAI Public License, Version 1.1  (the "License"); you may not use this file
- * except in compliance with the License.
- * You may obtain a copy of the License at
+ * the OAI Public License, Version 1.1  (the "License"); you may not use this
+ *file except in compliance with the License. You may obtain a copy of the
+ *License at
  *
  *      http://www.openairinterface.org/?page_id=698
  *
@@ -29,6 +29,6 @@
 #ifndef FILE_DYNAMIC_MEMORY_CHECK_SEEN
 #define FILE_DYNAMIC_MEMORY_CHECK_SEEN
 
-void free_wrapper(void **ptr) __attribute__ ((hot));
+void free_wrapper(void** ptr) __attribute__((hot));
 
 #endif /* FILE_DYNAMIC_MEMORY_CHECK_SEEN */

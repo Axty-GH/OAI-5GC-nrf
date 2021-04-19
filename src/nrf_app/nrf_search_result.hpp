@@ -42,7 +42,9 @@ using namespace std;
 class nrf_search_result {
  public:
   nrf_search_result() {
-    limit_nf_instances = 10;  // default value, TODO: to be removed
+    limit_nf_instances   = 10;  // default value, TODO: to be removed
+    validity_period      = 0;
+    num_nf_inst_complete = 0;
   };
   nrf_search_result(nrf_search_result const&) = delete;
 

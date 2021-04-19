@@ -49,8 +49,8 @@ namespace api_conv {
  * @param [std::shared_ptr<nrf_profile> &] profile: NF profile
  * @return true if successful, otherwise, return false
  */
-bool profile_api_to_nrf_profile(const NFProfile &api_profile,
-                                std::shared_ptr<nrf_profile> &profile);
+bool profile_api_to_nrf_profile(
+    const NFProfile& api_profile, std::shared_ptr<nrf_profile>& profile);
 
 /*
  * Convert a json-type profile to a subscription profile
@@ -60,23 +60,23 @@ bool profile_api_to_nrf_profile(const NFProfile &api_profile,
  * @return true if successful, otherwise, return false
  */
 bool subscription_api_to_nrf_subscription(
-    const SubscriptionData &api_sub, std::shared_ptr<nrf_subscription> &sub);
+    const SubscriptionData& api_sub, std::shared_ptr<nrf_subscription>& sub);
 
 /*
  * Convert a string to nf type
  * @param [const std::string &] str: string input
  * @return the corresponding nf_type
  */
-nf_type_t string_to_nf_type(const std::string &str);
+nf_type_t string_to_nf_type(const std::string& str);
 
 /*
  * Convert a string to Patch operation
  * @param [const std::string &] str: string input
  * @return the corresponding Patch operation
  */
-patch_op_type_t string_to_patch_operation(const std::string &str);
+patch_op_type_t string_to_patch_operation(const std::string& str);
 
-bool validate_uuid(const std::string &str);
+bool validate_uuid(const std::string& str);
 
 }  // namespace api_conv
 }  // namespace nrf
