@@ -71,6 +71,7 @@ typedef struct audience_s {
         // TODO:
       }
     }
+    return *this;
     // TODO:
   }
 
