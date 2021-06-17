@@ -54,6 +54,7 @@ bool nrf_jwt::generate_signature(
 
   // Get the encoded string/assertion
   signature = obj.signature();
+  return true;
 }
 
 //------------------------------------------------------------------------------
@@ -75,6 +76,7 @@ bool nrf_jwt::generate_signature(
 
   // Get the encoded string/assertion
   signature = obj.signature();
+  return true;
 }
 
 //------------------------------------------------------------------------------
@@ -83,6 +85,7 @@ bool nrf_jwt::get_secret_key(
     const std::string& target_nf_type, std::string& key) const {
   // TODO:
   key = "secret";
+  return true;
 }
 
 //------------------------------------------------------------------------------
@@ -91,6 +94,7 @@ bool nrf_jwt::get_secret_key(
     std::string& key) const {
   // TODO:
   key = "secret";
+  return true;
 }
 
 //------------------------------------------------------------------------------

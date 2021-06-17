@@ -80,12 +80,15 @@ nrf_app::nrf_app(const std::string& config_file, nrf_event& ev)
   Logger::nrf_app().startup("Started");
 }
 
+//------------------------------------------------------------------------------
 nrf_app::~nrf_app() {
   Logger::nrf_app().debug("Delete NRF_APP instance...");
   for (auto i : connections) {
     if (i.connected()) i.disconnect();
   }
+
   if (nrf_client_inst) delete nrf_client_inst;
+  if (nrf_jwt_inst) delete nrf_jwt_inst;
 }
 
 //------------------------------------------------------------------------------
@@ -106,7 +109,7 @@ void nrf_app::handle_register_nf_instance(
   // Check if nfInstanceID is a valid UUID (version 4)
   if (!api_conv::validate_uuid(nf_instance_id)) {
     http_code = HTTP_STATUS_CODE_400_BAD_REQUEST;
-    Logger::nrf_app().debug(
+    Logger::nrf_app().info(
         "Bad UUID format for NF Instance ID (%s)", nf_instance_id.c_str());
     problem_details.setCause(
         protocol_application_error_e2str[MANDATORY_QUERY_PARAM_INCORRECT]);
@@ -148,7 +151,8 @@ void nrf_app::handle_register_nf_instance(
       http_code = HTTP_STATUS_CODE_201_CREATED;
     // add to the DB
     add_nf_profile(nf_instance_id, sn);
-    Logger::nrf_app().debug("Added/Updated NF Profile to the DB");
+    Logger::nrf_app().info(
+        "Added/Updated NF Profile (ID %s) to the DB", nf_instance_id.c_str());
 
     // Heartbeart management for this NF profile
     // get current time
@@ -210,7 +214,7 @@ void nrf_app::handle_update_nf_instance(
         case PATCH_OP_REPLACE: {
           if (path.compare("nfStatus") == 0) {
             is_heartbeart_procedure = true;
-            Logger::nrf_app().debug("NF Heart-Beat procedure!");
+            Logger::nrf_app().info("NF Heart-Beat procedure!");
           }
           if (sn.get()->replace_profile_info(path, p.getValue())) {
             update_nf_profile(nf_instance_id, sn);
@@ -352,7 +356,7 @@ void nrf_app::handle_get_nf_instance(
 
   profile = find_nf_profile(nf_instance_id);
   if (profile.get() == nullptr) {
-    Logger::nrf_app().debug(
+    Logger::nrf_app().info(
         "Profile with profile ID %s not found", nf_instance_id.c_str());
     http_code = HTTP_STATUS_CODE_404_NOT_FOUND;
     problem_details.setCause(
@@ -383,7 +387,7 @@ void nrf_app::handle_deregister_nf_instance(
     m_event_sub.nf_status_deregistered(profile);  // from nrf_app
 
     if (remove_nf_profile(nf_instance_id)) {
-      Logger::nrf_app().debug(
+      Logger::nrf_app().info(
           "Removed NF profile with profile ID %s", nf_instance_id.c_str());
       http_code = HTTP_STATUS_CODE_204_NO_CONTENT;
       return;
@@ -394,7 +398,7 @@ void nrf_app::handle_deregister_nf_instance(
       return;
     }
   } else {
-    Logger::nrf_app().debug(
+    Logger::nrf_app().info(
         "Profile with profile ID %s not found", nf_instance_id.c_str());
     http_code = HTTP_STATUS_CODE_404_NOT_FOUND;
     problem_details.setCause(
@@ -1017,7 +1021,7 @@ void nrf_app::handle_nf_status_profile_changed(const std::string& profile_id) {
 void nrf_app::get_subscription_list(
     const std::string& profile_id, const uint8_t& notification_type,
     std::vector<std::string>& uris) const {
-  Logger::nrf_app().debug(
+  Logger::nrf_app().info(
       "\tGet the list of subscriptions related to this profile, profile id %s",
       profile_id.c_str());
 
@@ -1074,7 +1078,7 @@ void nrf_app::get_subscription_list(
         std::string nf_type = nf_type_e2str[profile.get()->get_nf_type()];
         if (nf_type.compare(condition.nf_type) == 0) {
           uris.push_back(uri);
-          Logger::nrf_app().debug(
+          Logger::nrf_app().info(
               "\tSubscription id %s, uri %s", s.first.c_str(), uri.c_str());
         }
       } break;

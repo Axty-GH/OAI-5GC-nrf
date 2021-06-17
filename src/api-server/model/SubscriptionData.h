@@ -86,6 +86,7 @@ typedef struct subscription_condition_api_s {
 
   subscription_condition_api_s& operator=(subscription_condition_api_s& s) {
     // TODO:
+    return *this;
   }
 
   friend void to_json(
