@@ -57,7 +57,9 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
         nf_type(NF_TYPE_UNKNOWN),
         heartBeat_timer(0),
         snssais(),
+        fqdn(),
         ipv4_addresses(),
+        ipv6_addresses(),
         priority(0),
         capacity(0),
         nf_services(),
@@ -73,7 +75,9 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
         nf_type(type),
         heartBeat_timer(0),
         snssais(),
+        fqdn(),
         ipv4_addresses(),
+        ipv6_addresses(),
         priority(0),
         capacity(0),
         nf_services(),
@@ -90,7 +94,9 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
         nf_instance_id(id),
         heartBeat_timer(0),
         snssais(),
+        fqdn(),
         ipv4_addresses(),
+        ipv6_addresses(),
         priority(0),
         capacity(0),
         nf_services(),
@@ -273,6 +279,20 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
   void get_nf_snssais(std::vector<snssai_t>& s) const;
 
   /*
+   * Get NF fqdn
+   * @param
+   * @return [std::string] nf fqdn
+   */
+  std::string get_fqdn() const;
+
+  /*
+   * Set NF fqdn
+   * @param [const fqdn_t &] fqdn: nf fqdn
+   * @return void
+   */
+  void set_fqdn(const std::string& fqdn);
+
+  /*
    * Set NF instance ipv4_addresses
    * @param [std::vector<struct in_addr> &] a: ipv4_addresses
    * @return void
@@ -285,6 +305,20 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
    * @return void
    */
   void add_nf_ipv4_addresses(const struct in_addr& a);
+
+  /*
+   * Set NF instance ipv6_addresses
+   * @param [std::vector<struct in6_addr> &] a: ipv6_addresses
+   * @return void
+   */
+  void set_nf_ipv6_addresses(const std::vector<struct in6_addr>& a);
+
+  /*
+   * Add an IPv6 address to the list of addresses
+   * @param [const struct in_addr &] a: ipv6_address
+   * @return void
+   */
+  void add_nf_ipv6_addresses(const struct in6_addr& a);
 
   /*
    * Get NF instance ipv4_addresses
@@ -441,7 +475,9 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
   std::string nf_status;
   int32_t heartBeat_timer;
   std::vector<snssai_t> snssais;
+  std::string fqdn;
   std::vector<struct in_addr> ipv4_addresses;
+  std::vector<struct in6_addr> ipv6_addresses;
   uint16_t priority;
   uint16_t capacity;
   nlohmann::json json_data;  // store extra json data

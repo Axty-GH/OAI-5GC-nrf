@@ -83,7 +83,10 @@ bool api_conv::profile_api_to_nrf_profile(
     Logger::nrf_app().debug(
         "\tSNSSAI (SD, SST): %d, %s", sn.sST, sn.sD.c_str());
   }
-
+  if (api_profile.fqdnIsSet()) {
+    profile.get()->set_fqdn(api_profile.getFqdn());
+    Logger::nrf_app().debug("\tFQDN: %s", api_profile.getFqdn().c_str());
+  }
   std::vector<std::string> ipv4_addr_str = api_profile.getIpv4Addresses();
   for (auto address : ipv4_addr_str) {
     struct in_addr addr4 = {};
@@ -98,6 +101,7 @@ bool api_conv::profile_api_to_nrf_profile(
     Logger::nrf_app().debug("\tIPv4 Addr: %s", address.c_str());
     profile.get()->add_nf_ipv4_addresses(addr4);
   }
+  // ToDo: Check if ipv6 addr present
 
   nf_type_t nf_type = string_to_nf_type(api_profile.getNfType());
 
