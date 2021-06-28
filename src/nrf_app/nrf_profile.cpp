@@ -229,12 +229,14 @@ void nrf_profile::display() {
   for (auto s : snssais) {
     Logger::nrf_app().debug("\tNNSSAI(SST, SD): %d, %s", s.sST, s.sD.c_str());
   }
-
+  if (!fqdn.empty()) {
+    Logger::nrf_app().debug("\tFQDN: %s", fqdn.c_str());
+  }
   // IPv4 Addresses
   for (auto address : ipv4_addresses) {
     Logger::nrf_app().debug("\tIPv4 Addr: %s", inet_ntoa(address));
   }
-
+  // ToDo : For ipv6 addresses
   if (!json_data.empty()) {
     Logger::nrf_app().debug("\tJson Data: %s", json_data.dump().c_str());
   }
@@ -405,7 +407,7 @@ bool nrf_profile::add_profile_info(
     std::string address   = value;
     struct in6_addr addr6 = {};
     unsigned char buf_in_addr[sizeof(struct in6_addr)];
-    if (inet_pton(AF_INET, util::trim(address).c_str(), buf_in_addr) == 1) {
+    if (inet_pton(AF_INET6, util::trim(address).c_str(), buf_in_addr) == 1) {
       memcpy(&addr6, buf_in_addr, sizeof(struct in6_addr));
     } else {
       Logger::nrf_app().warn(

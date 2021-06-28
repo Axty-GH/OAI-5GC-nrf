@@ -87,21 +87,40 @@ bool api_conv::profile_api_to_nrf_profile(
     profile.get()->set_fqdn(api_profile.getFqdn());
     Logger::nrf_app().debug("\tFQDN: %s", api_profile.getFqdn().c_str());
   }
-  std::vector<std::string> ipv4_addr_str = api_profile.getIpv4Addresses();
-  for (auto address : ipv4_addr_str) {
-    struct in_addr addr4 = {};
-    unsigned char buf_in_addr[sizeof(struct in_addr)];
-    if (inet_pton(AF_INET, util::trim(address).c_str(), buf_in_addr) == 1) {
-      memcpy(&addr4, buf_in_addr, sizeof(struct in_addr));
-    } else {
-      Logger::nrf_app().warn(
-          "Address conversion: Bad value %s", util::trim(address).c_str());
-    }
+  if (api_profile.ipv4AddressesIsSet()) {
+    std::vector<std::string> ipv4_addr_str = api_profile.getIpv4Addresses();
+    for (auto address : ipv4_addr_str) {
+      struct in_addr addr4 = {};
+      unsigned char buf_in_addr[sizeof(struct in_addr)];
+      if (inet_pton(AF_INET, util::trim(address).c_str(), buf_in_addr) == 1) {
+        memcpy(&addr4, buf_in_addr, sizeof(struct in_addr));
+      } else {
+        Logger::nrf_app().warn(
+            "Address conversion: Bad value %s", util::trim(address).c_str());
+      }
 
-    Logger::nrf_app().debug("\tIPv4 Addr: %s", address.c_str());
-    profile.get()->add_nf_ipv4_addresses(addr4);
+      Logger::nrf_app().debug("\tIPv4 Addr: %s", address.c_str());
+      profile.get()->add_nf_ipv4_addresses(addr4);
+    }
   }
-  // ToDo: Check if ipv6 addr present
+  // ToDo: For ipv6
+  // if (api_profile.ipv6AddressesIsSet()) {
+  //   std::vector<Ipv6Addr> ipv6_addr = api_profile.getIpv6Addresses();
+  //   for (auto address : ipv6_addr) {
+  //     struct in6_addr addr6 = {};
+  //     unsigned char buf_in_addr[sizeof(struct in6_addr)];
+  //     if (inet_pton(AF_INET6, util::trim(address).c_str(), buf_in_addr) == 1)
+  //     {
+  //       memcpy(&addr6, buf_in_addr, sizeof(struct in6_addr));
+  //     } else {
+  //       Logger::nrf_app().warn(
+  //           "Address conversion: Bad value %s", util::trim(address).c_str());
+  //     }
+
+  //     Logger::nrf_app().debug("\tIPv6 Addr: %s", address.c_str());
+  //     profile.get()->add_nf_ipv6_addresses(addr6);
+  //   }
+  // }
 
   nf_type_t nf_type = string_to_nf_type(api_profile.getNfType());
 
