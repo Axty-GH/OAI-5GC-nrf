@@ -158,6 +158,15 @@ void nrf_profile::add_snssai(const snssai_t& s) {
 }
 
 //------------------------------------------------------------------------------
+void nrf_profile::set_fqdn(const std::string& fqdN) {
+  fqdn = fqdN;
+}
+
+//------------------------------------------------------------------------------
+std::string nrf_profile::get_fqdn() const {
+  return fqdn;
+}
+//------------------------------------------------------------------------------
 void nrf_profile::set_nf_ipv4_addresses(const std::vector<struct in_addr>& a) {
   ipv4_addresses = a;
 }
@@ -165,6 +174,15 @@ void nrf_profile::set_nf_ipv4_addresses(const std::vector<struct in_addr>& a) {
 //------------------------------------------------------------------------------
 void nrf_profile::add_nf_ipv4_addresses(const struct in_addr& a) {
   ipv4_addresses.push_back(a);
+}
+//------------------------------------------------------------------------------
+void nrf_profile::set_nf_ipv6_addresses(const std::vector<struct in6_addr>& a) {
+  ipv6_addresses = a;
+}
+
+//------------------------------------------------------------------------------
+void nrf_profile::add_nf_ipv6_addresses(const struct in6_addr& a) {
+  ipv6_addresses.push_back(a);
 }
 //------------------------------------------------------------------------------
 void nrf_profile::get_nf_ipv4_addresses(std::vector<struct in_addr>& a) const {
@@ -211,12 +229,14 @@ void nrf_profile::display() {
   for (auto s : snssais) {
     Logger::nrf_app().debug("\tNNSSAI(SST, SD): %d, %s", s.sST, s.sD.c_str());
   }
-
+  if (!fqdn.empty()) {
+    Logger::nrf_app().debug("\tFQDN: %s", fqdn.c_str());
+  }
   // IPv4 Addresses
   for (auto address : ipv4_addresses) {
     Logger::nrf_app().debug("\tIPv4 Addr: %s", inet_ntoa(address));
   }
-
+  // ToDo : For ipv6 addresses
   if (!json_data.empty()) {
     Logger::nrf_app().debug("\tJson Data: %s", json_data.dump().c_str());
   }
@@ -277,9 +297,19 @@ bool nrf_profile::replace_profile_info(
     }
   }
 
+  if (path.compare("fqdn") == 0) {
+    fqdn = value;
+    return true;
+  }
+
   // Replace an array
   if (path.compare("ipv4Addresses") == 0) {
     Logger::nrf_app().info("Does not support this operation for ipv4Addresses");
+    return false;
+  }
+
+  if (path.compare("ipv6Addresses") == 0) {
+    Logger::nrf_app().info("Does not support this operation for ipv6Addresses");
     return false;
   }
 
@@ -350,6 +380,11 @@ bool nrf_profile::add_profile_info(
     }
   }
 
+  if (path.compare("fqdn") == 0) {
+    fqdn = value;
+    return true;
+  }
+
   // add an element to a list
   if (path.compare("ipv4Addresses") == 0) {
     std::string address  = value;
@@ -364,6 +399,23 @@ bool nrf_profile::add_profile_info(
     }
     Logger::nrf_app().debug("Added IPv4 Addr: %s", address.c_str());
     ipv4_addresses.push_back(addr4);
+    return true;
+  }
+
+  // add an element to a list
+  if (path.compare("ipv6Addresses") == 0) {
+    std::string address   = value;
+    struct in6_addr addr6 = {};
+    unsigned char buf_in_addr[sizeof(struct in6_addr)];
+    if (inet_pton(AF_INET6, util::trim(address).c_str(), buf_in_addr) == 1) {
+      memcpy(&addr6, buf_in_addr, sizeof(struct in6_addr));
+    } else {
+      Logger::nrf_app().warn(
+          "Address conversion: Bad value %s", util::trim(address).c_str());
+      return false;
+    }
+    Logger::nrf_app().debug("Added IPv6 Addr: %s", address.c_str());
+    ipv6_addresses.push_back(addr6);
     return true;
   }
 
@@ -412,6 +464,11 @@ bool nrf_profile::remove_profile_info(const std::string& path) {
 
   if (path.compare("capacity") == 0) {
     priority = 0;
+    return true;
+  }
+
+  if (path.compare("fqdn") == 0) {
+    fqdn = "";
     return true;
   }
 
@@ -473,12 +530,21 @@ void nrf_profile::to_json(nlohmann::json& data) const {
     ;
     data["sNssais"].push_back(tmp);
   }
+  if (!fqdn.empty()) {
+    data["fqdn"] = fqdn;
+  }
   // ipv4_addresses
   data["ipv4Addresses"] = nlohmann::json::array();
   for (auto address : ipv4_addresses) {
     nlohmann::json tmp = inet_ntoa(address);
     data["ipv4Addresses"].push_back(tmp);
   }
+  // // ipv6_addresses
+  // data["ipv6Addresses"] = nlohmann::json::array();
+  // for (auto address : ipv6_addresses) {
+  //   nlohmann::json tmp = inet_ntoa(address);
+  //   data["ipv6Addresses"].push_back(tmp);
+  // }
   data["priority"] = priority;
   data["capacity"] = capacity;
   // NF services
