@@ -168,6 +168,13 @@ void nrf_app::handle_register_nf_instance(
     Logger::nrf_app().debug(
         "Added/Updated NF Profile with the NF instance info");
     sn.get()->display();
+
+    nlohmann::json json_tmp = {};
+    sn.get()->to_json(json_tmp);
+
+    Logger::nrf_app().info(
+        "Added/Updated NF Instance, NF info: %s", json_tmp.dump().c_str());
+
   } else {
     // error
     Logger::nrf_app().warn(
