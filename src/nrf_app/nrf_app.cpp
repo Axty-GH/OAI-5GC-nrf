@@ -466,17 +466,12 @@ void nrf_app::handle_create_subscription(
         subscription_condition_t sub_condition = {};
         ss.get()->get_sub_condition(sub_condition);
         find_nf_profiles(sub_condition, profiles);
-        if (profiles.size() > 0) {
-          std::vector<std::string> notification_uris = {};
-          notification_uris.push_back(notification_uri);
-
-          for (auto p : profiles) {
-            // send notifications
-            nrf_client_inst->notify_subscribed_event(
-                p, NOTIFICATION_TYPE_NF_REGISTERED, notification_uris);
-          }
-        } else {
-          Logger::nrf_app().error("\tNo NF profile found");
+        std::vector<std::string> notification_uris = {};
+        notification_uris.push_back(notification_uri);
+        for (auto p : profiles) {
+          // send notifications
+          nrf_client_inst->notify_subscribed_event(
+              p, NOTIFICATION_TYPE_NF_REGISTERED, notification_uris);
         }
       }
 
