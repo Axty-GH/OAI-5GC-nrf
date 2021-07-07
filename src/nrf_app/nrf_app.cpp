@@ -445,6 +445,41 @@ void nrf_app::handle_create_subscription(
       // assign info for API server
       http_code = HTTP_STATUS_CODE_201_CREATED;
       sub_id    = evsub_id;
+
+      // Send notification (with the existed NFs which matches the
+      // conditions)
+      std::string notification_uri =
+          subscription_data.getNfStatusNotificationUri();
+
+      std::vector<uint8_t> ev_types;
+      ss.get()->get_notif_events(ev_types);
+      bool nf_registered_event = false;
+      for (auto ev : ev_types) {
+        if (ev == NOTIFICATION_TYPE_NF_REGISTERED) {
+          nf_registered_event = true;
+        }
+      }
+
+      if (nf_registered_event) {
+        std::vector<std::shared_ptr<nrf_profile>> profiles = {};
+
+        subscription_condition_t sub_condition = {};
+        ss.get()->get_sub_condition(sub_condition);
+        find_nf_profiles(sub_condition, profiles);
+        if (profiles.size() > 0) {
+          std::vector<std::string> notification_uris = {};
+          notification_uris.push_back(notification_uri);
+
+          for (auto p : profiles) {
+            // send notifications
+            nrf_client_inst->notify_subscribed_event(
+                p, NOTIFICATION_TYPE_NF_REGISTERED, notification_uris);
+          }
+        } else {
+          Logger::nrf_app().error("\tNo NF profile found");
+        }
+      }
+
       return;
     } else {
       Logger::nrf_app().debug("Subscription is not authorized!");
@@ -786,6 +821,53 @@ void nrf_app::find_nf_profiles(
       profiles.push_back(profile.second);
     }
   }
+}
+
+//------------------------------------------------------------------------------
+void nrf_app::find_nf_profiles(
+    const subscription_condition_t& sub_condition,
+    std::vector<std::shared_ptr<nrf_profile>>& profiles) const {
+  std::shared_lock lock(m_instance_id2nrf_profile);
+  switch (sub_condition.type) {
+    case NF_INSTANCE_ID_COND: {
+      // TODO:
+    } break;
+    case NF_TYPE_COND: {
+      nf_type_t nf_type = api_conv::string_to_nf_type(sub_condition.nf_type);
+
+      for (auto profile : instance_id2nrf_profile) {
+        if (profile.second.get()->get_nf_type() == nf_type) {
+          profiles.push_back(profile.second);
+        }
+      }
+
+    } break;
+
+    case SERVICE_NAME_COND: {
+      // TODO:
+    } break;
+    case AMF_COND:
+      // TODO
+      break;
+
+    case GUAMI_LIST_COND: {
+      // TODO:
+    } break;
+
+    case NETWOTK_SLICE_COND: {
+      // TODO:
+    } break;
+
+    case NF_GROUP_COND: {
+      // TODO:
+    } break;
+
+    default: {
+      // TODO:
+    }
+  }
+
+  return;
 }
 
 //------------------------------------------------------------------------------
