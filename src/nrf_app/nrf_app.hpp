@@ -256,6 +256,18 @@ class nrf_app {
       std::vector<std::shared_ptr<nrf_profile>>& profiles) const;
 
   /*
+   * Find a list of nf profiles matching the condition
+   * @param [const subscription_condition_t &] sub_condition: Subscription
+   * condition
+   * @param [std::vector<std::shared_ptr<nrf_profile>> &] profiles: Store list
+   * of corresponding profiles
+   * @return shared pointer to the profile if found
+   */
+  void find_nf_profiles(
+      const subscription_condition_t& sub_condition,
+      std::vector<std::shared_ptr<nrf_profile>>& profiles) const;
+
+  /*
    * Check if a profile with an ID exist
    * @param [const std::string &] profile_id: Profile ID
    * @return true if profile exist, otherwise, return false
