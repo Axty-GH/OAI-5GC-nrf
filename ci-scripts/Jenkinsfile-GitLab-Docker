@@ -360,7 +360,7 @@ pipeline {
       post {
         always {
           script {
-            copyArtifacts(projectName: params.AMF_BT_PipelineName,
+            copyArtifacts(projectName: params.NRF_BT_PipelineName,
                           filter: '*_results_oai_nrf_bt.html',
                           selector: lastCompleted())
           }
