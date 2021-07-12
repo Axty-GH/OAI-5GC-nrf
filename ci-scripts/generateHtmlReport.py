@@ -464,8 +464,6 @@ class HtmlReport():
 				section_end_pattern = 'build_nrf --clean --Verbose --build-type Release --jobs'
 				section_status = False
 				package_install = False
-				fmt_build_start = False
-				fmt_build_status = False
 				folly_build_start = False
 				folly_build_status = False
 				spdlog_build_start = False
@@ -474,6 +472,10 @@ class HtmlReport():
 				pistache_build_status = False
 				json_build_start = False
 				json_build_status = False
+				nghttp2_build_start = False
+				nghttp2_build_status = False
+				cpp_jwt_build_start = False
+				cpp_jwt_build_status = False
 				base_image = False
 				with open(cwd + '/archives/' + logFileName, 'r') as logfile:
 					for line in logfile:
@@ -490,35 +492,45 @@ class HtmlReport():
 							result = re.search('NRF deps installation successful', line)
 							if result is not None:
 								status = True
-							result = re.search('Install fmt from source', line)
+							result = re.search('distro libs installation complete', line)
 							if result is not None:
 								package_install = True
-								fmt_build_start = True
-							result = re.search('Installing: /usr/local/lib/pkgconfig/fmt.pc', line)
-							if result is not None:
-								fmt_build_status = True
-							result = re.search('Cloning into \'folly\'', line)
-							if result is not None:
-								folly_build_start = True
-							result = re.search('Installing: /usr/local/lib/libfollybenchmark.a', line)
-							if result is not None:
-								folly_build_status = True
-							result = re.search('Install spdlog from', line)
+							result = re.search('Starting to install spdlog', line)
 							if result is not None:
 								spdlog_build_start = True
-							result = re.search('Install Pistache from', line)
-							if result is not None:
+							result = re.search('spdlog installation complete', line)
+							if result is not None and spdlog_build_start:
 								spdlog_build_status = True
+							result = re.search('Starting to install folly', line)
+							if result is not None:
+								folly_build_start = True
+							result = re.search('folly installation complete', line)
+							if result is not None and folly_build_start:
+								folly_build_status = True
+							result = re.search('Starting to install pistache', line)
+							if result is not None:
 								pistache_build_start = True
-							result = re.search('Installing: /usr/local/lib/libpistache.a', line)
-							if result is not None:
+							result = re.search('pistache installation complete', line)
+							if result is not None and pistache_build_start:
 								pistache_build_status = True
-							result = re.search('Install Nlohmann Json', line)
+							result = re.search('Starting to install Nlohmann Json', line)
 							if result is not None:
+								json_build_start = True
+							result = re.search('Nlohmann Json installation complete', line)
+							if result is not None and json_build_start:
 								json_build_status = True
-							result = re.search('Installing: /usr/local/lib/cmake/nlohmann_json/nlohmann_jsonTargets.cmake', line)
+							result = re.search('Starting to install nghttp2', line)
 							if result is not None:
-								json_build_status = True
+								nghttp2_build_start = True
+							result = re.search('nghttp2 installation complete', line)
+							if result is not None and nghttp2_build_start:
+								nghttp2_build_status = True
+							result = re.search('Starting to install cpp_jwt', line)
+							if result is not None:
+								cpp_jwt_build_start = True
+							result = re.search('cpp_jwt installation complete', line)
+							if result is not None and cpp_jwt_build_start:
+								cpp_jwt_build_status = True
 					logfile.close()
 				if base_image:
 					cell_msg = '      <td bgcolor="LimeGreen"><pre style="border:none; background-color:LimeGreen"><b>'
@@ -537,23 +549,17 @@ class HtmlReport():
 				else:
 					cell_msg += '   ** Packages Installation: KO\n'
 				if base_image:
-					cell_msg += '   ** fmt Installation: N/A\n'
-				elif fmt_build_status:
-					cell_msg += '   ** fmt Installation: OK\n'
+					cell_msg += '   ** spdlog Installation: N/A\n'
+				elif spdlog_build_status:
+					cell_msg += '   ** spdlog Installation: OK\n'
 				else:
-					cell_msg += '   ** fmt Installation: KO\n'
+					cell_msg += '   ** spdlog Installation: KO\n'
 				if base_image:
 					cell_msg += '   ** folly Installation: N/A\n'
 				elif folly_build_status:
 					cell_msg += '   ** folly Installation: OK\n'
 				else:
 					cell_msg += '   ** folly Installation: KO\n'
-				if base_image:
-					cell_msg += '   ** spdlog Installation: N/A\n'
-				elif spdlog_build_status:
-					cell_msg += '   ** spdlog Installation: OK\n'
-				else:
-					cell_msg += '   ** spdlog Installation: KO\n'
 				if base_image:
 					cell_msg += '   ** pistache Installation: N/A\n'
 				elif pistache_build_status:
@@ -566,6 +572,18 @@ class HtmlReport():
 					cell_msg += '   ** Nlohmann Json Installation: OK\n'
 				else:
 					cell_msg += '   ** Nlohmann Json Installation: KO\n'
+				if base_image:
+					cell_msg += '   ** nghttp2 Installation: N/A\n'
+				elif nghttp2_build_status:
+					cell_msg += '   ** nghttp2 Installation: OK\n'
+				else:
+					cell_msg += '   ** nghttp2 Installation: KO\n'
+				if base_image:
+					cell_msg += '   ** cpp_jwt Installation: N/A\n'
+				elif cpp_jwt_build_status:
+					cell_msg += '   ** cpp_jwt Installation: OK\n'
+				else:
+					cell_msg += '   ** cpp_jwt Installation: KO\n'
 				cell_msg += '</b></pre></td>\n'
 			else:
 				cell_msg = '	  <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
@@ -830,12 +848,11 @@ class HtmlReport():
 								else:
 									result = re.search('oai-nrf *develop', line)
 							if result is not None:
-								if variant == 'docker':
-									result = re.search('ago *([0-9A-Z]+)', line)
-								else:
-									result = re.search('ago *([0-9]+ [A-Z]+)', line)
+								result = re.search('ago  *([0-9A-Z ]+)', line)
 								if result is not None:
 									size = result.group(1)
+									if variant == 'docker':
+										size = re.sub('MB', ' MB', size)
 									status = True
 					logfile.close()
 				if status:
