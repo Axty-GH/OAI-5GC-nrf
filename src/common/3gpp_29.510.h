@@ -69,14 +69,10 @@ typedef struct supi_range_ausf_info_item_s {
 supi_range_t supi_range;
 } supi_range_ausf_info_item_t;
 
-typedef struct routing_indicators_ausf_info_item_s {
-  std::vector<std::string> routing_indicator;
-} routing_indicators_ausf_info_item_t;
-
 typedef struct ausf_info_s {
   std::string groupid;
   std::vector<supi_range_ausf_info_item_t> supi_ranges;
-  std::vector<routing_indicators_ausf_info_item_t> routing_indicators;
+  std::vector<std::string> routing_indicator;
 } ausf_info_t;
 
 enum subscr_condition_type_e {  // TODO: use enum class
