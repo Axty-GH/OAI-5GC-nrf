@@ -243,6 +243,10 @@ void nrf_client::notify_subscribed_event(
         std::static_pointer_cast<upf_profile>(profile).get()->to_json(
             json_profile);
       } break;
+      case NF_TYPE_AUSF: {
+        std::static_pointer_cast<ausf_profile>(profile).get()->to_json(
+            json_profile);
+      } break;
       default: {
         profile.get()->to_json(json_profile);
       }

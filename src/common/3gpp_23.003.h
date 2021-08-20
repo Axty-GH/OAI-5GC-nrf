@@ -148,4 +148,14 @@ typedef struct guami_s {
   std::string amf_id;
 } guami_t;
 
+typedef struct routing_indicators_s {
+std::vector<std::string> routing_indicators;
+} routing_indicators_t;
+
+typedef struct supi_range_s {
+std::string start;
+std::string end;
+std::string pattern;
+} supi_range_t;
+
 #endif

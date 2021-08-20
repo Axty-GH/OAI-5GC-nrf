@@ -83,6 +83,16 @@ bool api_conv::profile_api_to_nrf_profile(
     Logger::nrf_app().debug(
         "\tSNSSAI (SD, SST): %d, %s", sn.sST, sn.sD.c_str());
   }
+  // if (api_profile.plmnListIsSet()){
+  // std::vector<PlmnId> &plmnid = api_profile.getPlmnList();
+  // for (auto s : plmnid) {
+  //   plmn_t sn   = {};
+  //   sn.mcc      = s.getMcc();
+  //   sn.mnc      = s.getMnc();
+  //   profile.get()->add_plmn_list(sn);
+  //   Logger::nrf_app().debug(
+  //       "\tPLMN_List (MCC, MNS): %s, %s", sn.mcc.c_str(), sn.mnc.c_str());
+  // }
   if (api_profile.fqdnIsSet()) {
     profile.get()->set_fqdn(api_profile.getFqdn());
     Logger::nrf_app().debug("\tFQDN: %s", api_profile.getFqdn().c_str());
@@ -205,6 +215,27 @@ bool api_conv::profile_api_to_nrf_profile(
       (std::static_pointer_cast<upf_profile>(profile))
           .get()
           ->add_upf_info(info);
+
+    } break;
+    case NF_TYPE_AUSF: {
+      Logger::nrf_app().debug("\tAUSF profile, AUSFF Info");
+      profile.get()->set_nf_type(NF_TYPE_AUSF);
+      ausf_info_t info       = {};
+      AusfInfo ausf_info_api = api_profile.getAusfInfo();
+      info.groupid           = ausf_info_api.getGroupId();
+      for (auto s : ausf_info_api.getSupiRanges()) {
+        supi_range_ausf_info_item_t supiRange = {};
+        supiRange.supi_range.start            = s.getStart();
+        supiRange.supi_range.end              = s.getEnd();
+        supiRange.supi_range.pattern          = s.getPattern();
+        info.supi_ranges.push_back(supiRange);
+      }
+      for (auto s : ausf_info_api.getRoutingIndicators()) {
+        info.routing_indicator.push_back(s);
+      }
+      (std::static_pointer_cast<ausf_profile>(profile))
+          .get()
+          ->add_ausf_info(info);
 
     } break;
     default: {
