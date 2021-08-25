@@ -65,6 +65,16 @@ typedef struct upf_info_s {
   std::vector<snssai_upf_info_item_t> snssai_upf_info_list;
 } upf_info_t;
 
+typedef struct supi_range_ausf_info_item_s {
+  supi_range_t supi_range;
+} supi_range_ausf_info_item_t;
+
+typedef struct ausf_info_s {
+  std::string groupid;
+  std::vector<supi_range_ausf_info_item_t> supi_ranges;
+  std::vector<std::string> routing_indicator;
+} ausf_info_t;
+
 enum subscr_condition_type_e {  // TODO: use enum class
   UNKNOWN_CONDITION   = 0,
   NF_INSTANCE_ID_COND = 1,
