@@ -242,7 +242,7 @@ void nrf_profile::display() {
   Logger::nrf_app().debug("\tPriority: %d", priority);
   Logger::nrf_app().debug("\tCapacity: %d", capacity);
   // SNSSAIs
-  if (!plmn_list.empty()){
+  if (!plmn_list.empty()) {
     for (auto s : plmn_list) {
       Logger::nrf_app().debug("\tPLMN List(MCC, MNC): %d, %s", s.mcc, s.mnc);
     }
@@ -558,21 +558,20 @@ void nrf_profile::to_json(nlohmann::json& data) const {
   data["nfStatus"]       = nf_status;
   data["heartBeatTimer"] = heartBeat_timer;
   // SNSSAIs
-  if (!snssais.empty()){
+  if (!snssais.empty()) {
     data["sNssais"] = nlohmann::json::array();
     for (auto s : snssais) {
       nlohmann::json tmp = {};
       tmp["sst"]         = s.sST;
       tmp["sd"]          = s.sD;
-      ;
       data["sNssais"].push_back(tmp);
     }
   }
   if (!fqdn.empty()) {
     data["fqdn"] = fqdn;
   }
-  if (!plmn_list.empty()){
-  data["plmnList"] = nlohmann::json::array();
+  if (!plmn_list.empty()) {
+    data["plmnList"] = nlohmann::json::array();
     for (auto s : plmn_list) {
       nlohmann::json tmp = {};
       tmp["mcc"]         = s.mcc;
@@ -1119,12 +1118,14 @@ void ausf_profile::get_ausf_info(ausf_info_t& infos) const {
 void ausf_profile::display() {
   nrf_profile::display();
   Logger::nrf_app().debug("\tAUSF Info");
-  Logger::nrf_app().debug("\t\tGroupId: %s",ausf_info.groupid);
+  Logger::nrf_app().debug("\t\tGroupId: %s", ausf_info.groupid);
   for (auto supi : ausf_info.supi_ranges) {
-    Logger::nrf_app().debug("\t\t SupiRanges: Start - %s, End - %s, Pattern - %s",supi.supi_range.start,supi.supi_range.end, supi.supi_range.pattern);
+    Logger::nrf_app().debug(
+        "\t\t SupiRanges: Start - %s, End - %s, Pattern - %s",
+        supi.supi_range.start, supi.supi_range.end, supi.supi_range.pattern);
   }
   for (auto route_ind : ausf_info.routing_indicator) {
-    Logger::nrf_app().debug("\t\t Routing Indicators: %s",route_ind);
+    Logger::nrf_app().debug("\t\t Routing Indicators: %s", route_ind);
   }
 }
 
@@ -1135,16 +1136,15 @@ bool ausf_profile::add_profile_info(
   if (result) return true;
 
   // add an element to a list of json object
-  if (path.compare("ausInfo") == 0) {
-    Logger::nrf_app().info("Does not support this operation for ausInfo");
+  if (path.compare("ausfInfo") == 0) {
+    Logger::nrf_app().info("Does not support this operation for ausfInfo");
     return false;
   }
 
   if ((path.compare("nfInstanceId") != 0) and
       (path.compare("nfInstanceName") != 0) and
       (path.compare("nfType") != 0) and (path.compare("nfStatus") != 0) and
-      (path.compare("heartBeatTimer") != 0) and
-      (path.compare("fqdn") != 0) and
+      (path.compare("heartBeatTimer") != 0) and (path.compare("fqdn") != 0) and
       (path.compare("plmnList") != 0) and
       (path.compare("ipv4Addresses") != 0) and
       (path.compare("priority") != 0) and (path.compare("capacity") != 0) and
@@ -1164,7 +1164,7 @@ bool ausf_profile::replace_profile_info(
   bool result = nrf_profile::replace_profile_info(path, value);
   if (result) return true;
   // for AUSF info
-  if (path.compare("ausInfo") == 0) {
+  if (path.compare("ausfInfo") == 0) {
     Logger::nrf_app().debug("Does not support this operation for ausfInfo");
     return false;
   }
@@ -1172,13 +1172,12 @@ bool ausf_profile::replace_profile_info(
   if ((path.compare("nfInstanceId") != 0) and
       (path.compare("nfInstanceName") != 0) and
       (path.compare("nfType") != 0) and (path.compare("nfStatus") != 0) and
-      (path.compare("heartBeatTimer") != 0) and
-      (path.compare("fqdn") != 0) and
+      (path.compare("heartBeatTimer") != 0) and (path.compare("fqdn") != 0) and
       (path.compare("plmnList") != 0) and
       (path.compare("ipv4Addresses") != 0) and
       (path.compare("priority") != 0) and (path.compare("capacity") != 0) and
       (path.compare("priority") != 0) and (path.compare("nfServices") != 0) and
-      (path.compare("ausInfo") != 0)) {
+      (path.compare("ausfInfo") != 0)) {
     Logger::nrf_app().debug("Member (%s) not found!", path.c_str());
     return false;
   }
@@ -1191,7 +1190,7 @@ bool ausf_profile::remove_profile_info(const std::string& path) {
   bool result = nrf_profile::remove_profile_info(path);
   if (result) return true;
   // for AUSF info
-  if (path.compare("ausInfo") == 0) {
+  if (path.compare("ausfInfo") == 0) {
     Logger::nrf_app().debug("Do not support this operation for ausfInfo");
     return false;
   }
@@ -1199,8 +1198,7 @@ bool ausf_profile::remove_profile_info(const std::string& path) {
   if ((path.compare("nfInstanceId") != 0) and
       (path.compare("nfInstanceName") != 0) and
       (path.compare("nfType") != 0) and (path.compare("nfStatus") != 0) and
-      (path.compare("heartBeatTimer") != 0) and
-      (path.compare("fqdn") != 0) and
+      (path.compare("heartBeatTimer") != 0) and (path.compare("fqdn") != 0) and
       (path.compare("plmnList") != 0) and
       (path.compare("ipv4Addresses") != 0) and
       (path.compare("priority") != 0) and (path.compare("capacity") != 0) and
@@ -1219,12 +1217,12 @@ void ausf_profile::to_json(nlohmann::json& data) const {
   // AUSF Info
   data["ausfInfo"]["groupId"]           = ausf_info.groupid;
   data["ausfInfo"]["supiRanges"]        = nlohmann::json::array();
-  data["ausfInfo"]["routingIndicators"] = nlohmann::json::array();  
+  data["ausfInfo"]["routingIndicators"] = nlohmann::json::array();
   for (auto supi : ausf_info.supi_ranges) {
-    nlohmann::json tmp    = {};
-    tmp["start"]    = supi.supi_range.start;
-    tmp["end"]      = supi.supi_range.end;
-    tmp["pattern"]  = supi.supi_range.pattern;
+    nlohmann::json tmp = {};
+    tmp["start"]       = supi.supi_range.start;
+    tmp["end"]         = supi.supi_range.end;
+    tmp["pattern"]     = supi.supi_range.pattern;
     data["ausfInfo"]["supiRanges"].push_back(tmp);
   }
   for (auto route_ind : ausf_info.routing_indicator) {

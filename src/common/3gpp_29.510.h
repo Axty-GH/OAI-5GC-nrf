@@ -66,7 +66,7 @@ typedef struct upf_info_s {
 } upf_info_t;
 
 typedef struct supi_range_ausf_info_item_s {
-supi_range_t supi_range;
+  supi_range_t supi_range;
 } supi_range_ausf_info_item_t;
 
 typedef struct ausf_info_s {

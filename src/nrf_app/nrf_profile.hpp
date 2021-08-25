@@ -780,10 +780,12 @@ class upf_profile : public nrf_profile {
 
 class ausf_profile : public nrf_profile {
  public:
-  ausf_profile(nrf_event& ev) : nrf_profile(ev, NF_TYPE_AUSF) { ausf_info = {}; }
+  ausf_profile(nrf_event& ev) : nrf_profile(ev, NF_TYPE_AUSF) {
+    ausf_info = {};
+  }
 
   ausf_profile(nrf_event& ev, const std::string& id) : nrf_profile(ev, id) {
-    nf_type  = NF_TYPE_AUSF;
+    nf_type   = NF_TYPE_AUSF;
     ausf_info = {};
   }
 
