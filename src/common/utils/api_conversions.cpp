@@ -83,16 +83,18 @@ bool api_conv::profile_api_to_nrf_profile(
     Logger::nrf_app().debug(
         "\tSNSSAI (SD, SST): %d, %s", sn.sST, sn.sD.c_str());
   }
-  // if (api_profile.plmnListIsSet()){
-  // std::vector<PlmnId> &plmnid = api_profile.getPlmnList();
-  // for (auto s : plmnid) {
-  //   plmn_t sn   = {};
-  //   sn.mcc      = s.getMcc();
-  //   sn.mnc      = s.getMnc();
-  //   profile.get()->add_plmn_list(sn);
-  //   Logger::nrf_app().debug(
-  //       "\tPLMN_List (MCC, MNS): %s, %s", sn.mcc.c_str(), sn.mnc.c_str());
-  // }
+  if (api_profile.plmnListIsSet()) {
+    NFProfile nf_profile        = api_profile;
+    std::vector<PlmnId>& plmnid = nf_profile.getPlmnList();
+    for (auto s : plmnid) {
+      plmn_t sn = {};
+      sn.mcc    = s.getMcc();
+      sn.mnc    = s.getMnc();
+      profile.get()->add_plmn_list(sn);
+      Logger::nrf_app().debug(
+          "\tPLMN_List (MCC, MNC): %s, %s", sn.mcc.c_str(), sn.mnc.c_str());
+    }
+  }
   if (api_profile.fqdnIsSet()) {
     profile.get()->set_fqdn(api_profile.getFqdn());
     Logger::nrf_app().debug("\tFQDN: %s", api_profile.getFqdn().c_str());
@@ -119,12 +121,14 @@ bool api_conv::profile_api_to_nrf_profile(
   //   for (auto address : ipv6_addr) {
   //     struct in6_addr addr6 = {};
   //     unsigned char buf_in_addr[sizeof(struct in6_addr)];
-  //     if (inet_pton(AF_INET6, util::trim(address).c_str(), buf_in_addr) == 1)
+  //     if (inet_pton(AF_INET6, util::trim(address).c_str(), buf_in_addr) ==
+  //     1)
   //     {
   //       memcpy(&addr6, buf_in_addr, sizeof(struct in6_addr));
   //     } else {
   //       Logger::nrf_app().warn(
-  //           "Address conversion: Bad value %s", util::trim(address).c_str());
+  //           "Address conversion: Bad value %s",
+  //           util::trim(address).c_str());
   //     }
 
   //     Logger::nrf_app().debug("\tIPv6 Addr: %s", address.c_str());
@@ -304,8 +308,8 @@ bool api_conv::subscription_api_to_nrf_subscription(
             sub_condition_api.amfCond.getAmfRegionId();
       } break;
       case GUAMI_LIST_COND: {
-        Logger::nrf_app().debug("Subscription condition type: GUAMI_LIST_COND");
-        sub_condition.type = GUAMI_LIST_COND;
+        Logger::nrf_app().debug("Subscription condition type:
+  GUAMI_LIST_COND"); sub_condition.type = GUAMI_LIST_COND;
         // TODO:
       } break;
       case NETWOTK_SLICE_COND: {
