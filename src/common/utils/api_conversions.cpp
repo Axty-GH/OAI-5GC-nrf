@@ -216,10 +216,80 @@ bool api_conv::profile_api_to_nrf_profile(
         info.snssai_upf_info_list.push_back(snssai);
       }
 
+      if (upf_info_api.interfaceUpfInfoListIsSet()) {
+        for (auto s : upf_info_api.getInterfaceUpfInfoList()) {
+          interface_upf_info_item_t interface = {};
+          nf_up_interface_type_t up_interface_type =
+              string_to_up_interface_type(s.getInterfaceType());
+          switch (up_interface_type) {
+            case N3: {
+              interface.interface_type = "N3";
+            } break;
+            case N6: {
+              interface.interface_type = "N6";
+            } break;
+            case N9: {
+              interface.interface_type = "N9";
+            } break;
+            case DATA_FORWARDING: {
+              interface.interface_type = "DATA_FORWARDING";
+            } break;
+            default: {
+              interface.interface_type = "UNKNOWN";
+            }
+          }
+          if (s.endpointFqdnIsSet())
+            interface.endpoint_fqdn = s.getEndpointFqdn();
+          if (s.networkInstanceIsSet())
+            interface.network_instance = s.getNetworkInstance();
+          if (s.ipv4EndpointAddressesIsSet()) {
+            std::vector<std::string> ipv4_addr_str =
+                s.getIpv4EndpointAddresses();
+            for (auto address : ipv4_addr_str) {
+              struct in_addr addr4 = {};
+              unsigned char buf_in_addr[sizeof(struct in_addr)];
+              if (inet_pton(
+                      AF_INET, util::trim(address).c_str(), buf_in_addr) == 1) {
+                memcpy(&addr4, buf_in_addr, sizeof(struct in_addr));
+              } else {
+                Logger::nrf_app().warn(
+                    "Address conversion: Bad value %s",
+                    util::trim(address).c_str());
+              }
+              Logger::nrf_app().debug(
+                  "\t\tEndpoint: %s, IPv4 Addr: %s, FQDN: %s, NWI: %s",
+                  interface.interface_type.c_str(), address.c_str(),
+                  interface.endpoint_fqdn.c_str(), interface.network_instance.c_str());
+              interface.ipv4_addresses.push_back(addr4);
+            }
+          }
+          // ToDo for ipv6
+          // if (s.ipv6EndpointAddressesIsSet()) {
+          //   std::vector<Ipv6Addr> ipv6_addr_str =
+          //       s.getIpv6EndpointAddresses();
+          //   for (auto address : ipv6_addr_str) {
+          //     struct in6_addr addr6 = {};
+          //     unsigned char buf_in_addr[sizeof(struct in6_addr)];
+          //     if (inet_pton(
+          //             AF_INET, util::trim(address).c_str(), buf_in_addr) ==
+          //             1) {
+          //       memcpy(&addr6, buf_in_addr, sizeof(struct in6_addr));
+          //     } else {
+          //       Logger::nrf_app().warn(
+          //           "Address conversion: Bad value %s",
+          //           util::trim(address).c_str());
+          //     }
+          //     Logger::nrf_app().debug("\tIPv4 Addr: %s", address.c_str());
+          //     interface.ipv6_addresses.push_back(addr6);
+          //   }
+          // }
+          info.interface_upf_info_list.push_back(interface);
+        }
+      }
+
       (std::static_pointer_cast<upf_profile>(profile))
           .get()
           ->add_upf_info(info);
-
     } break;
     case NF_TYPE_AUSF: {
       Logger::nrf_app().debug("\tAUSF profile, AUSFF Info");
@@ -443,6 +513,16 @@ nf_type_t api_conv::string_to_nf_type(const std::string& str) {
   return NF_TYPE_UNKNOWN;
 }
 
+//------------------------------------------------------------------------------
+nf_up_interface_type_t api_conv::string_to_up_interface_type(
+    const std::string& str) {
+  if (str.compare("N3") == 0) return N3;
+  if (str.compare("N6") == 0) return N6;
+  if (str.compare("N9") == 0) return N9;
+  if (str.compare("DATA_FORWARDING") == 0) return DATA_FORWARDING;
+  // default
+  return TYPE_UNKNOWN;
+}
 //------------------------------------------------------------------------------
 patch_op_type_t api_conv::string_to_patch_operation(const std::string& str) {
   if (str.compare("add") == 0) return PATCH_OP_ADD;

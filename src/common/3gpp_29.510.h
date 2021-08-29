@@ -30,6 +30,17 @@ enum class nf_status_e { REGISTERED = 0, SUSPENDED = 1, UNDISCOVERABLE = 2 };
 static const std::vector<std::string> nf_status_e2str = {
     "REGISTERED", "SUSPENDED", "UNDISCOVERABLE"};
 
+typedef enum nf_up_interface_type_s {
+  N3              = 0,
+  N6              = 1,
+  N9              = 2,
+  DATA_FORWARDING = 3,
+  TYPE_UNKNOWN    = 4
+} nf_up_interface_type_t;
+
+static const std::vector<std::string> up_interface_type_e2str = {
+    "N3", "N6", "N9", "DATA_FORWARDING", "UNKNOWN"};
+
 typedef struct amf_info_s {
   std::string amf_set_id;
   std::string amf_region_id;
@@ -61,8 +72,17 @@ typedef struct snssai_upf_info_item_s {
   std::vector<dnn_upf_info_item_t> dnn_upf_info_list;
 } snssai_upf_info_item_t;
 
+typedef struct interface_upf_info_item_s {
+  std::string interface_type;
+  std::vector<struct in_addr> ipv4_addresses;
+  std::vector<struct in6_addr> ipv6_addresses;
+  std::string endpoint_fqdn;
+  std::string network_instance;
+} interface_upf_info_item_t;
+
 typedef struct upf_info_s {
   std::vector<snssai_upf_info_item_t> snssai_upf_info_list;
+  std::vector<interface_upf_info_item_t> interface_upf_info_list;
 } upf_info_t;
 
 typedef struct supi_range_ausf_info_item_s {
