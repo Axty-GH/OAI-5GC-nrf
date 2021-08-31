@@ -63,7 +63,7 @@ void from_json(const nlohmann::json& j, InterfaceUpfInfoItem& o) {
   }
 }
 
-std::string  InterfaceUpfInfoItem::getInterfaceType() const {
+std::string InterfaceUpfInfoItem::getInterfaceType() const {
   return m_InterfaceType;
 }
 void InterfaceUpfInfoItem::setInterfaceType(std::string const& value) {

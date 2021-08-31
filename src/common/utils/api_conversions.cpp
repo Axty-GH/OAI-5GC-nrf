@@ -259,7 +259,8 @@ bool api_conv::profile_api_to_nrf_profile(
               Logger::nrf_app().debug(
                   "\t\tEndpoint: %s, IPv4 Addr: %s, FQDN: %s, NWI: %s",
                   interface.interface_type.c_str(), address.c_str(),
-                  interface.endpoint_fqdn.c_str(), interface.network_instance.c_str());
+                  interface.endpoint_fqdn.c_str(),
+                  interface.network_instance.c_str());
               interface.ipv4_addresses.push_back(addr4);
             }
           }
