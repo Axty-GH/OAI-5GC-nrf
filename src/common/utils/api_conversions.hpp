@@ -70,6 +70,13 @@ bool subscription_api_to_nrf_subscription(
 nf_type_t string_to_nf_type(const std::string& str);
 
 /*
+ * Convert a string to nf type
+ * @param [const std::string &] str: string input
+ * @return the corresponding up_interface_type
+ */
+nf_up_interface_type_t string_to_up_interface_type(const std::string& str);
+
+/*
  * Convert a string to Patch operation
  * @param [const std::string &] str: string input
  * @return the corresponding Patch operation

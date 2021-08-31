@@ -1001,6 +1001,14 @@ void upf_profile::display() {
           "\t\tSNSSAI UPF Info List, DNN List: %s", d.dnn.c_str());
     }
   }
+  if (!upf_info.interface_upf_info_list.empty()) {
+    for (auto s : upf_info.interface_upf_info_list) {
+      Logger::nrf_app().debug(
+          "\t\tInterface UPF Info List, Interface Type : %s, Network Instance "
+          "%s",
+          s.interface_type.c_str(), s.network_instance.c_str());
+    }
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -1101,6 +1109,25 @@ void upf_profile::to_json(nlohmann::json& data) const {
       tmp["dnnUpfInfoList"].push_back(tmp_dnn);
     }
     data["upfInfo"]["sNssaiUpfInfoList"].push_back(tmp);
+  }
+  if (!upf_info.interface_upf_info_list.empty()) {
+    data["upfInfo"]["interfaceUpfInfoList"] = nlohmann::json::array();
+    for (auto s : upf_info.interface_upf_info_list) {
+      nlohmann::json tmp   = {};
+      tmp["interfaceType"] = s.interface_type;
+      if (!s.endpoint_fqdn.empty()) tmp["endpointFqdn"] = s.endpoint_fqdn;
+      if (!s.network_instance.empty())
+        tmp["networkInstance"] = s.network_instance;
+      if (!s.ipv4_addresses.empty()) {
+        tmp["ipv4EndpointAddresses"] = nlohmann::json::array();
+        for (auto address : s.ipv4_addresses) {
+          nlohmann::json addr = inet_ntoa(address);
+          tmp["ipv4EndpointAddresses"].push_back(addr);
+        }
+      }
+      // ToDo for ipv6
+      data["upfInfo"]["interfaceUpfInfoList"].push_back(tmp);
+    }
   }
 }
 
