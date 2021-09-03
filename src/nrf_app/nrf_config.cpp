@@ -176,7 +176,7 @@ int nrf_config::load(const string& config_file) {
 //------------------------------------------------------------------------------
 void nrf_config::display() {
   Logger::nrf_app().info(
-      "==== EURECOM %s v%s ====", PACKAGE_NAME, PACKAGE_VERSION);
+      "==== OAI-CN5G %s v%s ====", PACKAGE_NAME, PACKAGE_VERSION);
   Logger::nrf_app().info("Configuration NRF:");
   Logger::nrf_app().info("- Instance ..............: %d\n", instance);
   Logger::nrf_app().info("- PID dir ...............: %s\n", pid_dir.c_str());
