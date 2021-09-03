@@ -1,5 +1,10 @@
 # RELEASE NOTES: #
 
+## v1.2.0 -- September 2021 ##
+
+* Added AUSF, UDR, UDM profiles
+* Updated UPF profile
+
 ## v1.1.0 -- July 2021 ##
 
 * FQDN DNS resolution
