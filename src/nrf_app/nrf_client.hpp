@@ -64,7 +64,7 @@ class nrf_client {
    */
   void notify_subscribed_event(
       const std::shared_ptr<nrf_profile>& profile, const uint8_t& event_type,
-      const std::vector<std::string>& uris);
+      const std::vector<std::string>& uris, uint8_t http_version);
 
   /*
    * Create Curl handle for multi curl
@@ -75,7 +75,7 @@ class nrf_client {
    */
   CURL* curl_create_handle(
       const std::string& uri, const std::string& data,
-      std::string& response_data);
+      std::string& response_data, uint8_t http_version);
 
   /*
    * Prepare to send a request using curl multi
@@ -86,7 +86,7 @@ class nrf_client {
    */
   void send_curl_multi(
       const std::string& uri, const std::string& data,
-      std::string& response_data);
+      std::string& response_data, uint8_t http_version);
 
   /*
    * Perform curl multi to actually process the available data

@@ -409,7 +409,7 @@ class nrf_app {
    */
   void get_subscription_list(
       const std::string& profile_id, const uint8_t& notification_type,
-      std::vector<std::string>& uris) const;
+      std::vector<std::string>& uris, uint8_t& http_version) const;
 
   /*
    * Verify whether the requester is allowed to discover the NF services

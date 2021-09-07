@@ -116,6 +116,16 @@ boost::posix_time::ptime nrf_subscription::get_validity_time() const {
 }
 
 //------------------------------------------------------------------------------
+void nrf_subscription::set_http_version(const uint8_t& httpVersion) {
+  http_version = httpVersion;
+}
+
+//------------------------------------------------------------------------------
+uint8_t nrf_subscription::get_http_version() const{
+  return http_version;
+}
+
+//------------------------------------------------------------------------------
 void nrf_subscription::display() {
   Logger::nrf_app().debug("Subscription information");
   Logger::nrf_app().debug("\tSub ID: %s", subscription_id.c_str());

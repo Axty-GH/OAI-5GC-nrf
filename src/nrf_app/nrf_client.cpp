@@ -88,8 +88,8 @@ nrf_client::~nrf_client() {
 
 //------------------------------------------------------------------------------
 CURL* nrf_client::curl_create_handle(
-    const std::string& uri, const std::string& data,
-    std::string& response_data) {
+    const std::string& uri, const std::string& data, std::string& response_data,
+    uint8_t http_version) {
   // create handle for a curl request
   CURL* curl = curl_easy_init();
 
@@ -106,17 +106,26 @@ CURL* nrf_client::curl_create_handle(
     curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
     curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, data.length());
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data.c_str());
+    if (http_version == 2) {
+      curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+      // curl_easy_setopt(curl, CURLOPT_PORT, 8080);
+      // We use a self-signed test server, skip verification during debugging
+      curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
+      curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
+      curl_easy_setopt(
+          curl, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2_PRIOR_KNOWLEDGE);
+    }
   }
   return curl;
 }
 
 //------------------------------------------------------------------------------
 void nrf_client::send_curl_multi(
-    const std::string& uri, const std::string& data,
-    std::string& response_data) {
+    const std::string& uri, const std::string& data, std::string& response_data,
+    uint8_t http_version) {
   // create a new handle and add to the multi handle
   // the curl will actually be sent in perform_curl_multi
-  CURL* tmp = curl_create_handle(uri, data, response_data);
+  CURL* tmp = curl_create_handle(uri, data, response_data, http_version);
   curl_multi_add_handle(curl_multi, tmp);
   handles.push_back(tmp);
 }
@@ -209,9 +218,11 @@ void nrf_client::curl_release_handles() {
 //------------------------------------------------------------------------------
 void nrf_client::notify_subscribed_event(
     const std::shared_ptr<nrf_profile>& profile, const uint8_t& event_type,
-    const std::vector<std::string>& uris) {
+    const std::vector<std::string>& uris, uint8_t http_version) {
   Logger::nrf_app().debug(
-      "Send notification for the subscribed event to the subscriptions");
+      "Send notification for the subscribed event to the subscriptions (HTTP "
+      "VERSION %d)",
+      http_version);
 
   std::map<std::string, std::string> responses = {};
   // Fill the json part
@@ -255,7 +266,7 @@ void nrf_client::notify_subscribed_event(
   for (auto uri : uris) {
     responses[uri] = "";
     std::unique_ptr<std::string> httpData(new std::string());
-    send_curl_multi(uri, body, responses[uri]);
+    send_curl_multi(uri, body, responses[uri], http_version);
   }
 
   perform_curl_multi(
