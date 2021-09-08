@@ -25,6 +25,7 @@
 #include <cctype>
 #include <locale>
 #include <stdarg.h>
+#include <regex>
 
 template<class T>
 class Buffer {
@@ -85,4 +86,17 @@ std::string& util::rtrim(std::string& s) {
 // trim from both ends
 std::string& util::trim(std::string& s) {
   return util::ltrim(util::rtrim(s));
+}
+
+// extract query param from given querystring
+std::string& util::get_query_param(
+    std::string& querystring, std::string param) {
+  std::regex reList("([^=]*)=([^&]*)&?");
+  std::string tmp = param;
+  std::for_each(
+      std::sregex_iterator(querystring.begin(), querystring.end(), reList),
+      std::sregex_iterator(), [param](std::smatch const& match) {
+        std::string qs_match_1 = match[1].str();
+        if (qs_match_1 == param) return match[2].str();
+      });
 }

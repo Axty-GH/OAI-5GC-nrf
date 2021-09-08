@@ -31,6 +31,8 @@
 #define FILE_NRF_HTTP2_SERVER_SEEN
 
 #include "conversions.hpp"
+#include "string.hpp"
+
 //#include "nrf.h"
 #include "nrf_app.hpp"
 #include "uint_generator.hpp"
@@ -54,7 +56,8 @@ class nrf_http2_server {
   void get_nf_instance_handler(
       const std::string& nfInstanceID, const response& response);
   void get_nf_instances_handler(
-      const std::string& nfInstanceID, const response& response);
+      const std::string& nfType, const uint32_t& limit,
+      const response& response);
   void update_instance_handler(
       const std::string& nfInstanceID, const std::vector<PatchItem>& patchItem,
       const response& response);
@@ -67,6 +70,7 @@ class nrf_http2_server {
       const std::string& subscriptionID, const response& response);
   void search_nf_instances_handler(
       const SubscriptionData& subscriptionData, const response& response);
+
   void access_token_request_handler(
       const SubscriptionData& subscriptionData, const response& response);
   void stop();
