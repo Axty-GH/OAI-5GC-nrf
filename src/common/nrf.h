@@ -77,6 +77,7 @@ typedef uint32_t evsub_id_t;
 #define UNASSIGNED_EVSUB_ID ((evsub_id_t) 0x00000000)
 
 #define NNRF_NFM_BASE "/nnrf-nfm/"
+#define NNRF_DISC_BASE "/nnrf-disc/"
 #define NNRF_NFM_NF_INSTANCE "/nf-instances/"
 #define NNRF_NFM_STATUS_SUBSCRIBE_URL "/subscriptions"
 

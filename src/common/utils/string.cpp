@@ -19,6 +19,7 @@
  *      contact@openairinterface.org
  */
 #include "string.hpp"
+#include <iostream>
 
 #include <algorithm>
 #include <functional>
@@ -89,14 +90,18 @@ std::string& util::trim(std::string& s) {
 }
 
 // extract query param from given querystring
-std::string& util::get_query_param(
-    std::string& querystring, std::string param) {
+std::string query_param_tmp;
+//
+std::string util::get_query_param(std::string querystring, std::string param) {
   std::regex reList("([^=]*)=([^&]*)&?");
-  std::string tmp = param;
+  query_param_tmp.clear();
   std::for_each(
       std::sregex_iterator(querystring.begin(), querystring.end(), reList),
-      std::sregex_iterator(), [param](std::smatch const& match) {
-        std::string qs_match_1 = match[1].str();
-        if (qs_match_1 == param) return match[2].str();
+      std::sregex_iterator(), [param](std::smatch match) {
+        if (match[1] == param) {
+          query_param_tmp = match[2].str().c_str();
+          return;
+        }
       });
+  return query_param_tmp;
 }

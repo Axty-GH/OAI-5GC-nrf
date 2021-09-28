@@ -31,7 +31,6 @@
 #define FILE_NRF_HTTP2_SERVER_SEEN
 
 #include "conversions.hpp"
-#include "string.hpp"
 
 //#include "nrf.h"
 #include "nrf_app.hpp"
@@ -69,7 +68,9 @@ class nrf_http2_server {
   void remove_subscription_handler(
       const std::string& subscriptionID, const response& response);
   void search_nf_instances_handler(
-      const SubscriptionData& subscriptionData, const response& response);
+      const std::string& target_nf_type, const std::string& requester_nf_type,
+      const std::string& requester_nf_instance_id, const std::string& limit_nfs,
+      const response& response);
 
   void access_token_request_handler(
       const SubscriptionData& subscriptionData, const response& response);

@@ -34,6 +34,7 @@
 #include <regex>
 #include <nlohmann/json.hpp>
 #include <string>
+#include "string.hpp"
 
 #include "logger.hpp"
 #include "nrf_config.hpp"
@@ -67,6 +68,7 @@ void nrf_http2_server::start() {
               nlohmann::json::parse(msg.c_str()).get_to(nFProfile);
               this->register_nf_instance_handler(nFProfile, response);
             }
+
             if (request.method().compare("GET") == 0) {
               nlohmann::json::parse(msg.c_str()).get_to(nFProfile);
               std::vector<std::string> split_result;
@@ -88,11 +90,12 @@ void nrf_http2_server::start() {
                 std::string nfType =
                     util::get_query_param(querystring, "nf-type");
                 uint32_t limit =
-                    atoi(util::get_query_param(querystring, "limit").c_str());
+                    stoi(util::get_query_param(querystring, "limit").c_str());
 
                 this->get_nf_instances_handler(nfType, limit, response);
               }
             }
+
             if (request.method().compare("PATCH") == 0 && len > 0) {
               std::vector<PatchItem> patchItem;
               nlohmann::json::parse(msg.c_str()).get_to(patchItem);
@@ -102,6 +105,7 @@ void nrf_http2_server::start() {
               nfInstanceID = split_result[split_result.size() - 1].c_str();
               this->update_instance_handler(nfInstanceID, patchItem, response);
             }
+
             if (request.method().compare("DELETE") == 0) {
               std::vector<std::string> split_result;
               boost::split(
@@ -148,7 +152,48 @@ void nrf_http2_server::start() {
               subscriptionID = split_result[split_result.size() - 1].c_str();
               this->remove_subscription_handler(subscriptionID, response);
             }
+          } catch (nlohmann::detail::exception& e) {
+            Logger::nrf_sbi().warn(
+                "Can not parse the json data (error: %s)!", e.what());
+            response.write_head(
+                http_status_code_e::HTTP_STATUS_CODE_400_BAD_REQUEST);
+            response.end();
+            return;
+          }
+        });
+      });
 
+  // NF Discovery
+  server.handle(
+      NNRF_DISC_BASE + nrf_cfg.sbi_api_version + "/nf-instances",
+      [&](const request& request, const response& response) {
+        request.on_data([&](const uint8_t* data, std::size_t len) {
+          std::string msg((char*) data, len);
+          try {
+            if (request.method().compare("GET") == 0) {
+              std::string split_query = request.uri().raw_query;
+
+              // Parse query paramaters
+              std::string nfTypeTarget =
+                  util::get_query_param(split_query, "target-nf-type");
+              std::string nfTypeReq = util::get_query_param(
+                  split_query.c_str(), "requester-nf-type");
+              std::string requester_nf_instance_id = util::get_query_param(
+                  split_query.c_str(), "requester-nf-instance-id");
+              std::string limit_nfs =
+                  util::get_query_param(split_query.c_str(), "limit");
+              // TODO: other query parameters
+
+              Logger::nrf_sbi().debug(
+                  "/nnrf-disc/ query params - nfTypeTarget: %s, nfTypeReq: %s, "
+                  "requester-nf-instance-id: %s, limit_nfs %s",
+                  nfTypeTarget.c_str(), nfTypeReq.c_str(),
+                  requester_nf_instance_id.c_str(), limit_nfs.c_str());
+
+              this->search_nf_instances_handler(
+                  nfTypeTarget, nfTypeReq, requester_nf_instance_id, limit_nfs,
+                  response);
+            }
           } catch (nlohmann::detail::exception& e) {
             Logger::nrf_sbi().warn(
                 "Can not parse the json data (error: %s)!", e.what());
@@ -431,38 +476,40 @@ void nrf_http2_server::remove_subscription_handler(
 }
 
 void nrf_http2_server::search_nf_instances_handler(
-    const SubscriptionData& subscriptionData, const response& response) {
+    const std::string& target_nf_type, const std::string& requester_nf_type,
+    const std::string& requester_nf_instance_id, const std::string& limit_nfs,
+    const response& response) {
   Logger::nrf_sbi().info(
       "Got a request to discover the set of NF instances that satisfies a "
       "number of input query parameters");
   // ToDo
-  std::string target_nf_type = {};
-  // if (!targetNfType.isEmpty()) {
-  //   target_nf_type = targetNfType.get();
-  //   Logger::nrf_sbi().debug("\tTarget NF type:  %s", target_nf_type.c_str());
-  // }
+  std::string target_nfType = {};
+  if (!target_nf_type.empty()) {
+    target_nfType = target_nf_type;
+    Logger::nrf_sbi().debug("\tTarget NF type:  %s", target_nfType.c_str());
+  }
 
-  std::string requester_nf_type = {};
-  // if (!requesterNfType.isEmpty()) {
-  //   requester_nf_type = requesterNfType.get();
-  //   Logger::nrf_sbi().debug(
-  //       "\tRequested NF type:  %s", requester_nf_type.c_str());
-  // }
+  std::string requester_nfType = {};
+  if (!requester_nf_type.empty()) {
+    requester_nfType = requester_nf_type;
+    Logger::nrf_sbi().debug(
+        "\tRequested NF type:  %s", requester_nfType.c_str());
+  }
 
-  std::string requester_nf_instance_id = {};
-  // if (!requesterNfInstanceId.isEmpty()) {
-  //   requester_nf_instance_id = requesterNfInstanceId.get();
-  //   Logger::nrf_sbi().debug(
-  //       "\tRequested NF instance id:  %s", requester_nf_instance_id.c_str());
-  // }
+  std::string requester_nfInstance_id = {};
+  if (!requester_nf_instance_id.empty()) {
+    requester_nfInstance_id = requester_nf_instance_id;
+    Logger::nrf_sbi().debug(
+        "\tRequested NF instance id:  %s", requester_nf_instance_id.c_str());
+  }
 
-  uint32_t limit_nfs = 0;
-  // if (!limit.isEmpty()) {
-  //   limit_nfs = limit.get();
-  //   Logger::nrf_sbi().debug(
-  //       "\tMaximum number of NFProfiles to be returned in the response: %d",
-  //       limit_nfs);
-  // }
+  uint32_t limit_Nfs = 0;
+  if (!limit_nfs.empty()) {
+    limit_Nfs = stoi(limit_nfs);
+    Logger::nrf_sbi().debug(
+        "\tMaximum number of NFProfiles to be returned in the response: %d",
+        limit_Nfs);
+  }
 
   // TODO: other query parameters
 
@@ -470,8 +517,8 @@ void nrf_http2_server::search_nf_instances_handler(
   ProblemDetails problem_details = {};
   std::string search_id          = {};
   m_nrf_app->handle_search_nf_instances(
-      target_nf_type, requester_nf_type, requester_nf_instance_id, limit_nfs,
-      search_id, http_code, 1, problem_details);
+      target_nfType, requester_nfType, requester_nfInstance_id, limit_Nfs,
+      search_id, http_code, 2, problem_details);
 
   nlohmann::json json_data = {};
   std::string content_type = "application/json";
@@ -485,7 +532,7 @@ void nrf_http2_server::search_nf_instances_handler(
   } else {
     // convert the profile to Json
     if (search_result != nullptr)
-      search_result.get()->to_json(json_data, limit_nfs);
+      search_result.get()->to_json(json_data, limit_Nfs);
   }
 
   // TODO: applying client restrictions in terms of the number of
