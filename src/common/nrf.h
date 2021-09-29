@@ -78,7 +78,7 @@ typedef uint32_t evsub_id_t;
 
 #define NNRF_NFM_BASE "/nnrf-nfm/"
 #define NNRF_DISC_BASE "/nnrf-disc/"
-#define NNRF_NFM_NF_INSTANCE "/nf-instances/"
+#define NNRF_NFM_NF_INSTANCES "/nf-instances/"
 #define NNRF_NFM_STATUS_SUBSCRIBE_URL "/subscriptions"
 
 #define NF_CURL_TIMEOUT_MS 1000L

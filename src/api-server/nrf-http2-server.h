@@ -55,7 +55,7 @@ class nrf_http2_server {
   void get_nf_instance_handler(
       const std::string& nfInstanceID, const response& response);
   void get_nf_instances_handler(
-      const std::string& nfType, const uint32_t& limit,
+      const std::string& nf_type, const std::string& limit_nfs,
       const response& response);
   void update_instance_handler(
       const std::string& nfInstanceID, const std::vector<PatchItem>& patchItem,
