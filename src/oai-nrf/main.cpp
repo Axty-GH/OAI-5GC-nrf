@@ -40,7 +40,7 @@ using namespace std;
 
 nrf_app* nrf_app_inst = nullptr;
 nrf_config nrf_cfg;
-NRFApiServer* api_server = nullptr;
+NRFApiServer* api_server           = nullptr;
 nrf_http2_server* nrf_api_server_2 = nullptr;
 
 //------------------------------------------------------------------------------
@@ -123,7 +123,6 @@ int main(int argc, char** argv) {
 
   nrf_manager.join();
   nrf_http2_manager.join();
-
 
   FILE* fp             = NULL;
   std::string filename = fmt::format("/tmp/nrf_{}.status", getpid());

@@ -121,7 +121,7 @@ void nrf_subscription::set_http_version(const uint8_t& httpVersion) {
 }
 
 //------------------------------------------------------------------------------
-uint8_t nrf_subscription::get_http_version() const{
+uint8_t nrf_subscription::get_http_version() const {
   return http_version;
 }
 

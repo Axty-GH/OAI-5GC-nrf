@@ -263,9 +263,9 @@ void nrf_http2_server::register_nf_instance_handler(
   }
   header_map h;
   h.emplace(
-      "location", header_value{
-                      m_address + NNRF_NFM_BASE + nrf_cfg.sbi_api_version +
-                      "/nf-instances/" + nfInstanceID});
+      "location",
+      header_value{m_address + NNRF_NFM_BASE + nrf_cfg.sbi_api_version +
+                   "/nf-instances/" + nfInstanceID});
   h.emplace("content-type", header_value{content_type});
   response.write_head(http_code, h);
   response.end(json_data.dump().c_str());
@@ -295,9 +295,9 @@ void nrf_http2_server::get_nf_instance_handler(
 
   header_map h;
   h.emplace(
-      "location", header_value{
-                      m_address + NNRF_NFM_BASE + nrf_cfg.sbi_api_version +
-                      "/nf-instances/" + nfInstanceID});
+      "location",
+      header_value{m_address + NNRF_NFM_BASE + nrf_cfg.sbi_api_version +
+                   "/nf-instances/" + nfInstanceID});
   h.emplace("content-type", header_value{content_type});
   response.write_head(http_code, h);
   response.end(json_data.dump().c_str());
@@ -342,9 +342,8 @@ void nrf_http2_server::get_nf_instances_handler(
 
   header_map h;
   h.emplace(
-      "location", header_value{
-                      m_address + NNRF_NFM_BASE + nrf_cfg.sbi_api_version +
-                      "/nf-instances/"});
+      "location", header_value{m_address + NNRF_NFM_BASE +
+                               nrf_cfg.sbi_api_version + "/nf-instances/"});
   h.emplace("content-type", header_value{content_type});
   response.write_head(http_code, h);
   response.end();
@@ -382,9 +381,9 @@ void nrf_http2_server::update_instance_handler(
   Logger::nrf_sbi().debug("Json data: %s", json_data.dump().c_str());
   header_map h;
   h.emplace(
-      "location", header_value{
-                      m_address + NNRF_NFM_BASE + nrf_cfg.sbi_api_version +
-                      "/nf-instances/" + nfInstanceID});
+      "location",
+      header_value{m_address + NNRF_NFM_BASE + nrf_cfg.sbi_api_version +
+                   "/nf-instances/" + nfInstanceID});
   h.emplace("content-type", header_value{content_type});
   response.write_head(http_code, h);
   response.end(json_data.dump().c_str());
@@ -406,9 +405,9 @@ void nrf_http2_server::deregister_nf_instance_handler(
 
   header_map h;
   h.emplace(
-      "location", header_value{
-                      m_address + NNRF_NFM_BASE + nrf_cfg.sbi_api_version +
-                      "/nf-instances/" + nfInstanceID});
+      "location",
+      header_value{m_address + NNRF_NFM_BASE + nrf_cfg.sbi_api_version +
+                   "/nf-instances/" + nfInstanceID});
   h.emplace("content-type", header_value{content_type});
   response.write_head(http_code, h);
   response.end();
@@ -438,9 +437,9 @@ void nrf_http2_server::create_subscription_handler(
 
   header_map h;
   h.emplace(
-      "location", header_value{
-                      m_address + NNRF_NFM_BASE + nrf_cfg.sbi_api_version +
-                      NNRF_NFM_STATUS_SUBSCRIBE_URL});
+      "location",
+      header_value{m_address + NNRF_NFM_BASE + nrf_cfg.sbi_api_version +
+                   NNRF_NFM_STATUS_SUBSCRIBE_URL});
   h.emplace("content-type", header_value{content_type});
   response.write_head(http_code, h);
   response.end(json_data.dump().c_str());

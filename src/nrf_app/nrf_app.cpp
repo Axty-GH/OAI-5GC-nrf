@@ -471,7 +471,8 @@ void nrf_app::handle_create_subscription(
         for (auto p : profiles) {
           // send notifications
           nrf_client_inst->notify_subscribed_event(
-              p, NOTIFICATION_TYPE_NF_REGISTERED, notification_uris, http_version);
+              p, NOTIFICATION_TYPE_NF_REGISTERED, notification_uris,
+              http_version);
         }
       }
 
@@ -1025,13 +1026,15 @@ void nrf_app::handle_nf_status_registered(const std::string& profile_id) {
   find_nf_profile(profile_id, profile);
   if (profile.get() != nullptr) {
     std::vector<std::string> notification_uris = {};
-    uint8_t httpVersion = 1;
+    uint8_t httpVersion                        = 1;
     get_subscription_list(
-        profile_id, NOTIFICATION_TYPE_NF_REGISTERED, notification_uris, httpVersion);
+        profile_id, NOTIFICATION_TYPE_NF_REGISTERED, notification_uris,
+        httpVersion);
     // send notifications
     if (notification_uris.size() > 0)
       nrf_client_inst->notify_subscribed_event(
-          profile, NOTIFICATION_TYPE_NF_REGISTERED, notification_uris, httpVersion);
+          profile, NOTIFICATION_TYPE_NF_REGISTERED, notification_uris,
+          httpVersion);
     else
       Logger::nrf_app().debug("\tNo subscription found");
 
@@ -1057,7 +1060,7 @@ void nrf_app::handle_nf_status_deregistered(
       p.get()->get_nf_instance_id().c_str());
 
   std::vector<std::string> notification_uris = {};
-  uint8_t http_version = 1;
+  uint8_t http_version                       = 1;
   get_subscription_list(
       p.get()->get_nf_instance_id(), NOTIFICATION_TYPE_NF_DEREGISTERED,
       notification_uris, http_version);
@@ -1087,15 +1090,17 @@ void nrf_app::handle_nf_status_profile_changed(const std::string& profile_id) {
   find_nf_profile(profile_id, profile);
   if (profile.get() != nullptr) {
     std::vector<std::string> notification_uris = {};
-    uint8_t http_version = 1;
+    uint8_t http_version                       = 1;
     get_subscription_list(
-        profile_id, NOTIFICATION_TYPE_NF_PROFILE_CHANGED, notification_uris, http_version);
+        profile_id, NOTIFICATION_TYPE_NF_PROFILE_CHANGED, notification_uris,
+        http_version);
     // Notification data includes NF profile (other alternative, includes
     // profile_changes)
     // send notifications
     if (notification_uris.size() > 0)
       nrf_client_inst->notify_subscribed_event(
-          profile, NOTIFICATION_TYPE_NF_PROFILE_CHANGED, notification_uris, http_version);
+          profile, NOTIFICATION_TYPE_NF_PROFILE_CHANGED, notification_uris,
+          http_version);
     else
       Logger::nrf_app().debug("\tNo subscription found");
   } else {

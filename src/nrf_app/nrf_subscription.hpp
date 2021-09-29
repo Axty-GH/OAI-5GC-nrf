@@ -200,7 +200,7 @@ class nrf_subscription {
   nrf_event& m_event_sub;
   bs2::connection ev_connection;
   boost::posix_time::ptime validity_time;
-  uint8_t http_version =1;
+  uint8_t http_version = 1;
 };
 }  // namespace app
 }  // namespace nrf
