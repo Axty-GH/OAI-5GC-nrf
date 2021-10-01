@@ -32,6 +32,7 @@ include_directories(${SRC_TOP_DIR}/../build/ext/spdlog/include)
 
 file(GLOB NRF_API_SERVER_src_files
     ${NRF_API_SERVER_DIR}/nrf-api-server.cpp
+    ${NRF_API_SERVER_DIR}/nrf-http2-server.cpp
     ${NRF_API_SERVER_DIR}/model/*.cpp
     ${NRF_API_SERVER_DIR}/api/*.cpp
     ${NRF_API_SERVER_DIR}/impl/*.cpp

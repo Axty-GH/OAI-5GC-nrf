@@ -436,7 +436,7 @@ void nrf_app::handle_create_subscription(
       // generate a subscription ID
       generate_ev_subscription_id(evsub_id);
       ss.get()->set_subscription_id(evsub_id);
-
+      ss.get()->set_http_version(http_version);
       // subscribe to NF status registered
       // subscribe_nf_status(evsub_id);  // from nrf_app
       // subscribe to NF status
@@ -475,7 +475,8 @@ void nrf_app::handle_create_subscription(
         for (auto p : profiles) {
           // send notifications
           nrf_client_inst->notify_subscribed_event(
-              p, NOTIFICATION_TYPE_NF_REGISTERED, notification_uris);
+              p, NOTIFICATION_TYPE_NF_REGISTERED, notification_uris,
+              http_version);
         }
       }
 
@@ -1029,12 +1030,15 @@ void nrf_app::handle_nf_status_registered(const std::string& profile_id) {
   find_nf_profile(profile_id, profile);
   if (profile.get() != nullptr) {
     std::vector<std::string> notification_uris = {};
+    uint8_t httpVersion                        = 1;
     get_subscription_list(
-        profile_id, NOTIFICATION_TYPE_NF_REGISTERED, notification_uris);
+        profile_id, NOTIFICATION_TYPE_NF_REGISTERED, notification_uris,
+        httpVersion);
     // send notifications
     if (notification_uris.size() > 0)
       nrf_client_inst->notify_subscribed_event(
-          profile, NOTIFICATION_TYPE_NF_REGISTERED, notification_uris);
+          profile, NOTIFICATION_TYPE_NF_REGISTERED, notification_uris,
+          httpVersion);
     else
       Logger::nrf_app().debug("\tNo subscription found");
 
@@ -1060,13 +1064,14 @@ void nrf_app::handle_nf_status_deregistered(
       p.get()->get_nf_instance_id().c_str());
 
   std::vector<std::string> notification_uris = {};
+  uint8_t http_version                       = 1;
   get_subscription_list(
       p.get()->get_nf_instance_id(), NOTIFICATION_TYPE_NF_DEREGISTERED,
-      notification_uris);
+      notification_uris, http_version);
   // send notifications
   if (notification_uris.size() > 0)
     nrf_client_inst->notify_subscribed_event(
-        p, NOTIFICATION_TYPE_NF_DEREGISTERED, notification_uris);
+        p, NOTIFICATION_TYPE_NF_DEREGISTERED, notification_uris, http_version);
   else
     Logger::nrf_app().debug("\tNo subscription found");
 }
@@ -1089,14 +1094,17 @@ void nrf_app::handle_nf_status_profile_changed(const std::string& profile_id) {
   find_nf_profile(profile_id, profile);
   if (profile.get() != nullptr) {
     std::vector<std::string> notification_uris = {};
+    uint8_t http_version                       = 1;
     get_subscription_list(
-        profile_id, NOTIFICATION_TYPE_NF_PROFILE_CHANGED, notification_uris);
+        profile_id, NOTIFICATION_TYPE_NF_PROFILE_CHANGED, notification_uris,
+        http_version);
     // Notification data includes NF profile (other alternative, includes
     // profile_changes)
     // send notifications
     if (notification_uris.size() > 0)
       nrf_client_inst->notify_subscribed_event(
-          profile, NOTIFICATION_TYPE_NF_PROFILE_CHANGED, notification_uris);
+          profile, NOTIFICATION_TYPE_NF_PROFILE_CHANGED, notification_uris,
+          http_version);
     else
       Logger::nrf_app().debug("\tNo subscription found");
   } else {
@@ -1108,7 +1116,7 @@ void nrf_app::handle_nf_status_profile_changed(const std::string& profile_id) {
 //------------------------------------------------------------------------------
 void nrf_app::get_subscription_list(
     const std::string& profile_id, const uint8_t& notification_type,
-    std::vector<std::string>& uris) const {
+    std::vector<std::string>& uris, uint8_t& http_version) const {
   Logger::nrf_app().info(
       "\tGet the list of subscriptions related to this profile, profile id %s",
       profile_id.c_str());
@@ -1126,6 +1134,8 @@ void nrf_app::get_subscription_list(
         "\tVerifying subscription, subscription id %s", s.first.c_str());
     std::string uri;
     s.second.get()->get_notification_uri(uri);
+
+    http_version = s.second.get()->get_http_version();
 
     // check notification event type
     bool match_notif_type = false;

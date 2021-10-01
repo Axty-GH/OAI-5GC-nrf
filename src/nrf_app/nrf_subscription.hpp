@@ -157,7 +157,19 @@ class nrf_subscription {
    * @return [boost::posix_time::ptime &] validity time
    */
   boost::posix_time::ptime get_validity_time() const;
+  /*
+   * Set the http_version
+   * @param [uint8_t&]: http_version: http_version
+   * @return void
+   */
+  void set_http_version(const uint8_t& http_version);
 
+  /*
+   * Get the http_version
+   * @param [void]
+   * @return http_version
+   */
+  uint8_t get_http_version() const;
   /*
    * Subscribe to be notified when a new NF registered to the NRF
    * @param void
@@ -188,6 +200,7 @@ class nrf_subscription {
   nrf_event& m_event_sub;
   bs2::connection ev_connection;
   boost::posix_time::ptime validity_time;
+  uint8_t http_version = 1;
 };
 }  // namespace app
 }  // namespace nrf

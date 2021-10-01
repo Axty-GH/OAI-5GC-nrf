@@ -92,3 +92,15 @@ int conv::ascii_to_hex(uint8_t* dst, const char* h) {
     dst[i++] = (high << 4) | low;
   }
 }
+
+std::string conv::toString(const struct in_addr& inaddr) {
+  std::string s              = {};
+  char str[INET6_ADDRSTRLEN] = {};
+  if (inet_ntop(AF_INET, (const void*) &inaddr, str, INET6_ADDRSTRLEN) ==
+      NULL) {
+    s.append("Error in_addr");
+  } else {
+    s.append(str);
+  }
+  return s;
+}

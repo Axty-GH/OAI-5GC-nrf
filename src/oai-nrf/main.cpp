@@ -16,10 +16,12 @@
 
 #include "logger.hpp"
 #include "nrf-api-server.h"
+#include "nrf-http2-server.h"
 #include "nrf_app.hpp"
 #include "nrf_client.hpp"
 #include "options.hpp"
 #include "pid_file.hpp"
+#include "conversions.hpp"
 
 #include "pistache/endpoint.h"
 #include "pistache/http.h"
@@ -38,7 +40,8 @@ using namespace std;
 
 nrf_app* nrf_app_inst = nullptr;
 nrf_config nrf_cfg;
-NRFApiServer* api_server = nullptr;
+NRFApiServer* api_server           = nullptr;
+nrf_http2_server* nrf_api_server_2 = nullptr;
 
 //------------------------------------------------------------------------------
 void my_app_signal_handler(int s) {
@@ -112,7 +115,14 @@ int main(int argc, char** argv) {
   api_server = new NRFApiServer(addr, nrf_app_inst);
   api_server->init(2);
   std::thread nrf_manager(&NRFApiServer::start, api_server);
+
+  // NRF NGHTTP API server (HTTP2)
+  nrf_api_server_2 = new nrf_http2_server(
+      conv::toString(nrf_cfg.sbi.addr4), nrf_cfg.sbi_http2_port, nrf_app_inst);
+  std::thread nrf_http2_manager(&nrf_http2_server::start, nrf_api_server_2);
+
   nrf_manager.join();
+  nrf_http2_manager.join();
 
   FILE* fp             = NULL;
   std::string filename = fmt::format("/tmp/nrf_{}.status", getpid());
