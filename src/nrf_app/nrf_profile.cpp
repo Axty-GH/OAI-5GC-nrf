@@ -608,6 +608,17 @@ void nrf_profile::to_json(nlohmann::json& data) const {
     }
     srv_tmp["scheme"]          = service.scheme;
     srv_tmp["nfServiceStatus"] = service.nf_service_status;
+    if (!service.ip_endpoints.empty()) {
+      // IP endpoints
+      srv_tmp["ipEndPoints"] = nlohmann::json::array();
+      for (auto endpoint : service.ip_endpoints) {
+        nlohmann::json ep_tmp = {};
+        ep_tmp["ipv4Address"] = inet_ntoa(endpoint.ipv4_address);
+        ep_tmp["transport"]   = endpoint.transport;
+        ep_tmp["port"]        = endpoint.port;
+        srv_tmp["ipEndPoints"].push_back(ep_tmp);
+      }
+    }
     data["nfServices"].push_back(srv_tmp);
   }
   data["json_data"] = json_data;
