@@ -338,8 +338,8 @@ bool api_conv::profile_api_to_nrf_profile(
           ip_endpoint_t ip_end;
           IPV4_STR_ADDR_TO_INADDR(
               v.getIpv4Address().c_str(), ip_end.ipv4_address, "");
-          ip_end.port      = v.getPort();
-          //ip_end.transport = v.getTransport();
+          ip_end.port = v.getPort();
+          // ip_end.transport = v.getTransport();
           ns.ip_endpoints.push_back(ip_end);
         }
       }
