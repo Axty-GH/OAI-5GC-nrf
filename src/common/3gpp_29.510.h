@@ -23,6 +23,8 @@
 #define FILE_3GPP_29_510_NRF_SEEN
 
 #include <vector>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 #include "3gpp_23.003.h"
 
 enum class nf_status_e { REGISTERED = 0, SUSPENDED = 1, UNDISCOVERABLE = 2 };
@@ -304,12 +306,30 @@ typedef struct nf_service_version_s {
   }
 } nf_service_version_t;
 
+typedef struct ip_endpoint_s {
+  // struct in6_addr  ipv6_address;
+  struct in_addr ipv4_address;
+  std::string transport;  // TCP
+  unsigned int port;
+  std::string to_string() const {
+    std::string s = {};
+    s.append("Ipv4 Address: ");
+    s.append(inet_ntoa(ipv4_address));
+    s.append(", TransportProtocol: ");
+    s.append(transport);
+    s.append(", Port: ");
+    s.append(std::to_string(port));
+    return s;
+  }
+} ip_endpoint_t;
+
 typedef struct nf_service_s {
   std::string service_instance_id;
   std::string service_name;
   std::vector<nf_service_version_t> versions;
   std::string scheme;
   std::string nf_service_status;
+  std::vector<ip_endpoint_t> ip_endpoints;
 
   std::string to_string() const {
     std::string s = {};
@@ -324,6 +344,10 @@ typedef struct nf_service_s {
     s.append(scheme);
     s.append(", Service status: ");
     s.append(nf_service_status);
+    s.append(",  IpEndPoints: ");
+    for (auto endpoint : ip_endpoints) {
+      s.append(endpoint.to_string());
+    }
     return s;
   }
 } nf_service_t;

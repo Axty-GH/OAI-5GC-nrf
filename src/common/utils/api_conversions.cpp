@@ -46,6 +46,7 @@
 #include "logger.hpp"
 #include "nrf.h"
 #include "string.hpp"
+#include "common_defs.h"
 
 using namespace oai::nrf::model;
 using namespace oai::nrf::app;
@@ -332,6 +333,16 @@ bool api_conv::profile_api_to_nrf_profile(
         ns.versions.push_back(version);
       }
       ns.nf_service_status = service.getNfServiceStatus();
+      if (service.ipEndPointsIsSet()) {
+        for (auto v : service.getIpEndPoints()) {
+          ip_endpoint_t ip_end;
+          IPV4_STR_ADDR_TO_INADDR(
+              v.getIpv4Address().c_str(), ip_end.ipv4_address, "");
+          ip_end.port = v.getPort();
+          // ip_end.transport = v.getTransport();
+          ns.ip_endpoints.push_back(ip_end);
+        }
+      }
       profile.get()->add_nf_service(ns);
     }
   }
