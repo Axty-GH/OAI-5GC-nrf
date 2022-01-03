@@ -3,6 +3,7 @@
 ## v1.3.0 -- January 2022 ##
 
 * NF profile update
+* Docker optimization
 
 ## v1.2.1 -- October 2021 ##
 
