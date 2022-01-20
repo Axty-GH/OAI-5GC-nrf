@@ -148,10 +148,4 @@ typedef struct guami_s {
   std::string amf_id;
 } guami_t;
 
-typedef struct supi_range_s {
-  std::string start;
-  std::string end;
-  std::string pattern;
-} supi_range_t;
-
 #endif
