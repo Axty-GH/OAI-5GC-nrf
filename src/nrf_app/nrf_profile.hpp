@@ -847,6 +847,140 @@ class ausf_profile : public nrf_profile {
   ausf_info_t ausf_info;
 };
 
+class udm_profile : public nrf_profile {
+ public:
+  udm_profile(nrf_event& ev) : nrf_profile(ev, NF_TYPE_UDM) { udm_info = {}; }
+
+  udm_profile(nrf_event& ev, const std::string& id) : nrf_profile(ev, id) {
+    nf_type  = NF_TYPE_UDM;
+    udm_info = {};
+  }
+
+  udm_profile(udm_profile& b) = delete;
+
+  /*
+   * Add a UDM info
+   * @param [const udm_info_t &] info: UDM info
+   * @return void
+   */
+  void add_udm_info(const udm_info_t& info);
+
+  /*
+   * Get list of UDM infos a UDM info
+   * @param [const udm_info_t &] info: UDM info
+   * @return void
+   */
+  void get_udm_info(udm_info_t& infos) const;
+
+  /*
+   * Print related-information for a UDM profile
+   * @param void
+   * @return void:
+   */
+  void display();
+
+  /*
+   * Update a new value for a member of UDM profile
+   * @param [const std::string &] path: member name
+   * @param [const std::string &] value: new value
+   * @return void
+   */
+  bool replace_profile_info(const std::string& path, const std::string& value);
+
+  /*
+   * Add a new value for a member of UDM profile
+   * @param [const std::string &] path: member name
+   * @param [const std::string &] value: new value
+   * @return true if success, otherwise false
+   */
+  bool add_profile_info(const std::string& path, const std::string& value);
+
+  /*
+   * Remove value of a member of UDM profile
+   * @param [const std::string &] path: member name
+   * @param [const std::string &] value: new value
+   * @return true if success, otherwise false
+   */
+  bool remove_profile_info(const std::string& path);
+
+  /*
+   * Represent UDM profile as json object
+   * @param [nlohmann::json &] data: Json data
+   * @return void
+   */
+  void to_json(nlohmann::json& data) const;
+
+ private:
+  udm_info_t udm_info;
+};
+
+class udr_profile : public nrf_profile {
+ public:
+  udr_profile(nrf_event& ev) : nrf_profile(ev, NF_TYPE_UDR) { udr_info = {}; }
+
+  udr_profile(nrf_event& ev, const std::string& id) : nrf_profile(ev, id) {
+    nf_type  = NF_TYPE_UDR;
+    udr_info = {};
+  }
+
+  udr_profile(udr_profile& b) = delete;
+
+  /*
+   * Add a UDR info
+   * @param [const udr_info_t &] info: UDR info
+   * @return void
+   */
+  void add_udr_info(const udr_info_t& info);
+
+  /*
+   * Get list of UDR infos a UDR info
+   * @param [const udr_info_t &] info: UDR info
+   * @return void
+   */
+  void get_udr_info(udr_info_t& infos) const;
+
+  /*
+   * Print related-information for a UDR profile
+   * @param void
+   * @return void:
+   */
+  void display();
+
+  /*
+   * Update a new value for a member of UDR profile
+   * @param [const std::string &] path: member name
+   * @param [const std::string &] value: new value
+   * @return void
+   */
+  bool replace_profile_info(const std::string& path, const std::string& value);
+
+  /*
+   * Add a new value for a member of UDR profile
+   * @param [const std::string &] path: member name
+   * @param [const std::string &] value: new value
+   * @return true if success, otherwise false
+   */
+  bool add_profile_info(const std::string& path, const std::string& value);
+
+  /*
+   * Remove value of a member of UDR profile
+   * @param [const std::string &] path: member name
+   * @param [const std::string &] value: new value
+   * @return true if success, otherwise false
+   */
+  bool remove_profile_info(const std::string& path);
+
+  /*
+   * Represent UDR profile as json object
+   * @param [nlohmann::json &] data: Json data
+   * @return void
+   */
+  void to_json(nlohmann::json& data) const;
+
+ private:
+  udr_info_t udr_info;
+};
+
 }  // namespace app
 }  // namespace nrf
 }  // namespace oai
