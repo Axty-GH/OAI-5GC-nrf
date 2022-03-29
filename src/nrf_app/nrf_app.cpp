@@ -148,6 +148,10 @@ void nrf_app::handle_register_nf_instance(
       sn = std::make_shared<udr_profile>(m_event_sub);
     } break;
 
+    case NF_TYPE_PCF: {
+      sn = std::make_shared<pcf_profile>(m_event_sub);
+    } break;
+
     default: {
       sn = std::make_shared<nrf_profile>(m_event_sub);
     }

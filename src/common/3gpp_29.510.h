@@ -140,6 +140,14 @@ typedef struct udr_info_s {
   std::vector<std::string> data_set_id;
 } udr_info_t;
 
+typedef struct pcf_info_s {
+  std::string groupid;
+  std::vector<std::string> dnn_list;
+  std::vector<supi_range_info_item_t> supi_ranges;
+  std::vector<identity_range_info_item_t> gpsi_ranges;
+  // ToDo: rxDiamHost, rxDiamRealm, v2xSupportInd.
+} pcf_info_t;
+
 enum subscr_condition_type_e {  // TODO: use enum class
   UNKNOWN_CONDITION   = 0,
   NF_INSTANCE_ID_COND = 1,

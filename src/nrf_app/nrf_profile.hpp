@@ -981,6 +981,73 @@ class udr_profile : public nrf_profile {
   udr_info_t udr_info;
 };
 
+class pcf_profile : public nrf_profile {
+ public:
+  pcf_profile(nrf_event& ev) : nrf_profile(ev, NF_TYPE_PCF) { pcf_info = {}; }
+
+  pcf_profile(nrf_event& ev, const std::string& id) : nrf_profile(ev, id) {
+    nf_type  = NF_TYPE_PCF;
+    pcf_info = {};
+  }
+
+  pcf_profile(pcf_profile& b) = delete;
+
+  /*
+   * Add a PCF info
+   * @param [const pcf_info_t &] info: PCF info
+   * @return void
+   */
+  void add_pcf_info(const pcf_info_t& info);
+
+  /*
+   * Get list of PCF infos a PCF info
+   * @param [const pcf_info_t &] info: pcf info
+   * @return void
+   */
+  void get_pcf_info(pcf_info_t& infos) const;
+
+  /*
+   * Print related-information for a PCF profile
+   * @param void
+   * @return void:
+   */
+  void display();
+
+  /*
+   * Update a new value for a member of PCF profile
+   * @param [const std::string &] path: member name
+   * @param [const std::string &] value: new value
+   * @return void
+   */
+  bool replace_profile_info(const std::string& path, const std::string& value);
+
+  /*
+   * Add a new value for a member of PCF profile
+   * @param [const std::string &] path: member name
+   * @param [const std::string &] value: new value
+   * @return true if success, otherwise false
+   */
+  bool add_profile_info(const std::string& path, const std::string& value);
+
+  /*
+   * Remove value of a member of PCF profile
+   * @param [const std::string &] path: member name
+   * @param [const std::string &] value: new value
+   * @return true if success, otherwise false
+   */
+  bool remove_profile_info(const std::string& path);
+
+  /*
+   * Represent PCF profile as json object
+   * @param [nlohmann::json &] data: Json data
+   * @return void
+   */
+  void to_json(nlohmann::json& data) const;
+
+ private:
+  pcf_info_t pcf_info;
+};
+
 }  // namespace app
 }  // namespace nrf
 }  // namespace oai
