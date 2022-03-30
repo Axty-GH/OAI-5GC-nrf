@@ -231,6 +231,16 @@ void nrf_profile::get_nf_services(std::vector<nf_service_t>& n) const {
 }
 
 //------------------------------------------------------------------------------
+void nrf_profile::set_custom_info(const nlohmann::json& c) {
+  custom_info = c;
+}
+
+//------------------------------------------------------------------------------
+void nrf_profile::get_custom_info(nlohmann::json& c) const {
+  c = custom_info;
+}
+
+//------------------------------------------------------------------------------
 void nrf_profile::display() {
   Logger::nrf_app().debug("NF instance info");
   Logger::nrf_app().debug("\tInstance ID: %s", nf_instance_id.c_str());
@@ -242,6 +252,8 @@ void nrf_profile::display() {
   Logger::nrf_app().debug("\tPriority: %d", priority);
   Logger::nrf_app().debug("\tCapacity: %d", capacity);
   // SNSSAIs
+  if (!custom_info.empty())
+    Logger::nrf_app().debug("\tCustomInfo: %s", custom_info.dump().c_str());
   if (!plmn_list.empty()) {
     for (auto s : plmn_list) {
       Logger::nrf_app().debug("\tPLMN List(MCC, MNC): %d, %s", s.mcc, s.mnc);
@@ -593,6 +605,8 @@ void nrf_profile::to_json(nlohmann::json& data) const {
   // }
   data["priority"] = priority;
   data["capacity"] = capacity;
+  // CustomInfo
+  if (!custom_info.empty()) data["customInfo"] = custom_info;
   // NF services
   data["nfServices"] = nlohmann::json::array();
   for (auto service : nf_services) {

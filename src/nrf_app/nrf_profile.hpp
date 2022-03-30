@@ -68,6 +68,7 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
     nf_instance_name = "";
     nf_status        = "";
     json_data        = {};
+    custom_info      = {};
     first_update     = true;
     is_updated       = false;
   }
@@ -366,6 +367,20 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
   void get_json_data(nlohmann::json& data) const;
 
   /*
+   * Set custom info
+   * @param [const nlohmann::json &] c: custom info to be set
+   * @return void
+   */
+  void set_custom_info(const nlohmann::json& c);
+
+  /*
+   * Get custom info
+   * @param [nlohmann::json &] c: Store custom info
+   * @return void
+   */
+  void get_custom_info(nlohmann::json& c) const;
+
+  /*
    * Set NF instance services
    * @param [std::vector<nf_service_t> &] n: nf_service
    * @return void
@@ -507,6 +522,7 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
   uint16_t capacity;
   nlohmann::json json_data;  // store extra json data
   std::vector<nf_service_t> nf_services;
+  nlohmann::json custom_info;  // store extra json data
 
   /*
    std::vector<PlmnId> m_PlmnList;

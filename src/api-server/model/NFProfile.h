@@ -345,10 +345,10 @@ class NFProfile {
   /// <summary>
   ///
   /// </summary>
-  // Object getCustomInfo() const;
-  // void setCustomInfo(Object const& value);
-  // bool customInfoIsSet() const;
-  // void unsetCustomInfo();
+  nlohmann::json getCustomInfo() const;
+  void setCustomInfo(nlohmann::json const& value);
+  bool customInfoIsSet() const;
+  void unsetCustomInfo();
   /// <summary>
   ///
   /// </summary>
@@ -480,8 +480,8 @@ class NFProfile {
   bool m_NrfInfoIsSet;
   NwdafInfo m_NwdafInfo;
   bool m_NwdafInfoIsSet;
-  // Object m_CustomInfo;
-  // bool m_CustomInfoIsSet;
+  nlohmann::json m_CustomInfo;
+  bool m_CustomInfoIsSet;
   std::string m_RecoveryTime;
   bool m_RecoveryTimeIsSet;
   bool m_NfServicePersistence;
