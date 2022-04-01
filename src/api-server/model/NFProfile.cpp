@@ -12,62 +12,63 @@
  */
 
 #include "NFProfile.h"
+#include <iostream>
 
 namespace oai {
 namespace nrf {
 namespace model {
 
 NFProfile::NFProfile() {
-  m_NfInstanceId           = "";
-  m_NfInstanceName         = "";
-  m_NfInstanceNameIsSet    = false;
-  m_HeartBeatTimer         = 0;
-  m_HeartBeatTimerIsSet    = false;
-  m_PlmnListIsSet          = false;
-  m_SNssaisIsSet           = false;
-  m_PerPlmnSnssaiListIsSet = false;
-  m_NsiListIsSet           = false;
-  m_Fqdn                   = "";
-  m_FqdnIsSet              = false;
-  m_InterPlmnFqdn          = "";
-  m_InterPlmnFqdnIsSet     = false;
-  m_Ipv4AddressesIsSet     = false;
-  m_Ipv6AddressesIsSet     = false;
-  m_AllowedPlmnsIsSet      = false;
-  m_AllowedNfTypesIsSet    = false;
-  m_AllowedNfDomainsIsSet  = false;
-  m_AllowedNssaisIsSet     = false;
-  m_Priority               = 0;
-  m_PriorityIsSet          = false;
-  m_Capacity               = 0;
-  m_CapacityIsSet          = false;
-  m_Load                   = 0;
-  m_LoadIsSet              = false;
-  m_Locality               = "";
-  m_LocalityIsSet          = false;
-  m_Priority               = 0;
-  m_PriorityIsSet          = false;
-  m_UdrInfoIsSet           = false;
-  m_UdrInfoExtIsSet        = false;
-  m_UdmInfoIsSet           = false;
-  m_UdmInfoExtIsSet        = false;
-  m_AusfInfoIsSet          = false;
-  m_AusfInfoExtIsSet       = false;
-  m_AmfInfoIsSet           = false;
-  m_AmfInfoExtIsSet        = false;
-  m_SmfInfoIsSet           = false;
-  m_SmfInfoExtIsSet        = false;
-  m_UpfInfoIsSet           = false;
-  m_UpfInfoExtIsSet        = false;
-  m_PcfInfoIsSet           = false;
-  m_PcfInfoExtIsSet        = false;
-  m_BsfInfoIsSet           = false;
-  m_BsfInfoExtIsSet        = false;
-  m_ChfInfoIsSet           = false;
-  m_ChfInfoExtIsSet        = false;
-  m_NrfInfoIsSet           = false;
-  m_NwdafInfoIsSet         = false;
-  // m_CustomInfoIsSet = false;
+  m_NfInstanceId                          = "";
+  m_NfInstanceName                        = "";
+  m_NfInstanceNameIsSet                   = false;
+  m_HeartBeatTimer                        = 0;
+  m_HeartBeatTimerIsSet                   = false;
+  m_PlmnListIsSet                         = false;
+  m_SNssaisIsSet                          = false;
+  m_PerPlmnSnssaiListIsSet                = false;
+  m_NsiListIsSet                          = false;
+  m_Fqdn                                  = "";
+  m_FqdnIsSet                             = false;
+  m_InterPlmnFqdn                         = "";
+  m_InterPlmnFqdnIsSet                    = false;
+  m_Ipv4AddressesIsSet                    = false;
+  m_Ipv6AddressesIsSet                    = false;
+  m_AllowedPlmnsIsSet                     = false;
+  m_AllowedNfTypesIsSet                   = false;
+  m_AllowedNfDomainsIsSet                 = false;
+  m_AllowedNssaisIsSet                    = false;
+  m_Priority                              = 0;
+  m_PriorityIsSet                         = false;
+  m_Capacity                              = 0;
+  m_CapacityIsSet                         = false;
+  m_Load                                  = 0;
+  m_LoadIsSet                             = false;
+  m_Locality                              = "";
+  m_LocalityIsSet                         = false;
+  m_Priority                              = 0;
+  m_PriorityIsSet                         = false;
+  m_UdrInfoIsSet                          = false;
+  m_UdrInfoExtIsSet                       = false;
+  m_UdmInfoIsSet                          = false;
+  m_UdmInfoExtIsSet                       = false;
+  m_AusfInfoIsSet                         = false;
+  m_AusfInfoExtIsSet                      = false;
+  m_AmfInfoIsSet                          = false;
+  m_AmfInfoExtIsSet                       = false;
+  m_SmfInfoIsSet                          = false;
+  m_SmfInfoExtIsSet                       = false;
+  m_UpfInfoIsSet                          = false;
+  m_UpfInfoExtIsSet                       = false;
+  m_PcfInfoIsSet                          = false;
+  m_PcfInfoExtIsSet                       = false;
+  m_BsfInfoIsSet                          = false;
+  m_BsfInfoExtIsSet                       = false;
+  m_ChfInfoIsSet                          = false;
+  m_ChfInfoExtIsSet                       = false;
+  m_NrfInfoIsSet                          = false;
+  m_NwdafInfoIsSet                        = false;
+  m_CustomInfoIsSet                       = false;
   m_RecoveryTime                          = "";
   m_RecoveryTimeIsSet                     = false;
   m_NfServicePersistence                  = false;
@@ -146,8 +147,7 @@ void to_json(nlohmann::json& j, const NFProfile& o) {
     j["chfInfoExt"] = o.m_ChfInfoExt;
   if (o.nrfInfoIsSet()) j["nrfInfo"] = o.m_NrfInfo;
   if (o.nwdafInfoIsSet()) j["nwdafInfo"] = o.m_NwdafInfo;
-  // if(o.customInfoIsSet())
-  //    j["customInfo"] = o.m_CustomInfo;
+  if (o.customInfoIsSet()) j["customInfo"] = o.m_CustomInfo;
   if (o.recoveryTimeIsSet()) j["recoveryTime"] = o.m_RecoveryTime;
   if (o.nfServicePersistenceIsSet())
     j["nfServicePersistence"] = o.m_NfServicePersistence;
@@ -323,11 +323,10 @@ void from_json(const nlohmann::json& j, NFProfile& o) {
     j.at("nwdafInfo").get_to(o.m_NwdafInfo);
     o.m_NwdafInfoIsSet = true;
   }
-  /*if(j.find("customInfo") != j.end())
-   {
-   j.at("customInfo").get_to(o.m_CustomInfo);
-   o.m_CustomInfoIsSet = true;
-   } */
+  if (j.find("customInfo") != j.end()) {
+    j.at("customInfo").get_to(o.m_CustomInfo);
+    o.m_CustomInfoIsSet = true;
+  }
   if (j.find("recoveryTime") != j.end()) {
     j.at("recoveryTime").get_to(o.m_RecoveryTime);
     o.m_RecoveryTimeIsSet = true;
@@ -867,26 +866,21 @@ bool NFProfile::nwdafInfoIsSet() const {
 void NFProfile::unsetNwdafInfo() {
   m_NwdafInfoIsSet = false;
 }
-/*Object NFProfile::getCustomInfo() const
- {
- return m_CustomInfo;
- }
- */
-/*
- void NFProfile::setCustomInfo(Object const& value)
- {
- m_CustomInfo = value;
- m_CustomInfoIsSet = true;
- }*/
-/* bool NFProfile::customInfoIsSet() const
- {
- return m_CustomInfoIsSet;
- }*/
-/*
- void NFProfile::unsetCustomInfo()
- {
- m_CustomInfoIsSet = false;
- }*/
+nlohmann::json NFProfile::getCustomInfo() const {
+  return m_CustomInfo;
+}
+
+void NFProfile::setCustomInfo(nlohmann::json const& value) {
+  m_CustomInfo      = value;
+  m_CustomInfoIsSet = true;
+}
+bool NFProfile::customInfoIsSet() const {
+  return m_CustomInfoIsSet;
+}
+
+void NFProfile::unsetCustomInfo() {
+  m_CustomInfoIsSet = false;
+}
 
 std::string NFProfile::getRecoveryTime() const {
   return m_RecoveryTime;

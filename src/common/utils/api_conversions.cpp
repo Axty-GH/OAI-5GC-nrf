@@ -65,6 +65,9 @@ bool api_conv::profile_api_to_nrf_profile(
       "\tInstance name: %s", profile.get()->get_nf_instance_name().c_str());
 
   profile.get()->set_nf_status(api_profile.getNfStatus());
+  profile.get()->set_custom_info(api_profile.getCustomInfo());
+  Logger::nrf_app().debug(
+      "getCustomInfo -> %s", api_profile.getCustomInfo().dump().c_str());
   Logger::nrf_app().debug(
       "\tStatus: %s", profile.get()->get_nf_status().c_str());
   profile.get()->set_nf_heartBeat_timer(api_profile.getHeartBeatTimer());
