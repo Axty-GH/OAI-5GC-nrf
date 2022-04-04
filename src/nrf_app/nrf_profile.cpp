@@ -1613,3 +1613,145 @@ void udr_profile::to_json(nlohmann::json& data) const {
     data["udrInfo"]["routingIndicators"].push_back(data_set_id);
   }
 }
+
+//------------------------------------------------------------------------------
+void pcf_profile::add_pcf_info(const pcf_info_t& info) {
+  pcf_info = info;
+}
+
+//------------------------------------------------------------------------------
+void pcf_profile::get_pcf_info(pcf_info_t& infos) const {
+  infos = pcf_info;
+}
+
+//------------------------------------------------------------------------------
+void pcf_profile::display() {
+  nrf_profile::display();
+  Logger::nrf_app().debug("\tUDR Info");
+  Logger::nrf_app().debug("\t\tGroupId: %s", pcf_info.groupid.c_str());
+  for (auto dnn : pcf_info.dnn_list) {
+    Logger::nrf_app().debug("\t\t DNN: %s", dnn.c_str());
+  }
+  for (auto supi : pcf_info.supi_ranges) {
+    Logger::nrf_app().debug(
+        "\t\t SupiRanges: Start - %s, End - %s, Pattern - %s",
+        supi.supi_range.start.c_str(), supi.supi_range.end.c_str(),
+        supi.supi_range.pattern.c_str());
+  }
+  for (auto gpsiRange : pcf_info.gpsi_ranges) {
+    Logger::nrf_app().debug(
+        "\t\t GpsiRanges: Start - %s, End - %s, Pattern - %s",
+        gpsiRange.identity_range.start.c_str(),
+        gpsiRange.identity_range.end.c_str(),
+        gpsiRange.identity_range.pattern.c_str());
+  }
+}
+
+//------------------------------------------------------------------------------
+bool pcf_profile::add_profile_info(
+    const std::string& path, const std::string& value) {
+  bool result = nrf_profile::add_profile_info(path, value);
+  if (result) return true;
+
+  // add an element to a list of json object
+  if (path.compare("pcfInfo") == 0) {
+    Logger::nrf_app().info("Does not support this operation for pcfInfo");
+    return false;
+  }
+
+  if ((path.compare("nfInstanceId") != 0) and
+      (path.compare("nfInstanceName") != 0) and
+      (path.compare("nfType") != 0) and (path.compare("nfStatus") != 0) and
+      (path.compare("heartBeatTimer") != 0) and (path.compare("fqdn") != 0) and
+      (path.compare("plmnList") != 0) and
+      (path.compare("ipv4Addresses") != 0) and
+      (path.compare("priority") != 0) and (path.compare("capacity") != 0) and
+      (path.compare("priority") != 0) and (path.compare("nfServices") != 0) and
+      (path.compare("pcfInfo") != 0)) {
+    Logger::nrf_app().debug("Add new member: %s", path.c_str());
+    // add new member
+    json_data[path] = value;
+    return true;
+  }
+  return false;
+}
+
+//------------------------------------------------------------------------------
+bool pcf_profile::replace_profile_info(
+    const std::string& path, const std::string& value) {
+  bool result = nrf_profile::replace_profile_info(path, value);
+  if (result) return true;
+  // for UDMAUSF info
+  if (path.compare("pcfInfo") == 0) {
+    Logger::nrf_app().debug("Does not support this operation for pcfInfo");
+    return false;
+  }
+
+  if ((path.compare("nfInstanceId") != 0) and
+      (path.compare("nfInstanceName") != 0) and
+      (path.compare("nfType") != 0) and (path.compare("nfStatus") != 0) and
+      (path.compare("heartBeatTimer") != 0) and (path.compare("fqdn") != 0) and
+      (path.compare("plmnList") != 0) and
+      (path.compare("ipv4Addresses") != 0) and
+      (path.compare("priority") != 0) and (path.compare("capacity") != 0) and
+      (path.compare("priority") != 0) and (path.compare("nfServices") != 0) and
+      (path.compare("pcfInfo") != 0)) {
+    Logger::nrf_app().debug("Member (%s) not found!", path.c_str());
+    return false;
+  }
+
+  return false;
+}
+
+//------------------------------------------------------------------------------
+bool pcf_profile::remove_profile_info(const std::string& path) {
+  bool result = nrf_profile::remove_profile_info(path);
+  if (result) return true;
+  // for UDM info
+  if (path.compare("pcfInfo") == 0) {
+    Logger::nrf_app().debug("Do not support this operation for pcfInfo");
+    return false;
+  }
+
+  if ((path.compare("nfInstanceId") != 0) and
+      (path.compare("nfInstanceName") != 0) and
+      (path.compare("nfType") != 0) and (path.compare("nfStatus") != 0) and
+      (path.compare("heartBeatTimer") != 0) and (path.compare("fqdn") != 0) and
+      (path.compare("plmnList") != 0) and
+      (path.compare("ipv4Addresses") != 0) and
+      (path.compare("priority") != 0) and (path.compare("capacity") != 0) and
+      (path.compare("priority") != 0) and (path.compare("nfServices") != 0) and
+      (path.compare("pcfInfo") != 0)) {
+    Logger::nrf_app().debug("Member (%s) not found!", path.c_str());
+    return false;
+  }
+  return false;
+}
+
+//------------------------------------------------------------------------------
+void pcf_profile::to_json(nlohmann::json& data) const {
+  nrf_profile::to_json(data);
+  // UDR Info
+  data["pcfInfo"]["groupId"]    = pcf_info.groupid;
+  data["pcfInfo"]["dnnList"]    = nlohmann::json::array();
+  data["pcfInfo"]["supiRanges"] = nlohmann::json::array();
+  data["pcfInfo"]["gpsiRanges"] = nlohmann::json::array();
+
+  for (auto supi : pcf_info.supi_ranges) {
+    nlohmann::json tmp = {};
+    tmp["start"]       = supi.supi_range.start;
+    tmp["end"]         = supi.supi_range.end;
+    tmp["pattern"]     = supi.supi_range.pattern;
+    data["pcfInfo"]["supiRanges"].push_back(tmp);
+  }
+  for (auto gpsi : pcf_info.gpsi_ranges) {
+    nlohmann::json tmp = {};
+    tmp["start"]       = gpsi.identity_range.start;
+    tmp["end"]         = gpsi.identity_range.end;
+    tmp["pattern"]     = gpsi.identity_range.pattern;
+    data["pcfInfo"]["gpsiRanges"].push_back(tmp);
+  }
+  for (auto dnn : pcf_info.dnn_list) {
+    data["pcfInfo"]["dnnList"].push_back(dnn);
+  }
+}
