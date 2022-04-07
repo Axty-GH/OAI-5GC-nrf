@@ -52,7 +52,6 @@ RUN apt-get update && \
       iputils-ping \
       bc \
       tzdata \
-      tshark \
       libasan4 \
       libgoogle-glog0v5 \
       libdouble-conversion1 \
