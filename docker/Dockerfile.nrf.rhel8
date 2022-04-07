@@ -107,7 +107,8 @@ COPY --from=oai-nrf-builder \
     /usr/lib64/libboost_regex.so.1.66.0 \
     /usr/lib64/
 
-RUN ldconfig
+RUN ldconfig && \
+    ldd /openair-nrf/bin/oai_nrf
 
 # Copying template configuration files
 # The configuration folder will be flat
