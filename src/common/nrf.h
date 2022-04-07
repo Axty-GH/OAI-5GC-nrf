@@ -52,9 +52,9 @@ typedef enum nf_type_s {
 } nf_type_t;
 
 static const std::vector<std::string> nf_type_e2str = {
-    "NRF",   "UDM", "AMF", "SMF",  "AUSF", "NEF",    "PCF",   "SMSF",
-    "NSSF",  "UDR", "LMF",  "GMLC", "5G_EIR", "SEPP",  "UPF",
-    "N3IWF", "AF",  "UDSF", "BSF",  "CHF",    "NWDAF", "UNKNOWN"};
+    "NRF",  "UDM",  "AMF", "SMF",  "AUSF",   "NEF",    "PCF", "SMSF",
+    "NSSF", "UDR",  "LMF", "GMLC", "5G_EIR", "SEPP",   "UPF", "N3IWF",
+    "AF",   "UDSF", "BSF", "CHF",  "NWDAF",  "UNKNOWN"};
 
 typedef enum patch_op_type_s {
   PATCH_OP_ADD     = 0,
