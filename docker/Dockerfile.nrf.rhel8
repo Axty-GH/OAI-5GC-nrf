@@ -82,7 +82,8 @@ RUN yum update -y && \
       net-tools \
       procps-ng\
       libevent && \
-    rm -rf /var/lib/apt/lists/*
+    yum clean all -y && \
+    rm -rf /var/cache/yum /var/cache/dnf
 
 # Copying executable and generated libraries
 WORKDIR /openair-nrf/bin
@@ -107,7 +108,8 @@ COPY --from=oai-nrf-builder \
     /usr/lib64/libboost_regex.so.1.66.0 \
     /usr/lib64/
 
-RUN ldconfig
+RUN ldconfig && \
+    ldd /openair-nrf/bin/oai_nrf
 
 # Copying template configuration files
 # The configuration folder will be flat
