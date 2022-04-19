@@ -107,7 +107,7 @@ pipeline {
 
           if ("MERGE".equals(env.gitlabActionType)) {
             try {
-              myShCmd('docker image inspect --format=\'Size = {{.Size}} bytes\' oai-nrf-base:' + NRF_BASE_IMAGE_TAG, rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
+              myShCmdNoDir('docker image inspect --format=\'Size = {{.Size}} bytes\' oai-nrf-base:' + NRF_BASE_IMAGE_TAG, rem_u18_host_flag, rem_u18_host_user, rem_u18_host)
             } catch (Exception e) {
               currentBuild.result = 'FAILURE'
               echo '\u26D4 \u001B[31mBase Image does not exist\u001B[0m'
@@ -618,6 +618,14 @@ def copyFrom2ndServer(filename, target, flag, user, host) {
 def myShCmd(cmd, flag, user, host) {
   if (flag) {
     sh "ssh -t -t ${user}@${host} 'cd /tmp/CI-CN-NRF && ${cmd}'"
+  } else {
+    sh "${cmd}"
+  }
+}
+
+def myShCmdNoDir(cmd, flag, user, host) {
+  if (flag) {
+    sh "ssh -t -t ${user}@${host} '${cmd}'"
   } else {
     sh "${cmd}"
   }
