@@ -212,10 +212,12 @@ bool api_conv::profile_api_to_nrf_profile(
             "\t\tNSSAI SD: %s, SST: %d", snssai.snssai.sD.c_str(),
             snssai.snssai.sST);
         for (auto d : s.getDnnUpfInfoList()) {
-          dnn_upf_info_item_t dnn = {};
-          dnn.dnn                 = d.getDnn();
-          snssai.dnn_upf_info_list.push_back(dnn);
-          Logger::nrf_app().debug("\t\tDNN: %s", dnn.dnn.c_str());
+          dnn_upf_info_item_t upf_info   = {};
+          upf_info.dnn                   = d.getDnn();
+          upf_info.dnai_list             = d.getDnaiList();
+          upf_info.dnai_nw_instance_list = d.getDnaiNwInstanceList();
+          snssai.dnn_upf_info_list.push_back(upf_info);
+          Logger::nrf_app().debug("\t\tDNN: %s", upf_info.dnn.c_str());
         }
         info.snssai_upf_info_list.push_back(snssai);
       }
