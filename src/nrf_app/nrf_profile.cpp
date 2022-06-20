@@ -1024,6 +1024,16 @@ void upf_profile::display() {
     for (auto d : s.dnn_upf_info_list) {
       Logger::nrf_app().debug(
           "\t\tSNSSAI UPF Info List, DNN List: %s", d.dnn.c_str());
+      for (auto dnai : d.dnai_list) {
+        Logger::nrf_app().debug(
+            "\t\tSNSSAI UPF Info List, DNN List, DNAI List: %s", dnai.c_str());
+      }
+      for (auto nwinstance : d.dnai_nw_instance_list) {
+        Logger::nrf_app().debug(
+            "\t\tSNSSAI UPF Info List, DNN List, DNAI NW Instance List: %s : "
+            "%s",
+            nwinstance.first.c_str(), nwinstance.second.c_str());
+      }
     }
   }
   if (!upf_info.interface_upf_info_list.empty()) {
