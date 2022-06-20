@@ -65,7 +65,7 @@ class DnnUpfInfoItem {
   std::map<std::string, std::string>& getDnaiNwInstanceList();
   void setDnaiNwInstanceList(std::map<std::string, std::string> const& value);
   bool dnaiNwInstanceListIsSet() const;
-  void unserDnaiNwInstanceList();
+  void unsetDnaiNwInstanceList();
 
   friend void to_json(nlohmann::json& j, const DnnUpfInfoItem& o);
   friend void from_json(const nlohmann::json& j, DnnUpfInfoItem& o);

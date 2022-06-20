@@ -100,7 +100,7 @@ void DnnUpfInfoItem::setDnaiNwInstanceList(
 bool DnnUpfInfoItem::dnaiNwInstanceListIsSet() const {
   return m_DnaiNwInstanceListIsSet;
 }
-void DnnUpfInfoItem::unserDnaiNwInstanceList() {
+void DnnUpfInfoItem::unsetDnaiNwInstanceList() {
   m_DnaiNwInstanceListIsSet = false;
 }
 
