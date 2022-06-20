@@ -67,6 +67,7 @@ typedef struct smf_info_s {
 typedef struct dnn_upf_info_item_s {
   std::string dnn;
   std::vector<std::string> dnai_list;
+  // Introduced in R16.8
   std::map<std::string, std::string> dnai_nw_instance_list;
   // std::vector<std::string> pdu_session_types
 } dnn_upf_info_item_t;
