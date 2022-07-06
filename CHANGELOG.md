@@ -1,5 +1,13 @@
 # RELEASE NOTES: #
 
+## v1.4.0 -- July 2022 ##
+
+* Remove unused packages
+* Add NF profile handling for PCF
+* HTTP/2 support for SBI interface
+* Official images produced by CI are pushed to `oaisoftwarealliance` Docker-Hub Team account
+* Reduce image size
+
 ## v1.3.0 -- January 2022 ##
 
 * NF profile update
