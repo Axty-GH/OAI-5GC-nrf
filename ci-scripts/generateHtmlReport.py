@@ -618,7 +618,7 @@ class HtmlReport():
 				status = False
 				if nfType == 'NRF':
 					section_start_pattern = 'build_nrf --clean --Verbose --build-type Release --jobs'
-					section_end_pattern = 'FROM ubuntu:bionic as oai-nrf$'
+					section_end_pattern = 'FROM .* as oai-nrf$'
 					pass_pattern = 'nrf installed'
 				section_status = False
 				with open(cwd + '/archives/' + logFileName, 'r') as logfile:
@@ -666,7 +666,7 @@ class HtmlReport():
 			if os.path.isfile(cwd + '/archives/' + logFileName):
 				if nfType == 'NRF':
 					section_start_pattern = 'build_nrf --clean --Verbose --build-type Release --jobs'
-					section_end_pattern = 'FROM ubuntu:bionic as oai-nrf$'
+					section_end_pattern = 'FROM .* as oai-nrf$'
 				section_status = False
 				with open(cwd + '/archives/' + logFileName, 'r') as logfile:
 					for line in logfile:
@@ -727,23 +727,31 @@ class HtmlReport():
 		for variant in variants:
 			logFileName = 'nrf_' + variant + '_image_build.log'
 			if os.path.isfile(cwd + '/archives/' + logFileName):
-				section_start_pattern = 'FROM ubuntu:bionic as oai-nrf$'
-				section_end_pattern = 'COPY --from=oai-nrf-builder /openair-nrf/scripts/entrypoint.sh entrypoint.sh'
+				section_start_pattern = 'FROM .* as oai-nrf$'
+				section_end_pattern = 'COPY --from=oai-nrf-builder /openair-nrf/etc/nrf.conf '
 				section_status = False
 				status = False
+				noPbInLDD = True
 				with open(cwd + '/archives/' + logFileName, 'r') as logfile:
 					for line in logfile:
 						result = re.search(section_start_pattern, line)
 						if result is not None:
 							section_status = True
+						result = re.search('not found', line)
+						if section_status and result is not None:
+							noPbInLDD = False
 						result = re.search(section_end_pattern, line)
 						if result is not None:
 							section_status = False
 							status = True
 					logfile.close()
-				if status:
+				if status and noPbInLDD:
 					cell_msg = '	   <td bgcolor="LimeGreen"><pre style="border:none; background-color:LimeGreen"><b>'
 					cell_msg += 'OK:\n'
+				elif noPbInLDD:
+					cell_msg = '	   <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
+					cell_msg += 'KO:\n'
+					cell_msg += '  Some libraries were not copied from builder image\n'
 				else:
 					cell_msg = '	   <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
 					cell_msg += 'KO:\n'
@@ -841,7 +849,7 @@ class HtmlReport():
 						result = re.search(section_end_pattern, line)
 						if result is not None:
 							section_status = False
-						if section_status:
+						if section_status and not status:
 							if nfType == 'NRF':
 								if self.git_pull_request:
 									result = re.search('oai-nrf *ci-tmp', line)

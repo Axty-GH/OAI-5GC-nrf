@@ -87,15 +87,66 @@ typedef struct upf_info_s {
   std::vector<interface_upf_info_item_t> interface_upf_info_list;
 } upf_info_t;
 
-typedef struct supi_range_ausf_info_item_s {
+typedef struct supi_range_s {
+  std::string start;
+  std::string end;
+  std::string pattern;
+} supi_range_t;
+
+typedef struct supi_range_info_item_s {
   supi_range_t supi_range;
-} supi_range_ausf_info_item_t;
+} supi_range_info_item_t;
+
+typedef struct identity_range_s {
+  std::string start;
+  std::string end;
+  std::string pattern;
+} identity_range_t;
+
+typedef struct identity_range_info_item_s {
+  identity_range_t identity_range;
+} identity_range_info_item_t;
+
+typedef struct internal_grpid_range_s {
+  std::string start;
+  std::string end;
+  std::string pattern;
+} internal_grpid_range_t;
+
+typedef struct internal_grpid_range_info_item_s {
+  internal_grpid_range_t int_grpid_range;
+} internal_grpid_range_info_item_t;
 
 typedef struct ausf_info_s {
   std::string groupid;
-  std::vector<supi_range_ausf_info_item_t> supi_ranges;
+  std::vector<supi_range_info_item_t> supi_ranges;
   std::vector<std::string> routing_indicator;
 } ausf_info_t;
+
+typedef struct udm_info_s {
+  std::string groupid;
+  std::vector<supi_range_info_item_t> supi_ranges;
+  std::vector<identity_range_info_item_t> gpsi_ranges;
+  std::vector<identity_range_info_item_t> ext_grp_id_ranges;
+  std::vector<std::string> routing_indicator;
+  std::vector<internal_grpid_range_info_item_t> int_grp_id_ranges;
+} udm_info_t;
+
+typedef struct udr_info_s {
+  std::string groupid;
+  std::vector<supi_range_info_item_t> supi_ranges;
+  std::vector<identity_range_info_item_t> gpsi_ranges;
+  std::vector<identity_range_info_item_t> ext_grp_id_ranges;
+  std::vector<std::string> data_set_id;
+} udr_info_t;
+
+typedef struct pcf_info_s {
+  std::string groupid;
+  std::vector<std::string> dnn_list;
+  std::vector<supi_range_info_item_t> supi_ranges;
+  std::vector<identity_range_info_item_t> gpsi_ranges;
+  // ToDo: rxDiamHost, rxDiamRealm, v2xSupportInd.
+} pcf_info_t;
 
 enum subscr_condition_type_e {  // TODO: use enum class
   UNKNOWN_CONDITION   = 0,

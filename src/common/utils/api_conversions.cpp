@@ -65,6 +65,9 @@ bool api_conv::profile_api_to_nrf_profile(
       "\tInstance name: %s", profile.get()->get_nf_instance_name().c_str());
 
   profile.get()->set_nf_status(api_profile.getNfStatus());
+  profile.get()->set_custom_info(api_profile.getCustomInfo());
+  Logger::nrf_app().debug(
+      "getCustomInfo -> %s", api_profile.getCustomInfo().dump().c_str());
   Logger::nrf_app().debug(
       "\tStatus: %s", profile.get()->get_nf_status().c_str());
   profile.get()->set_nf_heartBeat_timer(api_profile.getHeartBeatTimer());
@@ -294,17 +297,23 @@ bool api_conv::profile_api_to_nrf_profile(
           ->add_upf_info(info);
     } break;
     case NF_TYPE_AUSF: {
-      Logger::nrf_app().debug("\tAUSF profile, AUSFF Info");
+      Logger::nrf_app().debug("\tAUSF profile, AUSF Info");
       profile.get()->set_nf_type(NF_TYPE_AUSF);
       ausf_info_t info       = {};
       AusfInfo ausf_info_api = api_profile.getAusfInfo();
       info.groupid           = ausf_info_api.getGroupId();
+      Logger::nrf_app().debug("\t\t GroupId - %s", info.groupid.c_str());
       for (auto s : ausf_info_api.getSupiRanges()) {
-        supi_range_ausf_info_item_t supiRange = {};
-        supiRange.supi_range.start            = s.getStart();
-        supiRange.supi_range.end              = s.getEnd();
-        supiRange.supi_range.pattern          = s.getPattern();
+        supi_range_info_item_t supiRange = {};
+        supiRange.supi_range.start       = s.getStart();
+        supiRange.supi_range.end         = s.getEnd();
+        supiRange.supi_range.pattern     = s.getPattern();
         info.supi_ranges.push_back(supiRange);
+        Logger::nrf_app().debug(
+            "\t\t SupiRanges: Start - %s, End - %s, Pattern - %s",
+            supiRange.supi_range.start.c_str(),
+            supiRange.supi_range.end.c_str(),
+            supiRange.supi_range.pattern.c_str());
       }
       for (auto s : ausf_info_api.getRoutingIndicators()) {
         info.routing_indicator.push_back(s);
@@ -313,6 +322,176 @@ bool api_conv::profile_api_to_nrf_profile(
           .get()
           ->add_ausf_info(info);
 
+    } break;
+    case NF_TYPE_UDM: {
+      Logger::nrf_app().debug("\tUDM profile, UDM Info");
+      profile.get()->set_nf_type(NF_TYPE_UDM);
+      udm_info_t info      = {};
+      UdmInfo udm_info_api = api_profile.getUdmInfo();
+      info.groupid         = udm_info_api.getGroupId();
+      Logger::nrf_app().debug("\t\t GroupId - %s", info.groupid.c_str());
+      if (udm_info_api.supiRangesIsSet()) {
+        for (auto s : udm_info_api.getSupiRanges()) {
+          supi_range_info_item_t supiRange = {};
+          supiRange.supi_range.start       = s.getStart();
+          supiRange.supi_range.end         = s.getEnd();
+          supiRange.supi_range.pattern     = s.getPattern();
+          info.supi_ranges.push_back(supiRange);
+          Logger::nrf_app().debug(
+              "\t\t SupiRanges: Start - %s, End - %s, Pattern - %s",
+              supiRange.supi_range.start.c_str(),
+              supiRange.supi_range.end.c_str(),
+              supiRange.supi_range.pattern.c_str());
+        }
+      }
+      if (udm_info_api.gpsiRangesIsSet()) {
+        for (auto s : udm_info_api.getGpsiRanges()) {
+          identity_range_info_item_t gpsiRange = {};
+          gpsiRange.identity_range.start       = s.getStart();
+          gpsiRange.identity_range.end         = s.getEnd();
+          gpsiRange.identity_range.pattern     = s.getPattern();
+          info.gpsi_ranges.push_back(gpsiRange);
+          Logger::nrf_app().debug(
+              "\t\t GpsiRanges: Start - %s, End - %s, Pattern - %s",
+              gpsiRange.identity_range.start.c_str(),
+              gpsiRange.identity_range.end.c_str(),
+              gpsiRange.identity_range.pattern.c_str());
+        }
+      }
+      if (udm_info_api.externalGroupIdentifiersRangesIsSet()) {
+        for (auto s : udm_info_api.getExternalGroupIdentifiersRanges()) {
+          identity_range_info_item_t ExtGrpId = {};
+          ExtGrpId.identity_range.start       = s.getStart();
+          ExtGrpId.identity_range.end         = s.getEnd();
+          ExtGrpId.identity_range.pattern     = s.getPattern();
+          info.ext_grp_id_ranges.push_back(ExtGrpId);
+          Logger::nrf_app().debug(
+              "\t\t Ext_Id_Ranges: Start - %s, End - %s, Pattern - %s",
+              ExtGrpId.identity_range.start.c_str(),
+              ExtGrpId.identity_range.end.c_str(),
+              ExtGrpId.identity_range.pattern.c_str());
+        }
+      }
+      if (udm_info_api.routingIndicatorsIsSet()) {
+        for (auto s : udm_info_api.getRoutingIndicators()) {
+          info.routing_indicator.push_back(s);
+          Logger::nrf_app().debug("\t\t Routing Indicators: %s", s.c_str());
+        }
+      }
+      // ToDo:- InternalGroupIdentifiersRanges
+      // for (auto s : udm_info_api.getInternalGroupIdentifiersRanges()) {
+      //   internal_grpid_range_info_item_t IntGrpId = {};
+      //   IntGrpId.int_grpid_range.start            = s.getStart();
+      //   IntGrpId.int_grpid_range.end              = s.getEnd();
+      //   IntGrpId.int_grpid_range.pattern          = s.getPattern();
+      //   info.ext_grp_id_ranges.push_back(IntGrpId);
+      // }
+      (std::static_pointer_cast<udm_profile>(profile))
+          .get()
+          ->add_udm_info(info);
+    } break;
+    case NF_TYPE_UDR: {
+      Logger::nrf_app().debug("\tUDR profile, UDR Info");
+      profile.get()->set_nf_type(NF_TYPE_UDR);
+      udr_info_t info      = {};
+      UdrInfo udr_info_api = api_profile.getUdrInfo();
+      info.groupid         = udr_info_api.getGroupId();
+      Logger::nrf_app().debug("\t\t GroupId - %s", info.groupid.c_str());
+      if (udr_info_api.supiRangesIsSet()) {
+        for (auto s : udr_info_api.getSupiRanges()) {
+          supi_range_info_item_t supiRange = {};
+          supiRange.supi_range.start       = s.getStart();
+          supiRange.supi_range.end         = s.getEnd();
+          supiRange.supi_range.pattern     = s.getPattern();
+          info.supi_ranges.push_back(supiRange);
+          Logger::nrf_app().debug(
+              "\t\t SupiRanges: Start - %s, End - %s, Pattern - %s",
+              supiRange.supi_range.start.c_str(),
+              supiRange.supi_range.end.c_str(),
+              supiRange.supi_range.pattern.c_str());
+        }
+      }
+      if (udr_info_api.gpsiRangesIsSet()) {
+        for (auto s : udr_info_api.getGpsiRanges()) {
+          identity_range_info_item_t gpsiRange = {};
+          gpsiRange.identity_range.start       = s.getStart();
+          gpsiRange.identity_range.end         = s.getEnd();
+          gpsiRange.identity_range.pattern     = s.getPattern();
+          info.gpsi_ranges.push_back(gpsiRange);
+          Logger::nrf_app().debug(
+              "\t\t GpsiRanges: Start - %s, End - %s, Pattern - %s",
+              gpsiRange.identity_range.start.c_str(),
+              gpsiRange.identity_range.end.c_str(),
+              gpsiRange.identity_range.pattern.c_str());
+        }
+      }
+      if (udr_info_api.externalGroupIdentifiersRangesIsSet()) {
+        for (auto s : udr_info_api.getExternalGroupIdentifiersRanges()) {
+          identity_range_info_item_t ExtGrpId = {};
+          ExtGrpId.identity_range.start       = s.getStart();
+          ExtGrpId.identity_range.end         = s.getEnd();
+          ExtGrpId.identity_range.pattern     = s.getPattern();
+          info.ext_grp_id_ranges.push_back(ExtGrpId);
+          Logger::nrf_app().debug(
+              "\t\t Ext_Grp_Id_Ranges: Start - %s, End - %s, Pattern - %s",
+              ExtGrpId.identity_range.start.c_str(),
+              ExtGrpId.identity_range.end.c_str(),
+              ExtGrpId.identity_range.pattern.c_str());
+        }
+      }
+      // ToDo:- s.getInterfaceType() Not Implemented
+      // for (auto s : udr_info_api.getSupportedDataSets()) {
+      // info.data_set_id.push_back(s);
+      // Logger::nrf_app().debug("\t\t Supported Data Sets: %s", s.c_str());
+      // }
+      (std::static_pointer_cast<udr_profile>(profile))
+          .get()
+          ->add_udr_info(info);
+    } break;
+    case NF_TYPE_PCF: {
+      Logger::nrf_app().debug("\tPCF profile, PCF Info");
+      profile.get()->set_nf_type(NF_TYPE_PCF);
+      pcf_info_t info      = {};
+      PcfInfo pcf_info_api = api_profile.getPcfInfo();
+      info.groupid         = pcf_info_api.getGroupId();
+      Logger::nrf_app().debug("\t\t GroupId - %s", info.groupid.c_str());
+      if (pcf_info_api.dnnListIsSet()) {
+        for (auto s : pcf_info_api.getDnnList()) {
+          Logger::nrf_app().debug("\t\t DNN - %s", s.c_str());
+          info.dnn_list.push_back(s);
+        }
+      }
+      if (pcf_info_api.supiRangesIsSet()) {
+        for (auto s : pcf_info_api.getSupiRanges()) {
+          supi_range_info_item_t supiRange = {};
+          supiRange.supi_range.start       = s.getStart();
+          supiRange.supi_range.end         = s.getEnd();
+          supiRange.supi_range.pattern     = s.getPattern();
+          info.supi_ranges.push_back(supiRange);
+          Logger::nrf_app().debug(
+              "\t\t SupiRanges: Start - %s, End - %s, Pattern - %s",
+              supiRange.supi_range.start.c_str(),
+              supiRange.supi_range.end.c_str(),
+              supiRange.supi_range.pattern.c_str());
+        }
+      }
+      if (pcf_info_api.gpsiRangesIsSet()) {
+        for (auto s : pcf_info_api.getGpsiRanges()) {
+          identity_range_info_item_t gpsiRange = {};
+          gpsiRange.identity_range.start       = s.getStart();
+          gpsiRange.identity_range.end         = s.getEnd();
+          gpsiRange.identity_range.pattern     = s.getPattern();
+          info.gpsi_ranges.push_back(gpsiRange);
+          Logger::nrf_app().debug(
+              "\t\t GpsiRanges: Start - %s, End - %s, Pattern - %s",
+              gpsiRange.identity_range.start.c_str(),
+              gpsiRange.identity_range.end.c_str(),
+              gpsiRange.identity_range.pattern.c_str());
+        }
+      }
+      (std::static_pointer_cast<pcf_profile>(profile))
+          .get()
+          ->add_pcf_info(info);
     } break;
     default: {
     }
@@ -502,11 +681,12 @@ bool api_conv::subscription_api_to_nrf_subscription(
 //------------------------------------------------------------------------------
 nf_type_t api_conv::string_to_nf_type(const std::string& str) {
   if (str.compare("NRF") == 0) return NF_TYPE_NRF;
+  if (str.compare("UDM") == 0) return NF_TYPE_UDM;
   if (str.compare("AMF") == 0) return NF_TYPE_AMF;
   if (str.compare("SMF") == 0) return NF_TYPE_SMF;
   if (str.compare("AUSF") == 0) return NF_TYPE_AUSF;
   if (str.compare("NEF") == 0) return NF_TYPE_NEF;
-  if (str.compare("PCP") == 0) return NF_TYPE_PCF;
+  if (str.compare("PCF") == 0) return NF_TYPE_PCF;
   if (str.compare("SMSF") == 0) return NF_TYPE_SMSF;
   if (str.compare("NSSF") == 0) return NF_TYPE_NSSF;
   if (str.compare("UDR") == 0) return NF_TYPE_UDR;
