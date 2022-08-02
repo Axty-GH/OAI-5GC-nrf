@@ -66,6 +66,9 @@ nrf_client::nrf_client(nrf_event& ev) : m_event_sub(ev) {
   headers    = curl_slist_append(headers, "Accept: application/json");
   headers    = curl_slist_append(headers, "Content-Type: application/json");
   headers    = curl_slist_append(headers, "charsets: utf-8");
+  // to prevent curl from using the Expect: 100-continue feature, which is not
+  // supported by our servers
+  headers = curl_slist_append(headers, "Expect:");
   // subscribe_task_curl();
 }
 

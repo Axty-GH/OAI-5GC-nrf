@@ -23,6 +23,7 @@
 #define FILE_3GPP_29_510_NRF_SEEN
 
 #include <vector>
+#include <map>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include "3gpp_23.003.h"
@@ -65,7 +66,9 @@ typedef struct smf_info_s {
 
 typedef struct dnn_upf_info_item_s {
   std::string dnn;
-  // std::vector<std::string> dnai_list
+  std::vector<std::string> dnai_list;
+  // Introduced in R16.8
+  std::map<std::string, std::string> dnai_nw_instance_list;
   // std::vector<std::string> pdu_session_types
 } dnn_upf_info_item_t;
 

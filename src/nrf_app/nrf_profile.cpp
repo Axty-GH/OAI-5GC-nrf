@@ -1024,6 +1024,16 @@ void upf_profile::display() {
     for (auto d : s.dnn_upf_info_list) {
       Logger::nrf_app().debug(
           "\t\tSNSSAI UPF Info List, DNN List: %s", d.dnn.c_str());
+      for (auto dnai : d.dnai_list) {
+        Logger::nrf_app().debug(
+            "\t\tSNSSAI UPF Info List, DNN List, DNAI List: %s", dnai.c_str());
+      }
+      for (auto nwinstance : d.dnai_nw_instance_list) {
+        Logger::nrf_app().debug(
+            "\t\tSNSSAI UPF Info List, DNN List, DNAI NW Instance List: %s : "
+            "%s",
+            nwinstance.first.c_str(), nwinstance.second.c_str());
+      }
     }
   }
   if (!upf_info.interface_upf_info_list.empty()) {
@@ -1129,9 +1139,22 @@ void upf_profile::to_json(nlohmann::json& data) const {
     tmp["sNssai"]["sd"]   = snssai.snssai.sD;
     tmp["dnnUpfInfoList"] = nlohmann::json::array();
     for (auto d : snssai.dnn_upf_info_list) {
-      nlohmann::json tmp_dnn = {};
-      tmp_dnn["dnn"]         = d.dnn;
-      tmp["dnnUpfInfoList"].push_back(tmp_dnn);
+      nlohmann::json tmp_upf_info_item = {};
+      tmp_upf_info_item["dnn"]         = d.dnn;
+      if (d.dnai_list.size() > 0) {
+        tmp_upf_info_item["dnaiList"] = nlohmann::json::array();
+        for (auto dnai : d.dnai_list) {
+          tmp_upf_info_item["dnaiList"].push_back(dnai);
+        }
+      }
+      if (d.dnai_nw_instance_list.size() > 0) {
+        for (auto it_dnai_nw : d.dnai_nw_instance_list) {
+          tmp_upf_info_item["dnaiNwInstanceList"][it_dnai_nw.first] =
+              it_dnai_nw.second;
+        }
+      }
+
+      tmp["dnnUpfInfoList"].push_back(tmp_upf_info_item);
     }
     data["upfInfo"]["sNssaiUpfInfoList"].push_back(tmp);
   }
