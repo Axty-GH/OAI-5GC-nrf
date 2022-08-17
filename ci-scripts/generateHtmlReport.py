@@ -464,8 +464,6 @@ class HtmlReport():
 				section_end_pattern = 'build_nrf --clean --Verbose --build-type Release --jobs'
 				section_status = False
 				package_install = False
-				folly_build_start = False
-				folly_build_status = False
 				spdlog_build_start = False
 				spdlog_build_status = False
 				pistache_build_start = False
@@ -501,12 +499,6 @@ class HtmlReport():
 							result = re.search('spdlog installation complete', line)
 							if result is not None and spdlog_build_start:
 								spdlog_build_status = True
-							result = re.search('Starting to install folly', line)
-							if result is not None:
-								folly_build_start = True
-							result = re.search('folly installation complete', line)
-							if result is not None and folly_build_start:
-								folly_build_status = True
 							result = re.search('Starting to install pistache', line)
 							if result is not None:
 								pistache_build_start = True
@@ -554,12 +546,6 @@ class HtmlReport():
 					cell_msg += '   ** spdlog Installation: OK\n'
 				else:
 					cell_msg += '   ** spdlog Installation: KO\n'
-				if base_image:
-					cell_msg += '   ** folly Installation: N/A\n'
-				elif folly_build_status:
-					cell_msg += '   ** folly Installation: OK\n'
-				else:
-					cell_msg += '   ** folly Installation: KO\n'
 				if base_image:
 					cell_msg += '   ** pistache Installation: N/A\n'
 				elif pistache_build_status:

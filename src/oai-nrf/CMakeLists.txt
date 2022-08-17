@@ -291,5 +291,4 @@ IF(STATIC_LINKING)
 ENDIF(STATIC_LINKING)   
 
 target_link_libraries (nrf ${ASAN} 
-    -Wl,--start-group NRF 3GPP_COMMON_TYPES NRF_API CN_UTILS -lnettle ${NETTLE_LIBRARIES} ${CRYPTO_LIBRARIES} -lnghttp2_asio -lboost_system -lboost_thread -lboost_date_time -lssl -lcrypto gflags glog dl double-conversion folly -Wl,--end-group pthread m rt config++ event boost_system pistache curl)
-    
+    -Wl,--start-group NRF 3GPP_COMMON_TYPES NRF_API CN_UTILS -lnettle ${NETTLE_LIBRARIES} ${CRYPTO_LIBRARIES} -lnghttp2_asio -lboost_system -lboost_thread -lboost_date_time -lssl -lcrypto dl -Wl,--end-group pthread m rt config++ event boost_system pistache curl)
