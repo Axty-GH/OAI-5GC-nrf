@@ -52,6 +52,7 @@
 using namespace oai::nrf::app;
 using namespace oai::nrf::model;
 using namespace std::chrono;
+using namespace boost::placeholders;
 
 extern nrf_app* nrf_app_inst;
 extern nrf_config nrf_cfg;

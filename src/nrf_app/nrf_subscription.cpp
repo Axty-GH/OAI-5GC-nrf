@@ -35,6 +35,7 @@
 #include "logger.hpp"
 
 using namespace oai::nrf::app;
+using namespace boost::placeholders;
 
 //------------------------------------------------------------------------------
 void nrf_subscription::set_subscription_id(const std::string& sub) {

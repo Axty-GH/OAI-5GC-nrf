@@ -43,6 +43,7 @@
 using namespace Pistache::Http;
 using namespace Pistache::Http::Mime;
 using namespace oai::nrf::app;
+using namespace boost::placeholders;
 using json = nlohmann::json;
 
 extern nrf_client* nrf_client_inst;
