@@ -275,41 +275,10 @@ install_cpp_jwt_from_git() {
     prompt='y'
     OPTION="-y"
   fi
-  if [ $2 -eq 0 ]; then
-    debug=0
-  else
-    debug=1
-  fi
-
 
   if [[ $prompt =~ [yY](es)* ]]
   then
-    if [[ $OS_DISTRO == "ubuntu" ]]; then
-      PACKAGE_LIST="\
-        libgtest-dev \
-        libssl-dev"
-    elif [[ "$OS_BASEDISTRO" == "fedora" ]]; then
-      PACKAGE_LIST="\
-        gtest-devel \
-        openssl-devel"
-    else
-      echo_fatal "$OS_DISTRO is not a supported distribution." 
-    fi
-    $SUDO $INSTALLER install $OPTION $PACKAGE_LIST
-    ret=$?;[[ $ret -ne 0 ]] && return $ret
-   
-   #install libgtest
-    if [[ $OS_DISTRO == "ubuntu" ]]; then
-      echo "Building the gtest library" 
-      pushd $OPENAIRCN_DIR/build/ext    
-      cd /usr/src/gtest
-      $SUDO $CMAKE CMakeLists.txt
-      $SUDO make
-      $SUDO cp *.a /usr/lib
-      ret=$?;[[ $ret -ne 0 ]] && popd && return $ret
-      popd
-    fi
- 
+
     GIT_URL=https://github.com/arun11299/cpp-jwt.git
     echo "Install Cpp-jwt from $GIT_URL"
     pushd $OPENAIRCN_DIR/build/ext
@@ -324,7 +293,9 @@ install_cpp_jwt_from_git() {
     cd cpp-jwt && git checkout -f v1.4
     ret=$?;[[ $ret -ne 0 ]] && popd && return $ret
     mkdir _build && cd _build
-    $CMAKE ..
+    $CMAKE \
+      -DCPP_JWT_BUILD_TESTS=OFF \
+      -DCPP_JWT_BUILD_EXAMPLES=OFF ..
     ret=$?;[[ $ret -ne 0 ]] && popd && return $ret
     make
     ret=$?;[[ $ret -ne 0 ]] && popd && return $ret
@@ -444,6 +415,7 @@ check_install_nrf_deps() {
       python2 \
       pkgconfig \
       ninja-build \
+      boost-devel \
       libasan"
   else
     echo_fatal "$OS_DISTRO is not a supported distribution."

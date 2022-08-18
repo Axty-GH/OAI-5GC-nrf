@@ -53,7 +53,7 @@ WORKDIR /openair-nrf
 # Installing all the needed libraries/packages to build and run NRF
 WORKDIR /openair-nrf/build/scripts
 RUN ./build_nrf --install-deps --force && \
-    cp -Rf /openair-f/build/ext /openair-nrf-ext-ref
+    cp -Rf /openair-nrf/build/ext /openair-nrf-ext-ref
 
 #---------------------------------------------------------------------
 # BUILDER IMAGE
