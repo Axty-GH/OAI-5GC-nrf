@@ -464,8 +464,6 @@ class HtmlReport():
 				section_end_pattern = 'build_nrf --clean --Verbose --build-type Release --jobs'
 				section_status = False
 				package_install = False
-				folly_build_start = False
-				folly_build_status = False
 				spdlog_build_start = False
 				spdlog_build_status = False
 				pistache_build_start = False
@@ -501,12 +499,6 @@ class HtmlReport():
 							result = re.search('spdlog installation complete', line)
 							if result is not None and spdlog_build_start:
 								spdlog_build_status = True
-							result = re.search('Starting to install folly', line)
-							if result is not None:
-								folly_build_start = True
-							result = re.search('folly installation complete', line)
-							if result is not None and folly_build_start:
-								folly_build_status = True
 							result = re.search('Starting to install pistache', line)
 							if result is not None:
 								pistache_build_start = True
@@ -555,12 +547,6 @@ class HtmlReport():
 				else:
 					cell_msg += '   ** spdlog Installation: KO\n'
 				if base_image:
-					cell_msg += '   ** folly Installation: N/A\n'
-				elif folly_build_status:
-					cell_msg += '   ** folly Installation: OK\n'
-				else:
-					cell_msg += '   ** folly Installation: KO\n'
-				if base_image:
 					cell_msg += '   ** pistache Installation: N/A\n'
 				elif pistache_build_status:
 					cell_msg += '   ** pistache Installation: OK\n'
@@ -573,9 +559,9 @@ class HtmlReport():
 				else:
 					cell_msg += '   ** Nlohmann Json Installation: KO\n'
 				if base_image:
-					cell_msg += '   ** nghttp2 Installation: N/A\n'
+					cell_msg += '   ** nghttp2-asio Installation: N/A\n'
 				elif nghttp2_build_status:
-					cell_msg += '   ** nghttp2 Installation: OK\n'
+					cell_msg += '   ** nghttp2-asio Installation: OK\n'
 				else:
 					cell_msg += '   ** nghttp2 Installation: KO\n'
 				if base_image:
@@ -748,7 +734,7 @@ class HtmlReport():
 				if status and noPbInLDD:
 					cell_msg = '	   <td bgcolor="LimeGreen"><pre style="border:none; background-color:LimeGreen"><b>'
 					cell_msg += 'OK:\n'
-				elif noPbInLDD:
+				elif not noPbInLDD:
 					cell_msg = '	   <td bgcolor="Tomato"><pre style="border:none; background-color:Tomato"><b>'
 					cell_msg += 'KO:\n'
 					cell_msg += '  Some libraries were not copied from builder image\n'

@@ -39,6 +39,7 @@
 
 using namespace std;
 using namespace oai::nrf::app;
+using namespace boost::placeholders;
 
 //------------------------------------------------------------------------------
 void nrf_profile::set_nf_instance_id(const std::string& instance_id) {
