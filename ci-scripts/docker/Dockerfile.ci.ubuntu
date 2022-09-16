@@ -33,13 +33,14 @@ ARG BASE_IMAGE=ubuntu:bionic
 FROM oai-nrf-base:latest as oai-nrf-builder
 
 # Copying source code
+RUN rm -Rf /openair-nrf
 WORKDIR /openair-nrf/
 COPY . /openair-nrf
-RUN cp -Rf /openair-nrf-ext-ref /openair-nrf/build/ext
 
 # Building NRF
 WORKDIR /openair-nrf/build/scripts
 RUN ldconfig && \
+    cp -Rf /openair-nrf-ext-ref /openair-nrf/build/ext && \
     ./build_nrf --clean --Verbose --build-type Release --jobs && \
     ldd /openair-nrf/build/nrf/build/nrf && \
     mv /openair-nrf/build/nrf/build/nrf /openair-nrf/build/nrf/build/oai_nrf
