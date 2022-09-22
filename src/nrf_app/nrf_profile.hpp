@@ -497,6 +497,20 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
    */
   void set_status_updated(bool status);
 
+  /*
+   * Get status updated
+   * @param void
+   * @return status
+   */
+  bool get_status_updated();
+
+  /*
+   * Get status updated
+   * @param status
+   * @return void
+   */
+  void get_status_updated(bool& status);
+
  protected:
   nrf_event& m_event_sub;
   bs2::connection

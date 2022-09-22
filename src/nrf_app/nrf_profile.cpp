@@ -90,11 +90,13 @@ void nrf_profile::set_nf_status(const std::string& status) {
 
 //------------------------------------------------------------------------------
 void nrf_profile::get_nf_status(std::string& status) const {
+  std::shared_lock lock(heartbeart_mutex);
   status = nf_status;
 }
 
 //------------------------------------------------------------------------------
 std::string nrf_profile::get_nf_status() const {
+  std::shared_lock lock(heartbeart_mutex);
   return nf_status;
 }
 
@@ -723,7 +725,7 @@ void nrf_profile::handle_heartbeart_timeout_nfregistration(uint64_t ms) {
       "%d",
       nf_instance_id.c_str(), ms);
   // Set status to SUSPENDED and unsubscribe to the HBT
-  if (!is_updated) {
+  if (!get_status_updated()) {
     set_nf_status("SUSPENDED");
   }
 
@@ -741,8 +743,11 @@ void nrf_profile::handle_heartbeart_timeout_nfupdate(uint64_t ms) {
       "current "
       "ms %ld",
       nf_instance_id.c_str(), ms, current_ms);
-  if (!is_updated) {
+  if (!get_status_updated()) {
     set_nf_status("SUSPENDED");
+    // TODO: Notify to the subscribers
+    // notifCondition with ["monitoredAttributes": [ "/nfStatus""]
+    m_event_sub.nf_status_profile_changed(nf_instance_id);
   }
   set_status_updated(false);
 }
@@ -751,6 +756,18 @@ void nrf_profile::handle_heartbeart_timeout_nfupdate(uint64_t ms) {
 void nrf_profile::set_status_updated(bool status) {
   std::unique_lock lock(heartbeart_mutex);
   is_updated = status;
+}
+
+//------------------------------------------------------------------------------
+void nrf_profile::get_status_updated(bool& status) {
+  std::shared_lock lock(heartbeart_mutex);
+  status = is_updated;
+}
+
+//------------------------------------------------------------------------------
+bool nrf_profile::get_status_updated() {
+  std::shared_lock lock(heartbeart_mutex);
+  return is_updated;
 }
 
 //------------------------------------------------------------------------------
