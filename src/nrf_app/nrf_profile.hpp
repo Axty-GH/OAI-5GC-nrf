@@ -117,7 +117,7 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
 
   virtual ~nrf_profile() {
     Logger::nrf_app().debug("Delete NRF Profile instance...");
-    if (hb_update_connection.connected()) task_connection.disconnect();
+    if (hb_update_connection.connected()) hb_update_connection.disconnect();
     if (first_hb_connection.connected()) first_hb_connection.disconnect();
   }
 
