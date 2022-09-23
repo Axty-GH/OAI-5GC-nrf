@@ -849,7 +849,8 @@ void nrf_app::find_nf_profiles(
       nf_type_t nf_type = api_conv::string_to_nf_type(sub_condition.nf_type);
 
       for (auto profile : instance_id2nrf_profile) {
-        if (profile.second.get()->get_nf_type() == nf_type) {
+        if ((profile.second.get()->get_nf_type() == nf_type) and
+            profile.second->is_nf_active()) {
           profiles.push_back(profile.second);
         }
       }
