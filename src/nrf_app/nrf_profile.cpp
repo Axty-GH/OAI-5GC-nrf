@@ -85,9 +85,9 @@ nf_type_t nrf_profile::get_nf_type() const {
 //------------------------------------------------------------------------------
 bool nrf_profile::set_nf_status(const std::string& status) {
   Logger::nrf_app().debug("Set NF status to %s", status.c_str());
-  if (!(boost::iequals(nf_status, "REGISTERED") or
-        boost::iequals(nf_status, "UNDISCOVERABLE") or
-        boost::iequals(nf_status, "DEREGISTERED"))) {
+  if (!(boost::iequals(status, "REGISTERED") or
+        boost::iequals(status, "UNDISCOVERABLE") or
+        boost::iequals(status, "DEREGISTERED"))) {
     return false;
   }
   std::unique_lock lock(nf_profile_mutex);
