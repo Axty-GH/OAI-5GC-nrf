@@ -678,7 +678,7 @@ void nrf_profile::subscribe_heartbeat_timeout_nfupdate(uint64_t ms) {
   if (first_update) {
     ms = ms + 2000;  // Not a realtime NF: adding 2000ms interval between the
                      // expected NF update message and HBT
-    task_connection = m_event_sub.subscribe_task_tick(
+    hb_update_connection = m_event_sub.subscribe_task_tick(
         boost::bind(&nrf_profile::handle_heartbeart_timeout_nfupdate, this, _1),
         interval, ms + interval);
     first_update = false;
@@ -687,8 +687,8 @@ void nrf_profile::subscribe_heartbeat_timeout_nfupdate(uint64_t ms) {
 
 //------------------------------------------------------------------------------
 bool nrf_profile::unsubscribe_heartbeat_timeout_nfupdate() {
-  if (task_connection.connected()) {
-    task_connection.disconnect();
+  if (hb_update_connection.connected()) {
+    hb_update_connection.disconnect();
     Logger::nrf_app().debug(
         "Unsubscribe to the Heartbeat Timer timeout event (after NF Update)");
     return true;
@@ -748,6 +748,7 @@ void nrf_profile::handle_heartbeart_timeout_nfupdate(uint64_t ms) {
     // TODO: Notify to the subscribers
     // notifCondition with ["monitoredAttributes": [ "/nfStatus""]
     m_event_sub.nf_status_profile_changed(nf_instance_id);
+    unsubscribe_heartbeat_timeout_nfupdate();
   }
   set_status_updated(false);
 }

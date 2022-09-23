@@ -117,7 +117,7 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
 
   virtual ~nrf_profile() {
     Logger::nrf_app().debug("Delete NRF Profile instance...");
-    if (task_connection.connected()) task_connection.disconnect();
+    if (hb_update_connection.connected()) task_connection.disconnect();
     if (first_hb_connection.connected()) first_hb_connection.disconnect();
   }
 
@@ -514,7 +514,7 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
  protected:
   nrf_event& m_event_sub;
   bs2::connection
-      task_connection;  // connection for the HBT timeout (after NF Update)
+      hb_update_connection;  // connection for the HBT timeout (after NF Update)
   bs2::connection first_hb_connection;  // connection for first HBT timeout
                                         // (after NF Registration)
   bool first_update;
