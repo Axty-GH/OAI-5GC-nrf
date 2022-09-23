@@ -64,6 +64,7 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
         priority(0),
         capacity(0),
         nf_services(),
+        hb_mutex(),
         nf_profile_mutex() {
     nf_instance_name = "";
     nf_status        = "";
@@ -84,6 +85,7 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
         priority(0),
         capacity(0),
         nf_services(),
+        hb_mutex(),
         nf_profile_mutex() {
     nf_instance_name = "";
     nf_status        = "";
@@ -105,6 +107,7 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
         capacity(0),
         nf_services(),
         nf_type(NF_TYPE_UNKNOWN),
+        hb_mutex(),
         nf_profile_mutex() {
     nf_instance_name = "";
     nf_status        = "";
@@ -168,7 +171,7 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
    * @param [const std::string &] status: instance status
    * @return void
    */
-  void set_nf_status(const std::string& status);
+  bool set_nf_status(const std::string& status);
 
   /*
    * Get NF instance status
@@ -463,25 +466,25 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
   void subscribe_heartbeat_timeout_nfregistration(uint64_t ms);
 
   /*
-   * Handle heartbeart timeout event
+   * Handle heartbeat timeout event
    * @param [uint64_t] ms: current time
    * @return void
    */
-  void handle_heartbeart_timeout(uint64_t ms);
+  void handle_heartbeat_timeout(uint64_t ms);
 
   /*
-   * Handle heartbeart timeout event after NF Registration
+   * Handle heartbeat timeout event after NF Registration
    * @param [uint64_t] ms: current time
    * @return void
    */
-  void handle_heartbeart_timeout_nfregistration(uint64_t ms);
+  void handle_heartbeat_timeout_nfregistration(uint64_t ms);
 
   /*
-   * Handle heartbeart timeout event after NF Update
+   * Handle heartbeat timeout event after NF Update
    * @param [uint64_t] ms: current time
    * @return void
    */
-  void handle_heartbeart_timeout_nfupdate(uint64_t ms);
+  void handle_heartbeat_timeout_nfupdate(uint64_t ms);
 
   /*
    * Unubscribe to HBT event (after NF Registration)
@@ -496,6 +499,13 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
    * @return void
    */
   bool unsubscribe_heartbeat_timeout_nfupdate();
+
+  /*
+   * Verify whether HBT is currently active
+   * @param void
+   * @return true if active, otherwise return false
+   */
+  bool is_heartbeat_timeout_nfupdate_active();
 
   /*
    * Set status updated to true
@@ -524,6 +534,7 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
       hb_update_connection;  // connection for the HBT timeout (after NF Update)
   bs2::connection first_hb_connection;  // connection for first HBT timeout
                                         // (after NF Registration)
+  mutable std::shared_mutex hb_mutex;
   bool first_update;
   bool is_updated;
   mutable std::shared_mutex nf_profile_mutex;
