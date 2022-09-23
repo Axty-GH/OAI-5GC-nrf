@@ -87,7 +87,7 @@ bool nrf_profile::set_nf_status(const std::string& status) {
   Logger::nrf_app().debug("Set NF status to %s", status.c_str());
   if (!(boost::iequals(status, "REGISTERED") or
         boost::iequals(status, "UNDISCOVERABLE") or
-        boost::iequals(status, "DEREGISTERED"))) {
+        boost::iequals(status, "SUSPENDED"))) {
     return false;
   }
   std::unique_lock lock(nf_profile_mutex);
