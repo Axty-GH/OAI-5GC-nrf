@@ -64,7 +64,7 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
         priority(0),
         capacity(0),
         nf_services(),
-        heartbeart_mutex() {
+        nf_profile_mutex() {
     nf_instance_name = "";
     nf_status        = "";
     json_data        = {};
@@ -84,7 +84,7 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
         priority(0),
         capacity(0),
         nf_services(),
-        heartbeart_mutex() {
+        nf_profile_mutex() {
     nf_instance_name = "";
     nf_status        = "";
     json_data        = {};
@@ -105,7 +105,7 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
         capacity(0),
         nf_services(),
         nf_type(NF_TYPE_UNKNOWN),
-        heartbeart_mutex() {
+        nf_profile_mutex() {
     nf_instance_name = "";
     nf_status        = "";
     json_data        = {};
@@ -183,6 +183,13 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
    * @return [std::string] instance status
    */
   std::string get_nf_status() const;
+
+  /*
+   * Verify NF status
+   * @param
+   * @return true if NF status is REGISTERED, otherwise return false
+   */
+  bool is_nf_active() const;
 
   /*
    * Get NF type
@@ -519,7 +526,7 @@ class nrf_profile : public std::enable_shared_from_this<nrf_profile> {
                                         // (after NF Registration)
   bool first_update;
   bool is_updated;
-  mutable std::shared_mutex heartbeart_mutex;
+  mutable std::shared_mutex nf_profile_mutex;
 
   // From NFProfile (Section 6.1.6.2.2@3GPP TS 29.510 V16.0.0 (2019-06))
   std::string nf_instance_id;

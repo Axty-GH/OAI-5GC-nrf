@@ -30,6 +30,7 @@
 #include "nrf_profile.hpp"
 
 #include <unistd.h>
+#include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
 
@@ -84,20 +85,29 @@ nf_type_t nrf_profile::get_nf_type() const {
 //------------------------------------------------------------------------------
 void nrf_profile::set_nf_status(const std::string& status) {
   Logger::nrf_app().debug("Set NF status to %s", status.c_str());
-  std::unique_lock lock(heartbeart_mutex);
+  std::unique_lock lock(nf_profile_mutex);
   nf_status = status;
 }
 
 //------------------------------------------------------------------------------
 void nrf_profile::get_nf_status(std::string& status) const {
-  std::shared_lock lock(heartbeart_mutex);
+  std::shared_lock lock(nf_profile_mutex);
   status = nf_status;
 }
 
 //------------------------------------------------------------------------------
 std::string nrf_profile::get_nf_status() const {
-  std::shared_lock lock(heartbeart_mutex);
+  std::shared_lock lock(nf_profile_mutex);
   return nf_status;
+}
+
+//------------------------------------------------------------------------------
+bool nrf_profile::is_nf_active() const {
+  std::shared_lock lock(nf_profile_mutex);
+  if (boost::iequals(nf_status, "REGISTERED")) {
+    return true;
+  }
+  return false;
 }
 
 //------------------------------------------------------------------------------
@@ -755,19 +765,19 @@ void nrf_profile::handle_heartbeart_timeout_nfupdate(uint64_t ms) {
 
 //------------------------------------------------------------------------------
 void nrf_profile::set_status_updated(bool status) {
-  std::unique_lock lock(heartbeart_mutex);
+  std::unique_lock lock(nf_profile_mutex);
   is_updated = status;
 }
 
 //------------------------------------------------------------------------------
 void nrf_profile::get_status_updated(bool& status) {
-  std::shared_lock lock(heartbeart_mutex);
+  std::shared_lock lock(nf_profile_mutex);
   status = is_updated;
 }
 
 //------------------------------------------------------------------------------
 bool nrf_profile::get_status_updated() {
-  std::shared_lock lock(heartbeart_mutex);
+  std::shared_lock lock(nf_profile_mutex);
   return is_updated;
 }
 
