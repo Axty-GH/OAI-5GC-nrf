@@ -30,6 +30,7 @@
 #include "nrf_profile.hpp"
 
 #include <unistd.h>
+#include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
 
@@ -82,20 +83,37 @@ nf_type_t nrf_profile::get_nf_type() const {
 }
 
 //------------------------------------------------------------------------------
-void nrf_profile::set_nf_status(const std::string& status) {
+bool nrf_profile::set_nf_status(const std::string& status) {
   Logger::nrf_app().debug("Set NF status to %s", status.c_str());
-  std::unique_lock lock(heartbeart_mutex);
+  if (!(boost::iequals(status, "REGISTERED") or
+        boost::iequals(status, "UNDISCOVERABLE") or
+        boost::iequals(status, "SUSPENDED"))) {
+    return false;
+  }
+  std::unique_lock lock(nf_profile_mutex);
   nf_status = status;
+  return true;
 }
 
 //------------------------------------------------------------------------------
 void nrf_profile::get_nf_status(std::string& status) const {
+  std::shared_lock lock(nf_profile_mutex);
   status = nf_status;
 }
 
 //------------------------------------------------------------------------------
 std::string nrf_profile::get_nf_status() const {
+  std::shared_lock lock(nf_profile_mutex);
   return nf_status;
+}
+
+//------------------------------------------------------------------------------
+bool nrf_profile::is_nf_active() const {
+  std::shared_lock lock(nf_profile_mutex);
+  if (boost::iequals(nf_status, "REGISTERED")) {
+    return true;
+  }
+  return false;
 }
 
 //------------------------------------------------------------------------------
@@ -650,12 +668,12 @@ void nrf_profile::subscribe_heartbeat_timeout_nfregistration(uint64_t ms) {
       its.it_value.tv_nsec / 1000000;  // convert sec, nsec to msec
 
   Logger::nrf_app().debug(
-      "Subscribe to the HeartBeartTimer expire event (after NF "
+      "Subscribe to the HeartbeatTimer expire event (after NF "
       "registration): interval %d, current time %ld",
       2 * HEART_BEAT_TIMER, ms);
   first_hb_connection = m_event_sub.subscribe_task_tick(
       boost::bind(
-          &nrf_profile::handle_heartbeart_timeout_nfregistration, this, _1),
+          &nrf_profile::handle_heartbeat_timeout_nfregistration, this, _1),
       interval, ms + interval);
 }
 
@@ -676,8 +694,8 @@ void nrf_profile::subscribe_heartbeat_timeout_nfupdate(uint64_t ms) {
   if (first_update) {
     ms = ms + 2000;  // Not a realtime NF: adding 2000ms interval between the
                      // expected NF update message and HBT
-    task_connection = m_event_sub.subscribe_task_tick(
-        boost::bind(&nrf_profile::handle_heartbeart_timeout_nfupdate, this, _1),
+    hb_update_connection = m_event_sub.subscribe_task_tick(
+        boost::bind(&nrf_profile::handle_heartbeat_timeout_nfupdate, this, _1),
         interval, ms + interval);
     first_update = false;
   }
@@ -685,8 +703,9 @@ void nrf_profile::subscribe_heartbeat_timeout_nfupdate(uint64_t ms) {
 
 //------------------------------------------------------------------------------
 bool nrf_profile::unsubscribe_heartbeat_timeout_nfupdate() {
-  if (task_connection.connected()) {
-    task_connection.disconnect();
+  std::unique_lock lock(hb_mutex);
+  if (hb_update_connection.connected()) {
+    hb_update_connection.disconnect();
     Logger::nrf_app().debug(
         "Unsubscribe to the Heartbeat Timer timeout event (after NF Update)");
     return true;
@@ -696,7 +715,18 @@ bool nrf_profile::unsubscribe_heartbeat_timeout_nfupdate() {
 }
 
 //------------------------------------------------------------------------------
+bool nrf_profile::is_heartbeat_timeout_nfupdate_active() {
+  std::shared_lock lock(hb_mutex);
+  if (hb_update_connection.connected()) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+//------------------------------------------------------------------------------
 bool nrf_profile::unsubscribe_heartbeat_timeout_nfregistration() {
+  std::unique_lock lock(hb_mutex);
   if (first_hb_connection.connected()) {
     first_hb_connection.disconnect();
     Logger::nrf_app().debug(
@@ -709,21 +739,21 @@ bool nrf_profile::unsubscribe_heartbeat_timeout_nfregistration() {
 }
 
 //------------------------------------------------------------------------------
-void nrf_profile::handle_heartbeart_timeout(uint64_t ms) {
+void nrf_profile::handle_heartbeat_timeout(uint64_t ms) {
   Logger::nrf_app().info(
-      "\nHandle heartbeart timeout, NF instance ID %s, time %d",
+      "\nHandle heartbeat timeout, NF instance ID %s, time %d",
       nf_instance_id.c_str(), ms);
   set_nf_status("SUSPENDED");
 }
 
 //------------------------------------------------------------------------------
-void nrf_profile::handle_heartbeart_timeout_nfregistration(uint64_t ms) {
+void nrf_profile::handle_heartbeat_timeout_nfregistration(uint64_t ms) {
   Logger::nrf_app().info(
       "\nHandle the first Heartbeat timeout, NF instance ID %s, current time "
       "%d",
       nf_instance_id.c_str(), ms);
   // Set status to SUSPENDED and unsubscribe to the HBT
-  if (!is_updated) {
+  if (!get_status_updated()) {
     set_nf_status("SUSPENDED");
   }
 
@@ -732,25 +762,41 @@ void nrf_profile::handle_heartbeart_timeout_nfregistration(uint64_t ms) {
 }
 
 //------------------------------------------------------------------------------
-void nrf_profile::handle_heartbeart_timeout_nfupdate(uint64_t ms) {
+void nrf_profile::handle_heartbeat_timeout_nfupdate(uint64_t ms) {
   uint64_t current_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
                             std::chrono::system_clock::now().time_since_epoch())
                             .count();
   Logger::nrf_app().info(
-      "\nHandle heartbeart timeout (NF update), NF instance ID %s, time %ld, "
+      "\nHandle heartbeat timeout (NF update), NF instance ID %s, time %ld, "
       "current "
       "ms %ld",
       nf_instance_id.c_str(), ms, current_ms);
-  if (!is_updated) {
+  if (!get_status_updated()) {
     set_nf_status("SUSPENDED");
+    // TODO: Notify to the subscribers
+    // notifCondition with ["monitoredAttributes": [ "/nfStatus""]
+    m_event_sub.nf_status_profile_changed(nf_instance_id);
+    unsubscribe_heartbeat_timeout_nfupdate();
   }
   set_status_updated(false);
 }
 
 //------------------------------------------------------------------------------
 void nrf_profile::set_status_updated(bool status) {
-  std::unique_lock lock(heartbeart_mutex);
+  std::unique_lock lock(nf_profile_mutex);
   is_updated = status;
+}
+
+//------------------------------------------------------------------------------
+void nrf_profile::get_status_updated(bool& status) {
+  std::shared_lock lock(nf_profile_mutex);
+  status = is_updated;
+}
+
+//------------------------------------------------------------------------------
+bool nrf_profile::get_status_updated() {
+  std::shared_lock lock(nf_profile_mutex);
+  return is_updated;
 }
 
 //------------------------------------------------------------------------------

@@ -171,7 +171,7 @@ void nrf_app::handle_register_nf_instance(
     Logger::nrf_app().info(
         "Added/Updated NF Profile (ID %s) to the DB", nf_instance_id.c_str());
 
-    // Heartbeart management for this NF profile
+    // Heartbeat management for this NF profile
     // get current time
     uint64_t ms = std::chrono::duration_cast<std::chrono::milliseconds>(
                       std::chrono::system_clock::now().time_since_epoch())
@@ -216,7 +216,8 @@ void nrf_app::handle_update_nf_instance(
   std::shared_ptr<nrf_profile> sn = {};
   sn                              = find_nf_profile(nf_instance_id);
   bool op_success                 = true;
-  bool is_heartbeart_procedure    = false;
+  bool is_heartbeat_procedure     = false;
+  std::string heartbeat_value     = {};
 
   if (sn.get() != nullptr) {
     for (auto p : patchItem) {
@@ -237,7 +238,8 @@ void nrf_app::handle_update_nf_instance(
       switch (op) {
         case PATCH_OP_REPLACE: {
           if (path.compare("nfStatus") == 0) {
-            is_heartbeart_procedure = true;
+            is_heartbeat_procedure = true;
+            heartbeat_value        = p.getValue();
             Logger::nrf_app().info("NF Heart-Beat procedure!");
           }
           if (sn.get()->replace_profile_info(path, p.getValue())) {
@@ -277,7 +279,7 @@ void nrf_app::handle_update_nf_instance(
         problem_details.setCause(
             protocol_application_error_e2str[MANDATORY_IE_INCORRECT]);
       } else {
-        if (!is_heartbeart_procedure)
+        if (!is_heartbeat_procedure)
           // update successful,
           // Notify NF status change event
           m_event_sub.nf_status_profile_changed(
@@ -286,7 +288,7 @@ void nrf_app::handle_update_nf_instance(
     }
 
     // for NF Heartbeat procedure
-    if (is_heartbeart_procedure and (http_code == HTTP_STATUS_CODE_200_OK)) {
+    if (is_heartbeat_procedure and (http_code == HTTP_STATUS_CODE_200_OK)) {
       http_code   = HTTP_STATUS_CODE_204_NO_CONTENT;
       uint64_t ms = std::chrono::duration_cast<std::chrono::milliseconds>(
                         std::chrono::system_clock::now().time_since_epoch())
@@ -307,11 +309,17 @@ void nrf_app::handle_update_nf_instance(
         sn.get()->subscribe_heartbeat_timeout_nfupdate(ms);
       }
 
-      // sn.get()->subscribe_heartbeat_timeout_nfupdate(ms);
-      // update NF updated flag
-      sn.get()->set_status_updated(true);
+      // Subscribe again to heartbeat timeout if not done (e.g., change status
+      // from SUSPENDED to REGISTERED)
+      if (!sn.get()->is_heartbeat_timeout_nfupdate_active()) {
+        sn.get()->subscribe_heartbeat_timeout_nfupdate(ms);
+      }
+
       // update NF status
-      sn.get()->set_nf_status("REGISTERED");
+      if (sn.get()->set_nf_status(heartbeat_value)) {
+        // update NF updated flag
+        sn.get()->set_status_updated(true);
+      }
       return;
     }
 
@@ -849,7 +857,8 @@ void nrf_app::find_nf_profiles(
       nf_type_t nf_type = api_conv::string_to_nf_type(sub_condition.nf_type);
 
       for (auto profile : instance_id2nrf_profile) {
-        if (profile.second.get()->get_nf_type() == nf_type) {
+        if ((profile.second.get()->get_nf_type() == nf_type) and
+            profile.second->is_nf_active()) {
           profiles.push_back(profile.second);
         }
       }
@@ -990,13 +999,13 @@ void nrf_app::subscribe_task_tick(uint64_t ms) {
 
   Logger::nrf_app().debug("subscribe task_tick: %d", ms);
   m_event_sub.subscribe_task_tick(
-      boost::bind(&nrf_app::handle_heartbeart_timeout, this, _1), interval,
+      boost::bind(&nrf_app::handle_heartbeat_timeout, this, _1), interval,
       ms % 20000);
 }
 
 //------------------------------------------------------------------------------
-void nrf_app::handle_heartbeart_timeout(uint64_t ms) {
-  Logger::nrf_app().info("handle_heartbeart_timeout %d", ms);
+void nrf_app::handle_heartbeat_timeout(uint64_t ms) {
+  Logger::nrf_app().info("handle_heartbeat_timeout %d", ms);
 }
 
 //------------------------------------------------------------------------------

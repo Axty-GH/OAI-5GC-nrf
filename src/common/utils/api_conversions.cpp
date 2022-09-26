@@ -72,7 +72,7 @@ bool api_conv::profile_api_to_nrf_profile(
       "\tStatus: %s", profile.get()->get_nf_status().c_str());
   profile.get()->set_nf_heartBeat_timer(api_profile.getHeartBeatTimer());
   Logger::nrf_app().debug(
-      "\tHeartBeart timer: %d", profile.get()->get_nf_heartBeat_timer());
+      "\tHeartbeat timer: %d", profile.get()->get_nf_heartBeat_timer());
   profile.get()->set_nf_priority(api_profile.getPriority());
   Logger::nrf_app().debug("\tPriority: %d", profile.get()->get_nf_priority());
   profile.get()->set_nf_capacity(api_profile.getCapacity());

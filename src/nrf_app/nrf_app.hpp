@@ -325,7 +325,7 @@ class nrf_app {
    * @param [uint64_t] ms: current time in milliseconds
    * @return void
    */
-  void handle_heartbeart_timeout(uint64_t ms);
+  void handle_heartbeat_timeout(uint64_t ms);
 
   /*
    * Verify whether a subscription is authorized

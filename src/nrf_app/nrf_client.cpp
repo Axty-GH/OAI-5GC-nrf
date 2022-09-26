@@ -269,6 +269,8 @@ void nrf_client::notify_subscribed_event(
     json_data["nfProfile"] = json_profile;
   }
 
+  // TODO: profileChanges in case of "NF_PROFILE_CHANGED" instead of NF Profile
+
   std::string body = json_data.dump();
 
   for (auto uri : uris) {
