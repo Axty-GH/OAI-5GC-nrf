@@ -31,6 +31,8 @@
 
 FROM registry.access.redhat.com/ubi8/ubi:latest AS oai-nrf-builder
 
+ENV IS_DOCKERFILE=1
+
 # Copy the entitlements
 COPY ./etc-pki-entitlement /etc/pki/entitlement
 
@@ -40,11 +42,11 @@ COPY ./rhsm-ca /etc/rhsm/ca
 
 RUN rm -f /etc/rhsm-host && \
     yum repolist --disablerepo=* && \
-    subscription-manager repos --enable codeready-builder-for-rhel-8-x86_64-rpms && \	
+    subscription-manager repos --enable codeready-builder-for-rhel-8-x86_64-rpms && \
     yum update -y && \
     yum install -y \
-    	psmisc \
-    	git \
+      psmisc \
+      git \
         diffutils \
         libasan \
         wget \
