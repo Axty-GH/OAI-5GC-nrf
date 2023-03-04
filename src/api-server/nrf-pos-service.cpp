@@ -56,7 +56,7 @@ void NrfPosition::Start(void)
 	static unsigned long count = 0;
 	while(m_normal_flag)
 	{
-		cout << m_pos_vec[count].time << '\t' << m_pos_vec[count].lati << '\t' << m_pos_vec[count].longi << '\t' << m_pos_vec[count].alti << endl;
+		cout << "Time:" << m_pos_vec[count].time << '\t' << "Position:" << m_pos_vec[count].lati << '\t' << m_pos_vec[count].longi << '\t' << m_pos_vec[count].alti << endl;
 		this_thread::sleep_for(chrono::milliseconds(2000));
 
 		if(m_pos_vec.size())
