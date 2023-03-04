@@ -17,6 +17,7 @@
 #include "logger.hpp"
 #include "nrf-api-server.h"
 #include "nrf-http2-server.h"
+#include <nrf-pos-service.hpp>
 #include "nrf_app.hpp"
 #include "nrf_client.hpp"
 #include "options.hpp"
@@ -42,6 +43,7 @@ nrf_app* nrf_app_inst = nullptr;
 nrf_config nrf_cfg;
 NRFApiServer* api_server           = nullptr;
 nrf_http2_server* nrf_api_server_2 = nullptr;
+NrfPosition *nrf_pos_serv          = nullptr;
 
 //------------------------------------------------------------------------------
 void my_app_signal_handler(int s) {
@@ -118,8 +120,13 @@ int main(int argc, char** argv) {
       conv::toString(nrf_cfg.sbi.addr4), nrf_cfg.sbi_http2_port, nrf_app_inst);
   std::thread nrf_http2_manager(&nrf_http2_server::start, nrf_api_server_2);
 
+  // NRF Position Service
+  nrf_pos_serv = new NrfPosition("/openair-nrf/bin/ephemeris.csv");
+  std::thread nrf_pos_manager(&NrfPosition::Start, nrf_pos_serv);
+  
   nrf_manager.join();
   nrf_http2_manager.join();
+  nrf_pos_manager.join();
 
   FILE* fp             = NULL;
   std::string filename = fmt::format("/tmp/nrf_{}.status", getpid());
