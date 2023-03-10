@@ -1,9 +1,10 @@
-#include <nrf-pos-service.hpp>
 #include <thread>
 #include <iostream>
 #include <string>
 #include <fstream>
 #include <sstream>
+#include "logger.hpp"
+#include "nrf-pos-service.hpp"
 
 
 using namespace std;
@@ -54,14 +55,24 @@ NrfPosition::NrfPosition(string filepath) : m_file_path(filepath)
 void NrfPosition::Start(void)
 {
 	static unsigned long count = 0;
+	stringstream strstream;
+
+	// Config decimal output format
+	strstream.unsetf(ios::fixed);
+	strstream.setf(ios_base::showpoint);
+	strstream.precision(6);
+
 	while(m_normal_flag)
 	{
-		cout << "Time:" << m_pos_vec[count].time << '\t' << "Position:" << m_pos_vec[count].lati << '\t' << m_pos_vec[count].longi << '\t' << m_pos_vec[count].alti << endl;
-		this_thread::sleep_for(chrono::milliseconds(2000));
-
+		strstream.clear();
+		strstream.str("");
+		strstream << "Latitude:" << m_pos_vec[count].lati << "°\tLongitude:" << m_pos_vec[count].longi << "°\tAltitude:" << m_pos_vec[count].alti << "km";
+		Logger::nrf_pos().info(strstream.str().c_str());
+	
 		if(m_pos_vec.size())
 		{
 			count = (count+1) % m_pos_vec.size();
 		}
+		this_thread::sleep_for(chrono::milliseconds(2000));
 	}
 }

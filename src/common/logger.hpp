@@ -80,6 +80,7 @@ class Logger {
   static _Logger& nrf_app() { return *singleton().m_nrf_app; }
   static _Logger& system() { return *singleton().m_system; }
   static _Logger& nrf_sbi() { return *singleton().m_nrf_sbi; }
+  static _Logger& nrf_pos() { return *singleton().m_nrf_pos; } //Position Related
 
  private:
   static Logger* m_singleton;
@@ -102,6 +103,7 @@ class Logger {
   _Logger* m_nrf_app;
   _Logger* m_system;
   _Logger* m_nrf_sbi;
+  _Logger* m_nrf_pos; //Position Related
 };
 
 #endif  // __LOGGER_H

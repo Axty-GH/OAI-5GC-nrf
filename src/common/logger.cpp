@@ -58,6 +58,7 @@ void Logger::_init(
   m_nrf_app   = new _Logger("nrf_app", m_sinks, ss.str().c_str());
   m_system    = new _Logger("system ", m_sinks, ss.str().c_str());
   m_nrf_sbi   = new _Logger("sbi_srv", m_sinks, ss.str().c_str());
+  m_nrf_pos   = new _Logger("nrf_pos", m_sinks, ss.str().c_str()); //Position Related
 }
 
 //------------------------------------------------------------------------------
